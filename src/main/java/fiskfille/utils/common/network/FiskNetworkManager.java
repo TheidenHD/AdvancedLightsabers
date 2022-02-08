@@ -1,6 +1,6 @@
 package fiskfille.utils.common.network;
 
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import fiskfille.utils.helper.FiskServerUtils;
 
 public class FiskNetworkManager extends FiskNetworkHelper

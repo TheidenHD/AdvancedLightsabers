@@ -1,0 +1,13 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+  },
+  "variants": {
+    "facing=up": { "model": "lightsabers:lightsaber_crystal" },
+    "facing=east": { "model": "lightsabers:lightsaber_crystal" },
+    "facing=south": { "model": "lightsabers:lightsaber_crystal"},
+    "facing=west": { "model": "lightsabers:lightsaber_crystal"},
+    "facing=north": { "model": "lightsabers:lightsaber_crystal"},
+	"facing=down": { "model": "lightsabers:lightsaber_crystal"}
+  }
+}

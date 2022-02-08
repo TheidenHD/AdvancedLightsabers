@@ -1,9 +1,9 @@
 package com.fiskmods.lightsabers.client.particle;
 
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.world.World;
 
-public class EntityALFX extends EntityFX
+public class EntityALFX extends Particle
 {
     protected EntityALFX(World world, double x, double y, double z)
     {

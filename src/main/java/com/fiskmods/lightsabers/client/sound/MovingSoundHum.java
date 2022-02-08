@@ -5,25 +5,28 @@ import com.fiskmods.lightsabers.asm.ASMHooksClient;
 import com.fiskmods.lightsabers.common.entity.EntityLightsaber;
 import com.fiskmods.lightsabers.common.item.ItemLightsaberBase;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 
 @SideOnly(Side.CLIENT)
 public class MovingSoundHum extends MovingSound
 {
     public final Entity theEntity;
 
-    public MovingSoundHum(Entity entity, String type)
+    public MovingSoundHum(Entity entity)
     {
-        super(new ResourceLocation(Lightsabers.MODID, "hum_" + type));
+        //super(new ResourceLocation(Lightsabers.MODID, "hum_" + type)); //TODO
+    	super(SoundEvents.ITEM_ELYTRA_FLYING, SoundCategory.PLAYERS);
         theEntity = entity;
         repeat = true;
-        field_147665_h = 0;
+        repeatDelay = 0;
         volume = 0.25F;
     }
 
@@ -35,7 +38,7 @@ public class MovingSoundHum extends MovingSound
         if (theEntity instanceof EntityLivingBase)
         {
             EntityLivingBase entity = (EntityLivingBase) theEntity;
-            ItemStack itemstack = entity.getHeldItem();
+            ItemStack itemstack = entity.getHeldItemMainhand();
             flag = itemstack == null || !(itemstack.getItem() instanceof ItemLightsaberBase) || !ItemLightsaberBase.isActive(itemstack);
         }
         else if (theEntity instanceof EntityLightsaber)

@@ -3,9 +3,9 @@ package com.fiskmods.lightsabers.common.interaction.key;
 import com.fiskmods.lightsabers.common.item.ItemLightsaberBase;
 import com.fiskmods.lightsabers.common.keybinds.ALKeyBinds;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import fiskfille.utils.common.interaction.key.KeyPressBase;
 import fiskfille.utils.common.keybinds.FiskKeyBinding;
@@ -16,7 +16,7 @@ public class KeyPressLightsaber extends KeyPressBase
     @Override
     public boolean serverRequirements(EntityPlayer player, InteractionType type, int x, int y, int z)
     {
-        return player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemLightsaberBase;
+        return player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() instanceof ItemLightsaberBase;
     }
     
     @Override
@@ -31,7 +31,7 @@ public class KeyPressLightsaber extends KeyPressBase
     {
         if (side.isServer())
         {
-            ItemLightsaberBase.ignite(sender, !ItemLightsaberBase.isActive(sender.getHeldItem()));
+            ItemLightsaberBase.ignite(sender, !ItemLightsaberBase.isActive(sender.getHeldItemMainhand()));
         }
     }
     

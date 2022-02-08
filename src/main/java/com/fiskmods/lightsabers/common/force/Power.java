@@ -24,21 +24,20 @@ import com.fiskmods.lightsabers.common.force.effect.PowerEffectStun;
 import com.fiskmods.lightsabers.helper.ALHelper;
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import fiskfille.utils.helper.NBTHelper.ISaveAdapter;
 import fiskfille.utils.helper.NBTHelper.ISerializableObject;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.event.HoverEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 public class Power implements Comparable<Power>, ISerializableObject<Power>
 {
@@ -194,37 +193,37 @@ public class Power implements Comparable<Power>, ISerializableObject<Power>
         return I18n.format(getUnlocalizedName());
     }
 
-    public IChatComponent getFormattedName()
+    public ITextComponent getFormattedName()
     {
-        IChatComponent title = new ChatComponentTranslation(getUnlocalizedName());
-        title.getChatStyle().setColor(forceSide.theme);
+    	ITextComponent title = new TextComponentTranslation(getUnlocalizedName());
+        title.getStyle().setColor(forceSide.theme);
 
-        IChatComponent desc = title.createCopy();
+        ITextComponent desc = title.createCopy();
         List<String> list = Lists.newArrayList();
 
         if (powerStats.useCost > 0)
         {
-            desc.appendText("\n" + EnumChatFormatting.GRAY + StatCollector.translateToLocalFormatted(powerStats.powerType == PowerType.PER_USE ? "forcepower.perUse" : "forcepower.perSecond", ItemStack.field_111284_a.format(powerStats.useCost)) + "\n");
+            desc.appendText("\n" + TextFormatting.GRAY + new TextComponentTranslation(powerStats.powerType == PowerType.PER_USE ? "forcepower.perUse" : "forcepower.perSecond", ItemStack.DECIMALFORMAT.format(powerStats.useCost)) + "\n");
         }
 
         if (powerEffect != null)
         {
             for (String s : powerEffect.getDesc())
             {
-                desc.appendText("\n" + EnumChatFormatting.GRAY + s);
+                desc.appendText("\n" + TextFormatting.GRAY + s);
             }
         }
 
-        title.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
+        title.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
 
         return title;
     }
 
-    public IChatComponent getChatFormattedName()
+    public ITextComponent getChatFormattedName()
     {
-        IChatComponent title = getFormattedName().createCopy();
-        IChatComponent text = new ChatComponentText("[").appendSibling(title).appendText("]");
-        text.setChatStyle(title.getChatStyle());
+    	ITextComponent title = getFormattedName().createCopy();
+    	ITextComponent text = new TextComponentString("[").appendSibling(title).appendText("]");
+        text.setStyle(title.getStyle());
 
         return text;
     }
@@ -365,7 +364,7 @@ public class Power implements Comparable<Power>, ISerializableObject<Power>
         {
             if (tag instanceof NBTTagString)
             {
-                return Power.getPowerFromName(((NBTTagString) tag).func_150285_a_());
+                return Power.getPowerFromName(((NBTTagString) tag).getString());
             }
 
             return null;

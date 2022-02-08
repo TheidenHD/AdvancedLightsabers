@@ -9,13 +9,15 @@ import com.fiskmods.lightsabers.common.force.PowerType;
 import com.fiskmods.lightsabers.common.keybinds.ALKeyBinds;
 import com.fiskmods.lightsabers.helper.ALHelper;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import fiskfille.utils.common.interaction.key.KeyPressBase;
 import fiskfille.utils.common.keybinds.FiskKeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.StringUtils;
 
 public class KeyPressForceUse extends KeyPressBase
@@ -52,11 +54,11 @@ public class KeyPressForceUse extends KeyPressBase
             {
                 if (side.isServer())
                 {
-                    String sound = power.powerEffect.getCastSound(power.getSide());
+                    SoundEvent sound = power.powerEffect.getCastSound(power.getSide());
 
-                    if (!StringUtils.isNullOrEmpty(sound))
+                    if (!StringUtils.isNullOrEmpty(sound.getSoundName().toString()))//TODO
                     {
-                        player.worldObj.playSoundAtEntity(player, sound, power.powerEffect.getCastSoundVolume(power.getSide()), power.powerEffect.getCastSoundPitch(power.getSide()));
+                        player.getEntityWorld().playSound(player, player.posX, player.posY, player.posZ, sound, SoundCategory.PLAYERS, power.powerEffect.getCastSoundVolume(power.getSide()), power.powerEffect.getCastSoundPitch(power.getSide()));
                     }
 
                     ALData.FORCE_POWER.incr(player, -power.getUseCost(player));
@@ -67,7 +69,7 @@ public class KeyPressForceUse extends KeyPressBase
             }
             else if (side.isClient())
             {
-                player.playSound(ALSounds.player_force_fail, 1, 1);
+                player.playSound(ALSounds.PLAYER_FORCE_FAIL, 1, 1);
             }
         }
         

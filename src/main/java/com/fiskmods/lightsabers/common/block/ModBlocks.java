@@ -19,71 +19,54 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.item.ItemSlab;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ModBlocks
 {
-    public static Block lightsaberCrystal;
-//    public static Block lightsaberCrystalGen;
-    public static Block lightsaberForgeLight;
-    public static Block lightsaberForgeDark;
-    public static Block lightsaberStand;
-    public static Block disassemblyStation;
-    public static Block sithCoffin;
-    public static Block sithStoneCoffin;
-    public static Block holocron;
+    public static final List<Block> BLOCKS = new ArrayList<Block>();
 
-    public static Block lightForcestone;
-    public static Block lightActivatedForcestone;
-    public static Block lightForcestoneStairs;
-    public static Block darkForcestone;
-    public static Block darkActivatedForcestone;
-    public static Block darkForcestoneStairs;
-    public static BlockSlab forcestoneDoubleSlab;
-    public static BlockSlab forcestoneSlab;
+    public static final Block lightsaberCrystal = new BlockCrystal("lightsaber_crystal");
+    //public static final Block lightsaberCrystalGen = new BlockCrystalGen();
+    public static final Block lightsaberStand = new BlockLightsaberStand();
+    public static final Block disassemblyStation = new BlockDisassemblyStation();
+    public static final Block sithCoffin = new BlockSithCoffin();
+    public static final Block sithStoneCoffin = new BlockSithStoneCoffin();
+    public static final Block holocron = new BlockHolocron();
 
-//    public static Block test;
+    public static final Block lightForcestone = new BlockForcestone().setHardness(3.0F).setResistance(100.0F);
+    public static final Block lightActivatedForcestone = new BlockPillar().setLightLevel(1.0F).setHardness(3.0F).setResistance(100.0F);
+    public static final Block lightForcestoneStairs = new BlockModStairs(lightForcestone.getDefaultState()); //TODO check
+    public static final Block darkForcestone = new BlockForcestone().setHardness(3.0F).setResistance(100.0F);
+    public static final Block darkActivatedForcestone = new BlockPillar().setLightLevel(1.0F).setHardness(3.0F).setResistance(100.0F);
+    public static final Block darkForcestoneStairs = new BlockModStairs(darkForcestone.getDefaultState());
+    public static final Block forcestoneDoubleSlab = (BlockSlab) new BlockModSlab(true).setHardness(3.0F).setResistance(100.0F);
+    public static final Block forcestoneSlab = (BlockSlab) new BlockModSlab(false).setHardness(3.0F).setResistance(100.0F);
 
-    public static void register()
-    {
-        lightsaberCrystal = new BlockCrystal();
-//        lightsaberCrystalGen = new BlockCrystalGen();
-        lightsaberStand = new BlockLightsaberStand();
-        disassemblyStation = new BlockDisassemblyStation();
-        sithCoffin = new BlockSithCoffin();
-        sithStoneCoffin = new BlockSithStoneCoffin();
-        holocron = new BlockHolocron();
+    public static final Block lightsaberForgeLight = new BlockLightsaberForge(lightForcestone);
+    public static final Block lightsaberForgeDark = new BlockLightsaberForge(darkForcestone);
+    //test = new BlockStructureSpawner();
+    //BlockRegistry.registerItemBlockAsTileEntity(lightsaberCrystal, "Lightsaber Crystal", TileEntityCrystal.class, ItemCrystal.class);
 
-        lightForcestone = new BlockForcestone().setHardness(3.0F).setResistance(100.0F);
-        lightActivatedForcestone = new BlockPillar().setLightLevel(1.0F).setHardness(3.0F).setResistance(100.0F);
-        lightForcestoneStairs = new BlockModStairs(lightForcestone, 0);
-        darkForcestone = new BlockForcestone().setHardness(3.0F).setResistance(100.0F);
-        darkActivatedForcestone = new BlockPillar().setLightLevel(1.0F).setHardness(3.0F).setResistance(100.0F);
-        darkForcestoneStairs = new BlockModStairs(darkForcestone, 0);
-        forcestoneDoubleSlab = (BlockSlab) new BlockModSlab(true).setHardness(3.0F).setResistance(100.0F);
-        forcestoneSlab = (BlockSlab) new BlockModSlab(false).setHardness(3.0F).setResistance(100.0F);
-
-        lightsaberForgeLight = new BlockLightsaberForge(lightForcestone);
-        lightsaberForgeDark = new BlockLightsaberForge(darkForcestone);
-//        test = new BlockStructureSpawner();
-
-        BlockRegistry.registerItemBlockAsTileEntity(lightsaberCrystal, "Lightsaber Crystal", TileEntityCrystal.class, ItemCrystal.class);
-        BlockRegistry.registerItemBlockAsTileEntity(lightsaberForgeLight, "Lightsaber Forge Light", TileEntityLightsaberForge.class, ItemLightsaberForge.class);
-        BlockRegistry.registerItemBlockAsTileEntity(lightsaberForgeDark, "Lightsaber Forge Dark", TileEntityLightsaberForge.class, ItemLightsaberForge.class);
-        BlockRegistry.registerTileEntity(lightsaberStand, "Lightsaber Stand", TileEntityLightsaberStand.class);
-        BlockRegistry.registerItemBlockAsTileEntity(disassemblyStation, "Disassembly Station", TileEntityDisassemblyStation.class, ItemDisassemblyTable.class);
-        BlockRegistry.registerItemBlockAsTileEntity(sithCoffin, "Sith Coffin", TileEntitySithCoffin.class, ItemSithCoffin.class);
-        BlockRegistry.registerItemBlockAsTileEntity(sithStoneCoffin, "Sith Stone Coffin", TileEntitySithStoneCoffin.class, ItemSithStoneCoffin.class);
-        BlockRegistry.registerItemBlockAsTileEntity(holocron, "Holocron", TileEntityHolocron.class, ItemHolocron.class);
-
-        BlockRegistry.registerItemBlock(lightForcestone, "Light Forcestone", new ItemForcestone(lightForcestone));
-        BlockRegistry.registerBlock(lightActivatedForcestone, "Light Activated Forcestone Pillar");
-        BlockRegistry.registerBlock(lightForcestoneStairs, "Light Forcestone Stairs");
-        BlockRegistry.registerItemBlock(darkForcestone, "Dark Forcestone", new ItemForcestone(darkForcestone));
-        BlockRegistry.registerBlock(darkActivatedForcestone, "Dark Activated Forcestone Pillar");
-        BlockRegistry.registerBlock(darkForcestoneStairs, "Dark Forcestone Stairs");
-        BlockRegistry.registerItemBlock(forcestoneDoubleSlab, "Forcestone Double Slab", new ItemSlab(forcestoneDoubleSlab, forcestoneSlab, forcestoneDoubleSlab, true));
-        BlockRegistry.registerItemBlock(forcestoneSlab, "Forcestone Slab", new ItemSlab(forcestoneSlab, forcestoneSlab, forcestoneDoubleSlab, false));
+//        BlockRegistry.registerItemBlockAsTileEntity(lightsaberCrystal, "Lightsaber Crystal", TileEntityCrystal.class, ItemCrystal.class); //TODO
+//        BlockRegistry.registerItemBlockAsTileEntity(lightsaberForgeLight, "Lightsaber Forge Light", TileEntityLightsaberForge.class, ItemLightsaberForge.class);
+//        BlockRegistry.registerItemBlockAsTileEntity(lightsaberForgeDark, "Lightsaber Forge Dark", TileEntityLightsaberForge.class, ItemLightsaberForge.class);
+//        BlockRegistry.registerTileEntity(lightsaberStand, "Lightsaber Stand", TileEntityLightsaberStand.class);
+//        BlockRegistry.registerItemBlockAsTileEntity(disassemblyStation, "Disassembly Station", TileEntityDisassemblyStation.class, ItemDisassemblyTable.class);
+//        BlockRegistry.registerItemBlockAsTileEntity(sithCoffin, "Sith Coffin", TileEntitySithCoffin.class, ItemSithCoffin.class);
+//        BlockRegistry.registerItemBlockAsTileEntity(sithStoneCoffin, "Sith Stone Coffin", TileEntitySithStoneCoffin.class, ItemSithStoneCoffin.class);
+//        BlockRegistry.registerItemBlockAsTileEntity(holocron, "Holocron", TileEntityHolocron.class, ItemHolocron.class);
+//
+//        BlockRegistry.registerItemBlock(lightForcestone, "Light Forcestone", new ItemForcestone(lightForcestone));
+//        BlockRegistry.registerBlock(lightActivatedForcestone, "Light Activated Forcestone Pillar");
+//        BlockRegistry.registerBlock(lightForcestoneStairs, "Light Forcestone Stairs");
+//        BlockRegistry.registerItemBlock(darkForcestone, "Dark Forcestone", new ItemForcestone(darkForcestone));
+//        BlockRegistry.registerBlock(darkActivatedForcestone, "Dark Activated Forcestone Pillar");
+//        BlockRegistry.registerBlock(darkForcestoneStairs, "Dark Forcestone Stairs");
+//        BlockRegistry.registerItemBlock(forcestoneDoubleSlab, "Forcestone Double Slab", new ItemSlab(forcestoneDoubleSlab, forcestoneSlab, forcestoneDoubleSlab));
+//        BlockRegistry.registerItemBlock(forcestoneSlab, "Forcestone Slab", new ItemSlab(forcestoneSlab, forcestoneSlab, forcestoneDoubleSlab));
 
 //        BlockRegistry.registerBlock(lightsaberCrystalGen, "Lightsaber Crystal Gen");
 //		BlockRegistry.registerBlock(test, "Test");
-    }
+
 }

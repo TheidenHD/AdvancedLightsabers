@@ -3,12 +3,13 @@ package com.fiskmods.lightsabers.common.tileentity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 
-public class TileEntityHolocron extends TileEntity
+public class TileEntityHolocron extends TileEntity implements ITickable
 {
     public int playersUsing;
     public float openTimer;
@@ -17,7 +18,7 @@ public class TileEntityHolocron extends TileEntity
     public int prevOpenTicks;
 
     @Override
-    public void updateEntity()
+    public void update()
     {
         prevOpenTimer = openTimer;
         prevOpenTicks = openTicks;
@@ -46,7 +47,7 @@ public class TileEntityHolocron extends TileEntity
             ++openTicks;
         }
 
-        openTimer = MathHelper.clamp_float(openTimer, 0, 1);
+        openTimer = MathHelper.clamp(openTimer, 0, 1);
         playersUsing = Math.max(playersUsing, 0);
     }
 
@@ -58,30 +59,30 @@ public class TileEntityHolocron extends TileEntity
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbttagcompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound)
     {
-        super.writeToNBT(nbttagcompound);
+        return super.writeToNBT(nbttagcompound);
 
     }
 
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
     }
 
-    @Override
-    public Packet getDescriptionPacket()
-    {
-        NBTTagCompound syncData = new NBTTagCompound();
-        writeToNBT(syncData);
+//    @Override //TODO
+//    public Packet getDescriptionPacket()
+//    {
+//        NBTTagCompound syncData = new NBTTagCompound();
+//        writeToNBT(syncData);
+//
+//        return new SPacketUpdateTileEntity(pos, 1, syncData);
+//    }
 
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, syncData);
-    }
-
     @Override
-    public void onDataPacket(NetworkManager netManager, S35PacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager netManager, SPacketUpdateTileEntity packet)
     {
-        readFromNBT(packet.func_148857_g());
+        readFromNBT(packet.getNbtCompound());
     }
 }

@@ -2,7 +2,7 @@ package com.fiskmods.lightsabers.common.network;
 
 import com.fiskmods.lightsabers.common.data.ALData;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.Log;
 import fiskfille.utils.common.network.AbstractMessage;
 import fiskfille.utils.helper.NBTHelper;
@@ -50,7 +50,7 @@ public class MessagePlayerData extends AbstractMessage<MessagePlayerData>
 
         if (!type.hasPerms(senderSide))
         {
-            Log.warn("Player %s tried to set %s to %s on illegal side %s!", player.getCommandSenderName(), type, value, senderSide);
+            Log.warn("Player %s tried to set %s to %s on illegal side %s!", player.getCommandSenderEntity(), type, value, senderSide);
             return;
         }
 

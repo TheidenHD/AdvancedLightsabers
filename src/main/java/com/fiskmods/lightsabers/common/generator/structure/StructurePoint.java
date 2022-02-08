@@ -1,14 +1,19 @@
 package com.fiskmods.lightsabers.common.generator.structure;
 
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 
-public class StructurePoint extends ChunkCoordinates
+public class StructurePoint extends BlockPos
 {
     public StructurePoint(int x, int y, int z)
     {
         super(x, y, z);
     }
 
+    public StructurePoint(BlockPos p)
+    {
+        super(p);
+    }
+    
     public StructurePoint(StructurePoint p)
     {
         super(p);
@@ -24,7 +29,7 @@ public class StructurePoint extends ChunkCoordinates
         else
         {
             StructurePoint chunkcoordinates = (StructurePoint) obj;
-            return posX == chunkcoordinates.posX && posZ == chunkcoordinates.posZ;
+            return this.getX() == chunkcoordinates.getX() && this.getZ() == chunkcoordinates.getZ();
         }
     }
 }

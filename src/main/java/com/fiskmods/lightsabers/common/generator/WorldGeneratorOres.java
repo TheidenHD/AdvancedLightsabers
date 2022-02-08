@@ -10,16 +10,18 @@ import com.fiskmods.lightsabers.common.lightsaber.CrystalColor;
 import com.fiskmods.lightsabers.common.tileentity.TileEntityCrystal;
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumRarity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
 
 public enum WorldGeneratorOres implements IWorldGenerator
 {
@@ -28,12 +30,12 @@ public enum WorldGeneratorOres implements IWorldGenerator
     private WorldGenCrystalCaveEntrance entrance = new WorldGenCrystalCaveEntrance(32);
     
     @Override
-    public void generate(Random rand, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
+    public void generate(Random rand, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
     {
-        switch (world.provider.dimensionId)
+        switch (world.provider.getDimension())
         {
         case 0:
-            generateOverworld(world, rand, chunkX * 16, chunkZ * 16);
+            generateOverworld(world, rand, chunkX, chunkZ);
             break;
         }
     }
@@ -46,16 +48,17 @@ public enum WorldGeneratorOres implements IWorldGenerator
 
     public boolean isCrystalCaveChunk(World world, Chunk chunk)
     {
-        return isCrystalCaveChunk(world, chunk.xPosition, chunk.zPosition);
+        return isCrystalCaveChunk(world, chunk.x, chunk.z);
     }
 
     public void generateOverworld(World world, Random rand, int x, int z)
     {
         if (world.getWorldInfo().getTerrainType() != WorldType.FLAT)
         {
-            Chunk chunk = world.getChunkFromBlockCoords(x, z);
-
-            if (isCrystalCaveChunk(world, chunk) && world.getBiomeGenForCoords(x, z) != BiomeGenBase.ocean)
+            Chunk chunk = world.getChunk(x, z);
+            x *= 16; 
+            z *= 16;
+            if (isCrystalCaveChunk(world, chunk) && world.getBiome(new BlockPos(x, 63, z)).getTempCategory() != Biome.TempCategory.OCEAN)
             {
                 List<int[]> airBlocks = Lists.newArrayList();
 
@@ -65,14 +68,14 @@ public enum WorldGeneratorOres implements IWorldGenerator
                     {
                         int topBlock = 128;
 
-                        while (world.getBlock(x + i, topBlock, z + j) == Blocks.air && topBlock > 0)
+                        while (world.getBlockState(new BlockPos(x + i, topBlock, z + j)).getBlock() == Blocks.AIR && topBlock > 0)
                         {
                             --topBlock;
                         }
 
                         for (int y = 0; y < topBlock - 10; ++y)
                         {
-                            if (world.getBlock(x + i, y, z + j) == Blocks.air)
+                            if (world.getBlockState(new BlockPos(x + i, y, z + j)).getBlock() == Blocks.AIR)
                             {
                                 airBlocks.add(new int[] {x + i, y, z + j});
                             }
@@ -88,7 +91,7 @@ public enum WorldGeneratorOres implements IWorldGenerator
                     int z1 = aint[2];
                     int count = 0;
 
-                    while (y1 < world.getTopSolidOrLiquidBlock(x1, z1))
+                    while (y1 < world.getTopSolidOrLiquidBlock(new BlockPos(x1, 0, z1)).getY())
                     {
                         if (count < 10 + rand.nextInt(10))
                         {
@@ -112,7 +115,7 @@ public enum WorldGeneratorOres implements IWorldGenerator
                             }
                         }
 
-                        entrance.generate(world, rand, x1, y1, z1);
+                        entrance.generate(world, rand, new BlockPos(x1, y1, z1));
                         ++count;
                     }
 
@@ -137,10 +140,11 @@ public enum WorldGeneratorOres implements IWorldGenerator
             int x = chunkX + rand.nextInt(16);
             int y = rand.nextInt(minY);
             int z = chunkZ + rand.nextInt(16);
+            BlockPos pos = new BlockPos(x, y, z);
 
-            if (world.getBlock(x, y, z) == Blocks.air)
+            if (world.getBlockState(pos).getBlock() == Blocks.AIR)
             {
-                BlockCrystalGen.replace(world, x, y, z);
+                BlockCrystalGen.replace(world, pos);
             }
         }
     }

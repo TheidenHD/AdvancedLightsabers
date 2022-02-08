@@ -3,18 +3,19 @@ package com.fiskmods.lightsabers.common.network;
 import com.fiskmods.lightsabers.Lightsabers;
 import com.fiskmods.lightsabers.client.sound.ALSounds;
 import com.fiskmods.lightsabers.common.data.ALData;
-import com.fiskmods.lightsabers.common.data.ALPlayerData;
 import com.fiskmods.lightsabers.common.force.Power;
 import com.fiskmods.lightsabers.common.force.PowerStats;
 import com.fiskmods.lightsabers.common.force.PowerType;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.StringUtils;
 
 public class PacketRightClick implements IMessage
@@ -49,7 +50,7 @@ public class PacketRightClick implements IMessage
 
     public static void onMessage(EntityPlayer player, Power power, Side side)
     {
-        ALPlayerData data = ALPlayerData.getData(player);
+        //ALPlayerData data = ALPlayerData.getData(player);//TODO
         PowerStats stats = power.powerStats;
         float force = ALData.FORCE_POWER.get(player);
 
@@ -59,11 +60,11 @@ public class PacketRightClick implements IMessage
             {
                 if (power.powerEffect.execute(player, side))
                 {
-                    String sound = power.powerEffect.getCastSound(power.getSide());
+                    String sound = power.powerEffect.getCastSound(power.getSide()).getSoundName().getPath();//TODO check
 
                     if (!StringUtils.isNullOrEmpty(sound))
                     {
-                        player.playSound(sound, power.powerEffect.getCastSoundVolume(power.getSide()), power.powerEffect.getCastSoundPitch(power.getSide()));
+                        player.playSound(new SoundEvent(new ResourceLocation(sound)), power.powerEffect.getCastSoundVolume(power.getSide()), power.powerEffect.getCastSoundPitch(power.getSide()));//TODO fix?
                     }
 
                     ALData.FORCE_POWER.incrWithoutNotify(player, -power.getUseCost(player));
@@ -71,7 +72,7 @@ public class PacketRightClick implements IMessage
                 }
                 else if (side.isClient())
                 {
-                    player.playSound(ALSounds.player_force_fail, 1.0F, 1.0F);
+                    player.playSound(new SoundEvent(ALSounds.PLAYER_FORCE_FAIL.getRegistryName()), 1.0F, 1.0F);//TODO fix?
                 }
             }
             else
@@ -89,13 +90,13 @@ public class PacketRightClick implements IMessage
         @Override
         public IMessage onMessage(PacketRightClick message, MessageContext ctx)
         {
-            EntityPlayer clientPlayer = ctx.side.isClient() ? Lightsabers.proxy.getPlayer() : ctx.getServerHandler().playerEntity;
+            EntityPlayer clientPlayer = ctx.side.isClient() ? Lightsabers.proxy.getPlayer() : ctx.getServerHandler().player;
 
             if (clientPlayer != null)
             {
-                if (clientPlayer.worldObj.getEntityByID(message.id) instanceof EntityPlayer)
+                if (clientPlayer.getEntityWorld().getEntityByID(message.id) instanceof EntityPlayer)
                 {
-                    EntityPlayer player = (EntityPlayer) clientPlayer.worldObj.getEntityByID(message.id);
+                    EntityPlayer player = (EntityPlayer) clientPlayer.getEntityWorld().getEntityByID(message.id);
 
                     if (ctx.side.isServer() || player != clientPlayer)
                     {

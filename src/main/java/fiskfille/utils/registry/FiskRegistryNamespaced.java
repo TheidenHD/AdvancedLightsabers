@@ -36,22 +36,22 @@ public class FiskRegistryNamespaced<T extends FiskRegistryEntry<T>> extends Fisk
         }
 
         super.putObject(key, value);
-        underlyingIntegerMap.func_148746_a(value, id);
+        underlyingIntegerMap.put(value, id);
     }
 
     public int getIDForObject(T value)
     {
-        return underlyingIntegerMap.func_148747_b(value);
+        return underlyingIntegerMap.get(value);
     }
 
     public T getObjectById(int id)
     {
-        return castDefault((T) underlyingIntegerMap.func_148745_a(id));
+        return castDefault((T) underlyingIntegerMap.getByValue(id));
     }
 
     public boolean containsId(int id)
     {
-        return underlyingIntegerMap.func_148744_b(id);
+        return underlyingIntegerMap.getByValue(id) != null;
     }
 
     @Override

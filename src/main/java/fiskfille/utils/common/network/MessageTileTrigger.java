@@ -27,7 +27,7 @@ public class MessageTileTrigger extends AbstractMessage<MessageTileTrigger>
         if (player != null)
         {
             id = player.getEntityId();
-            playerDim = player.worldObj.provider.dimensionId;
+            playerDim = player.getEntityWorld().provider.getDimension();
         }
     }
 
@@ -53,7 +53,7 @@ public class MessageTileTrigger extends AbstractMessage<MessageTileTrigger>
     public void receive() throws MessageException
     {
         EntityPlayer player = getSender(getWorld(playerDim), id);
-        TileEntity tile = getWorld(coords.dimension).getTileEntity(coords.posX, coords.posY, coords.posZ);
+        TileEntity tile = getWorld(coords.getDimension()).getTileEntity(coords.getBlockPos());
 
         if (tile instanceof ITileDataCallback)
         {
@@ -61,7 +61,7 @@ public class MessageTileTrigger extends AbstractMessage<MessageTileTrigger>
 
             if (context.side.isServer())
             {
-                ALNetworkManager.wrapper.sendToDimension(new MessageTileTrigger(coords, player, action), coords.dimension);
+                ALNetworkManager.wrapper.sendToDimension(new MessageTileTrigger(coords, player, action), coords.getDimension());
             }
         }
     }

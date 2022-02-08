@@ -1,7 +1,7 @@
 package fiskfille.utils.common.network;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.common.interaction.Interaction;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import io.netty.buffer.ByteBuf;

@@ -1,4 +1,4 @@
-//package com.fiskmods.lightsabers.common.item;
+//package com.fiskmods.lightsabers.common.item; //TODO
 //
 //import com.fiskmods.lightsabers.common.block.BlockLightsaberStand;
 //
@@ -59,7 +59,7 @@
 //            }
 //        }
 //
-//        if (stack.stackSize == 0)
+//        if (stack.getCount() == 0)
 //        {
 //            return false;
 //        }
@@ -79,7 +79,7 @@
 //            if (world.isSideSolid(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ, dir.getOpposite(), false) && placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata))
 //            {
 //                world.playSoundEffect(x + 0.5F, y + 0.5F, z + 0.5F, field_150939_a.stepSound.func_150496_b(), (field_150939_a.stepSound.getVolume() + 1.0F) / 2.0F, field_150939_a.stepSound.getPitch() * 0.8F);
-//                --stack.stackSize;
+//                --stack.getCount();
 //            }
 //
 //            return true;

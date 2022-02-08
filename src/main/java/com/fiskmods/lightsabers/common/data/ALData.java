@@ -15,7 +15,7 @@ import com.fiskmods.lightsabers.helper.ALFormatHelper;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.helper.NBTHelper;
 import fiskfille.utils.registry.FiskRegistryEntry;
 import fiskfille.utils.registry.FiskRegistryNamespaced;
@@ -25,7 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 public class ALData<T> extends FiskRegistryEntry<ALData<?>>
 {
@@ -233,7 +233,7 @@ public class ALData<T> extends FiskRegistryEntry<ALData<?>>
             }
             else if (entity instanceof EntityPlayer)
             {
-                ALPlayerData.getData((EntityPlayer) entity).putData(this, value);
+                //ALPlayerData.getData((EntityPlayer) entity).putData(this, value); //TODO
                 onValueChanged(entity, value);
             }
 
@@ -314,15 +314,15 @@ public class ALData<T> extends FiskRegistryEntry<ALData<?>>
     {
         if (min instanceof Byte)
         {
-            return setWithoutNotify(entity, (T) Byte.valueOf((byte) MathHelper.clamp_int((Byte) get(entity), (Byte) min, (Byte) max)));
+            return setWithoutNotify(entity, (T) Byte.valueOf((byte) MathHelper.clamp((Byte) get(entity), (Byte) min, (Byte) max)));
         }
         else if (min instanceof Short)
         {
-            return setWithoutNotify(entity, (T) Short.valueOf((short) MathHelper.clamp_int((Short) get(entity), (Short) min, (Short) max)));
+            return setWithoutNotify(entity, (T) Short.valueOf((short) MathHelper.clamp((Short) get(entity), (Short) min, (Short) max)));
         }
         else if (min instanceof Integer)
         {
-            return setWithoutNotify(entity, (T) Integer.valueOf(MathHelper.clamp_int((Integer) get(entity), (Integer) min, (Integer) max)));
+            return setWithoutNotify(entity, (T) Integer.valueOf(MathHelper.clamp((Integer) get(entity), (Integer) min, (Integer) max)));
         }
         else if (min instanceof Long)
         {
@@ -331,11 +331,11 @@ public class ALData<T> extends FiskRegistryEntry<ALData<?>>
         }
         else if (min instanceof Float)
         {
-            return setWithoutNotify(entity, (T) Float.valueOf(MathHelper.clamp_float((Float) get(entity), (Float) min, (Float) max)));
+            return setWithoutNotify(entity, (T) Float.valueOf(MathHelper.clamp((Float) get(entity), (Float) min, (Float) max)));
         }
         else if (min instanceof Double)
         {
-            return setWithoutNotify(entity, (T) Double.valueOf(MathHelper.clamp_double((Double) get(entity), (Double) min, (Double) max)));
+            return setWithoutNotify(entity, (T) Double.valueOf(MathHelper.clamp((Double) get(entity), (Double) min, (Double) max)));
         }
 
         throw new RuntimeException("Cannot clamp a non-numerical data type!");
@@ -349,7 +349,7 @@ public class ALData<T> extends FiskRegistryEntry<ALData<?>>
         }
         else if (entity instanceof EntityPlayer)
         {
-            return ALPlayerData.getData((EntityPlayer) entity).getData(this);
+            //return ALPlayerData.getData((EntityPlayer) entity).getData(this); //TODO
         }
 
         return getDefault();
@@ -357,9 +357,9 @@ public class ALData<T> extends FiskRegistryEntry<ALData<?>>
 
     public boolean sync(EntityPlayer player)
     {
-        if (hasPerms(player.worldObj.isRemote ? Side.CLIENT : Side.SERVER) && legalUpdate(player))
+        if (hasPerms(player.world.isRemote ? Side.CLIENT : Side.SERVER) && legalUpdate(player))
         {
-            if (player.worldObj.isRemote)
+            if (player.world.isRemote)
             {
                 ALNetworkManager.wrapper.sendToServer(new MessagePlayerData(player, this, get(player)));
             }

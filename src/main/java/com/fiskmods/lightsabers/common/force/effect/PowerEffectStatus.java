@@ -4,7 +4,7 @@ import com.fiskmods.lightsabers.common.data.ALData;
 import com.fiskmods.lightsabers.common.data.effect.Effect;
 import com.fiskmods.lightsabers.common.data.effect.StatusEffect;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PowerEffectStatus extends PowerEffectActive

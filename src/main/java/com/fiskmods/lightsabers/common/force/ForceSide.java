@@ -5,19 +5,19 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 public enum ForceSide
 {
-    NONE(EnumChatFormatting.WHITE),
-    LIGHT(EnumChatFormatting.AQUA),
-    DARK(EnumChatFormatting.RED),
-    NEUTRAL(EnumChatFormatting.YELLOW);
+    NONE(TextFormatting.WHITE),
+    LIGHT(TextFormatting.AQUA),
+    DARK(TextFormatting.RED),
+    NEUTRAL(TextFormatting.YELLOW);
 
-    public final EnumChatFormatting theme;
+    public final TextFormatting theme;
     public final Set<Power> powers = Sets.newHashSet();
 
-    private ForceSide(EnumChatFormatting formatting)
+    private ForceSide(TextFormatting formatting)
     {
         theme = formatting;
     }

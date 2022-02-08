@@ -2,9 +2,10 @@ package fiskfille.utils.common.network;
 
 import com.fiskmods.lightsabers.Lightsabers;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -34,7 +35,7 @@ public abstract class AbstractMessage<REQ extends AbstractMessage> implements IM
 
     public EntityPlayer getPlayer() throws MessageException
     {
-        EntityPlayer player = context.side.isClient() ? Lightsabers.proxy.getPlayer() : context.getServerHandler().playerEntity;
+        EntityPlayer player = context.side.isClient() ? Lightsabers.proxy.getPlayer() : context.getServerHandler().player;
 
         if (player != null)
         {
@@ -83,18 +84,18 @@ public abstract class AbstractMessage<REQ extends AbstractMessage> implements IM
 
     public World getWorld() throws MessageException
     {
-        return getPlayer().worldObj;
+        return getPlayer().getEntityWorld();
     }
 
     public World getWorld(int dimension) throws MessageException
     {
-        if (dimension == getWorld().provider.dimensionId)
+        if (dimension == getWorld().provider.getDimension())
         {
             return getWorld();
         }
         else if (context.side.isServer())
         {
-            return MinecraftServer.getServer().worldServerForDimension(dimension);
+            return FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
         }
 
         throw new InvalidSideException();

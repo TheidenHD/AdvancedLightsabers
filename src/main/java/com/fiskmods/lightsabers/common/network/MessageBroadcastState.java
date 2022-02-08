@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import com.fiskmods.lightsabers.Lightsabers;
 import com.fiskmods.lightsabers.common.data.ALData;
-import com.fiskmods.lightsabers.common.data.ALEntityData;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,7 +57,7 @@ public class MessageBroadcastState extends MessageSyncBase<MessageBroadcastState
             Collections.sort(activeEffects);
         }
 
-        ALEntityData.getData(player).activeEffects = activeEffects;
+        //ALEntityData.getData(player).activeEffects = activeEffects;//TODO
 
         if (context.side.isServer())
         {

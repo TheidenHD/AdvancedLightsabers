@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class Lightning
@@ -17,14 +17,14 @@ public class Lightning
     public float rotateAngleX;
     public float rotateAngleY;
     public float rotateAngleZ;
-    public Vec3 lightningColor;
+    public Vec3d lightningColor;
 
     public Lightning(float f)
     {
-        this(f, Vec3.createVectorHelper(1, 1, 1));
+        this(f, new Vec3d(1, 1, 1));
     }
 
-    public Lightning(float f, Vec3 color)
+    public Lightning(float f, Vec3d color)
     {
         length = f;
         lightningColor = color;

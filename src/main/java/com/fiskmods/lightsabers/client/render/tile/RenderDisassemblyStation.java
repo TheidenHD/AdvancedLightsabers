@@ -22,7 +22,7 @@ public class RenderDisassemblyStation extends TileEntitySpecialRenderer
     {
         int metadata = 0;
 
-        if (tile.getWorldObj() != null)
+        if (tile.getWorld() != null)
         {
             metadata = tile.getBlockMetadata();
         }
@@ -30,7 +30,7 @@ public class RenderDisassemblyStation extends TileEntitySpecialRenderer
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         GL11.glScalef(1F, -1F, -1F);
-        GL11.glRotatef(BlockDisassemblyStation.getRotation(metadata) * 90 + 180, 0, 1, 0);
+        //GL11.glRotatef(BlockDisassemblyStation.getRotation(metadata) * 90 + 180, 0, 1, 0);//TODO
         GL11.glTranslatef(0.5F, 0, 0);
         bindTexture(TEXTURE);
         MODEL.render(0.0625F);
@@ -41,9 +41,9 @@ public class RenderDisassemblyStation extends TileEntitySpecialRenderer
         GL11.glPopMatrix();
     }
 
-    @Override
-    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks)
-    {
-        render((TileEntityDisassemblyStation) tile, x, y, z, partialTicks);
-    }
+//    @Override //TODO
+//    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks)
+//    {
+//        render((TileEntityDisassemblyStation) tile, x, y, z, partialTicks);
+//    }
 }

@@ -1,34 +1,34 @@
 {
   "ambient.fortify": {
 	"sounds": [
-	  "ambient/force/fortify"
+	  "lightsabers:ambient/force/fortify"
 	],
 	"category": "ambient"
   },
   "ambient.stealth": {
 	"sounds": [
-	  "ambient/force/stealth1",
-	  "ambient/force/stealth2",
-	  "ambient/force/stealth3"
+	  "lightsabers:ambient/force/stealth1",
+	  "lightsabers:ambient/force/stealth2",
+	  "lightsabers:ambient/force/stealth3"
 	],
 	"category": "ambient"
   },
   "block.holocron.invest": {
 	"sounds": [
-	  "block/holocron/invest"
+	  "lightsabers:block/holocron/invest"
 	],
 	"category": "block"
   },
   "block.holocron.unlock": {
 	"sounds": [
-	  "block/holocron/unlock"
+	  "lightsabers:block/holocron/unlock"
 	],
 	"category": "block"
   },
   "block.sith_sarcophagus.close": {
 	"sounds": [
 	  {
-	    "name": "block/sith_sarcophagus/open",
+	    "name": "lightsabers:block/sith_sarcophagus/open",
 		"pitch": 0.8
 	  }
 	],
@@ -36,95 +36,95 @@
   },
   "block.sith_sarcophagus.open": {
 	"sounds": [
-	  "block/sith_sarcophagus/open"
+	  "lightsabers:block/sith_sarcophagus/open"
 	],
 	"category": "block"
   },
   "mob.lightsaber.hit": {
 	"sounds": [
-	  "item/lightsaber/hit1",
-	  "item/lightsaber/hit2",
-	  "item/lightsaber/hit3",
-	  "item/lightsaber/hit4",
-	  "item/lightsaber/hit5",
-	  "item/lightsaber/hit6",
-	  "item/lightsaber/hit7"
+	  "lightsabers:item/lightsaber/hit1",
+	  "lightsabers:item/lightsaber/hit2",
+	  "lightsabers:item/lightsaber/hit3",
+	  "lightsabers:item/lightsaber/hit4",
+	  "lightsabers:item/lightsaber/hit5",
+	  "lightsabers:item/lightsaber/hit6",
+	  "lightsabers:item/lightsaber/hit7"
 	],
 	"category": "hostile"
   },
   "mob.lightsaber.off": {
 	"sounds": [
-	  "item/lightsaber/off"
+	  "lightsabers:item/lightsaber/off"
 	],
 	"category": "hostile"
   },
   "mob.lightsaber.on": {
 	"sounds": [
-	  "item/lightsaber/on"
+	  "lightsabers:item/lightsaber/on"
 	],
 	"category": "hostile"
   },
   "mob.lightsaber.swing": {
 	"sounds": [
-	  "item/lightsaber/swing1",
-	  "item/lightsaber/swing2",
-	  "item/lightsaber/swing3",
-	  "item/lightsaber/swing4"
+	  "lightsabers:item/lightsaber/swing1",
+	  "lightsabers:item/lightsaber/swing2",
+	  "lightsabers:item/lightsaber/swing3",
+	  "lightsabers:item/lightsaber/swing4"
 	],
 	"category": "hostile"
   },
   "mob.sith_ghost.death": {
 	"sounds": [
-	  "mob/sith_ghost/death"
+	  "lightsabers:mob/sith_ghost/death"
 	],
 	"category": "hostile"
   },
   "mob.sith_ghost.idle": {
 	"sounds": [
-	  "mob/sith_ghost/idle1",
-	  "mob/sith_ghost/idle2",
-	  "mob/sith_ghost/idle3"
+	  "lightsabers:mob/sith_ghost/idle1",
+	  "lightsabers:mob/sith_ghost/idle2",
+	  "lightsabers:mob/sith_ghost/idle3"
 	],
 	"category": "hostile"
   },
   "player.force.cast": {
 	"sounds": [
-	  "force/cast"
+	  "lightsabers:force/cast"
 	],
 	"category": "player"
   },
   "player.force.dark": {
 	"sounds": [
-	  "force/cast_dark"
+	  "lightsabers:force/cast_dark"
 	],
 	"category": "player"
   },
   "player.force.fail": {
 	"sounds": [
-	  "force/cast_fail"
+	  "lightsabers:force/cast_fail"
 	],
 	"category": "player"
   },
   "player.force.heal": {
 	"sounds": [
-	  "force/heal"
+	  "lightsabers:force/heal"
 	],
 	"category": "player"
   },
   "player.force.lightning": {
 	"sounds": [
-	  "force/lightning1",
-	  "force/lightning2",
-	  "force/lightning3",
-	  "force/lightning4",
-	  "force/lightning5"
+	  "lightsabers:force/lightning1",
+	  "lightsabers:force/lightning2",
+	  "lightsabers:force/lightning3",
+	  "lightsabers:force/lightning4",
+	  "lightsabers:force/lightning5"
 	],
 	"category": "player"
   },
   "player.force.stealth.off": {
 	"sounds": [
 	  {
-		"name": "force/stealth",
+		"name": "lightsabers:force/stealth",
 		"pitch": 1.1
 	  }
 	],
@@ -132,46 +132,46 @@
   },
   "player.force.stealth.on": {
 	"sounds": [
-	  "force/stealth"
+	  "lightsabers:force/stealth"
 	],
 	"category": "player"
   },
   "player.lightsaber.hit": {
 	"sounds": [
-	  "item/lightsaber/hit1",
-	  "item/lightsaber/hit2",
-	  "item/lightsaber/hit3",
-	  "item/lightsaber/hit4",
-	  "item/lightsaber/hit5",
-	  "item/lightsaber/hit6",
-	  "item/lightsaber/hit7"
+	  "lightsabers:item/lightsaber/hit1",
+	  "lightsabers:item/lightsaber/hit2",
+	  "lightsabers:item/lightsaber/hit3",
+	  "lightsabers:item/lightsaber/hit4",
+	  "lightsabers:item/lightsaber/hit5",
+	  "lightsabers:item/lightsaber/hit6",
+	  "lightsabers:item/lightsaber/hit7"
 	],
 	"category": "player"
   },
   "player.lightsaber.off": {
 	"sounds": [
-	  "item/lightsaber/off"
+	  "lightsabers:item/lightsaber/off"
 	],
 	"category": "player"
   },
   "player.lightsaber.on": {
 	"sounds": [
-	  "item/lightsaber/on"
+	  "lightsabers:item/lightsaber/on"
 	],
 	"category": "player"
   },
   "player.lightsaber.sweet_dreams": {
 	"sounds": [
-	  "random/sweet_dreams"
+	  "lightsabers:random/sweet_dreams"
 	],
 	"category": "master"
   },
   "player.lightsaber.swing": {
 	"sounds": [
-	  "item/lightsaber/swing1",
-	  "item/lightsaber/swing2",
-	  "item/lightsaber/swing3",
-	  "item/lightsaber/swing4"
+	  "lightsabers:item/lightsaber/swing1",
+	  "lightsabers:item/lightsaber/swing2",
+	  "lightsabers:item/lightsaber/swing3",
+	  "lightsabers:item/lightsaber/swing4"
 	],
 	"category": "player"
   }

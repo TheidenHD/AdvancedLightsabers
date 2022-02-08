@@ -1,10 +1,9 @@
 package com.fiskmods.lightsabers.common.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.IIcon;
 
 public class ItemBlockWithMetadata extends ItemBlock
 {
@@ -21,12 +20,12 @@ public class ItemBlockWithMetadata extends ItemBlock
     /**
      * Gets an icon index based on an item's damage value
      */
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIconFromDamage(int damage)
-    {
-        return block.getIcon(2, damage);
-    }
+//    @Override //TODO
+//    @SideOnly(Side.CLIENT)
+//    public IIcon getIconFromDamage(int damage)
+//    {
+//        return block.getIcon(2, damage);
+//    }
 
     /**
      * Returns the metadata of the block which this Item (ItemBlock) can place

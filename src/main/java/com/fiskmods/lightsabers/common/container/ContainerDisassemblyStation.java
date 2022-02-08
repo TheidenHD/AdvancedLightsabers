@@ -4,11 +4,11 @@ import static com.fiskmods.lightsabers.common.tileentity.TileEntityDisassemblySt
 
 import com.fiskmods.lightsabers.common.tileentity.TileEntityDisassemblyStation;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -33,12 +33,12 @@ public class ContainerDisassemblyStation extends ContainerBasic<TileEntityDisass
     }
 
     @Override
-    public void addCraftingToCrafters(ICrafting icrafting)
+    public void addListener(IContainerListener icrafting)
     {
-        super.addCraftingToCrafters(icrafting);
-        icrafting.sendProgressBarUpdate(this, 0, tileentity.progress);
-        icrafting.sendProgressBarUpdate(this, 1, tileentity.fuelTicks);
-        icrafting.sendProgressBarUpdate(this, 2, tileentity.maxFuelTicks);
+        super.addListener(icrafting);
+        //icrafting.sendProgressBarUpdate(this, 0, tileentity.progress);//TODO progres bar
+        //icrafting.sendProgressBarUpdate(this, 1, tileentity.fuelTicks);
+        //icrafting.sendProgressBarUpdate(this, 2, tileentity.maxFuelTicks);
     }
 
     @Override
@@ -46,25 +46,25 @@ public class ContainerDisassemblyStation extends ContainerBasic<TileEntityDisass
     {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < crafters.size(); ++i)
-        {
-            ICrafting icrafting = (ICrafting) crafters.get(i);
-
-            if (lastProgress != tileentity.progress)
-            {
-                icrafting.sendProgressBarUpdate(this, 0, tileentity.progress);
-            }
-
-            if (lastFuelTicks != tileentity.fuelTicks)
-            {
-                icrafting.sendProgressBarUpdate(this, 1, tileentity.fuelTicks);
-            }
-
-            if (lastMaxFuelTicks != tileentity.maxFuelTicks)
-            {
-                icrafting.sendProgressBarUpdate(this, 2, tileentity.maxFuelTicks);
-            }
-        }
+//        for (int i = 0; i < crafters.size(); ++i)
+//        {
+//        	IContainerListener icrafting = (IContainerListener) crafters.get(i);
+//
+//            if (lastProgress != tileentity.progress)
+//            {
+//                icrafting.sendProgressBarUpdate(this, 0, tileentity.progress);
+//            }
+//
+//            if (lastFuelTicks != tileentity.fuelTicks)
+//            {
+//                icrafting.sendProgressBarUpdate(this, 1, tileentity.fuelTicks);
+//            }
+//
+//            if (lastMaxFuelTicks != tileentity.maxFuelTicks)
+//            {
+//                icrafting.sendProgressBarUpdate(this, 2, tileentity.maxFuelTicks);
+//            }
+//        } TODO progrs barr
 
         lastProgress = tileentity.progress;
         lastFuelTicks = tileentity.fuelTicks;
@@ -144,7 +144,7 @@ public class ContainerDisassemblyStation extends ContainerBasic<TileEntityDisass
                 return null;
             }
 
-            if (stack.stackSize == 0)
+            if (stack.getCount() == 0)
             {
                 slot.putStack((ItemStack) null);
             }
@@ -153,12 +153,12 @@ public class ContainerDisassemblyStation extends ContainerBasic<TileEntityDisass
                 slot.onSlotChanged();
             }
 
-            if (stack.stackSize == itemstack.stackSize)
+            if (stack.getCount() == itemstack.getCount())
             {
                 return null;
             }
 
-            slot.onPickupFromSlot(player, stack);
+            slot.onTake(player, stack);//TODO Test
         }
 
         return itemstack;

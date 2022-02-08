@@ -56,6 +56,6 @@ public class HiltManager
 
     private static void map(Hilt value, String legacy)
     {
-        Hilt.LEGACY_MAPPINGS.put(legacy, value.delegate.name());
+        Hilt.LEGACY_MAPPINGS.put(legacy, value.delegate.name().toString());
     }
 }

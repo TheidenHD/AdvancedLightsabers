@@ -8,7 +8,7 @@ import com.fiskmods.lightsabers.common.data.ALData.ClassType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import fiskfille.utils.DimensionalCoords;
 import fiskfille.utils.registry.FiskRegistryEntry;
 import fiskfille.utils.registry.FiskSimpleRegistry;
@@ -16,7 +16,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTBase.NBTPrimitive;
+import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
@@ -106,10 +106,10 @@ public class NBTHelper
         {
             DimensionalCoords coords = (DimensionalCoords) obj;
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setInteger("x", coords.posX);
-            nbt.setInteger("y", coords.posY);
-            nbt.setInteger("z", coords.posZ);
-            nbt.setInteger("dim", coords.dimension);
+            nbt.setInteger("x", coords.getX());
+            nbt.setInteger("y", coords.getY());
+            nbt.setInteger("z", coords.getZ());
+            nbt.setInteger("dim", coords.getDimension());
 
             return nbt;
         }
@@ -139,36 +139,36 @@ public class NBTHelper
 
             if (typeClass.getType() == Byte.class)
             {
-                return (T) Byte.valueOf(nbt.func_150290_f());
+                return (T) Byte.valueOf(nbt.getByte());
             }
             else if (typeClass.getType() == Short.class)
             {
-                return (T) Short.valueOf(nbt.func_150289_e());
+                return (T) Short.valueOf(nbt.getShort());
             }
             else if (typeClass.getType() == Integer.class)
             {
-                return (T) Integer.valueOf(nbt.func_150287_d());
+                return (T) Integer.valueOf(nbt.getInt());
             }
             else if (typeClass.getType() == Long.class)
             {
-                return (T) Long.valueOf(nbt.func_150291_c());
+                return (T) Long.valueOf(nbt.getLong());
             }
             else if (typeClass.getType() == Float.class)
             {
-                return (T) Float.valueOf(nbt.func_150288_h());
+                return (T) Float.valueOf(nbt.getFloat());
             }
             else if (typeClass.getType() == Double.class)
             {
-                return (T) Double.valueOf(nbt.func_150286_g());
+                return (T) Double.valueOf(nbt.getDouble());
             }
             else if (typeClass.getType() == Boolean.class)
             {
-                return (T) Boolean.valueOf(nbt.func_150290_f() != 0);
+                return (T) Boolean.valueOf(nbt.getByte() != 0);
             }
         }
         else if (typeClass.getType() == String.class && tag instanceof NBTTagString)
         {
-            return (T) ((NBTTagString) tag).func_150285_a_();
+            return (T) ((NBTTagString) tag).getString();
         }
         else if (typeClass.getType() == List.class && tag instanceof NBTTagList)
         {
@@ -193,7 +193,7 @@ public class NBTHelper
 
             if (typeClass.getType() == ItemStack.class)
             {
-                return (T) ItemStack.loadItemStackFromNBT(nbt);
+                return (T) new ItemStack(nbt);
             }
             else if (typeClass.getType() == DimensionalCoords.class)
             {
@@ -263,10 +263,10 @@ public class NBTHelper
             else if (obj instanceof DimensionalCoords)
             {
                 DimensionalCoords coords = (DimensionalCoords) obj;
-                buf.writeInt(coords.posX);
-                buf.writeInt(coords.posY);
-                buf.writeInt(coords.posZ);
-                buf.writeInt(coords.dimension);
+                buf.writeInt(coords.getX());
+                buf.writeInt(coords.getY());
+                buf.writeInt(coords.getZ());
+                buf.writeInt(coords.getDimension());
             }
         }
     }
@@ -376,12 +376,9 @@ public class NBTHelper
     {
         try
         {
-            NBTBase tag = JsonToNBT.func_150315_a(s);
-
-            if (tag instanceof NBTTagCompound)
-            {
-                return (NBTTagCompound) tag;
-            }
+        	NBTTagCompound tag = JsonToNBT.getTagFromJson(s);
+            return tag;
+            
         }
         catch (NBTException e)
         {

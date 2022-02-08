@@ -9,12 +9,16 @@ import com.fiskmods.lightsabers.common.tileentity.TileEntityHolocron;
 import com.fiskmods.lightsabers.common.tileentity.TileEntitySithCoffin;
 import com.fiskmods.lightsabers.common.tileentity.TileEntitySithStoneCoffin;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 
 public class PacketTileAction implements IMessage
@@ -64,17 +68,17 @@ public class PacketTileAction implements IMessage
         @Override
         public IMessage onMessage(PacketTileAction message, MessageContext ctx)
         {
-            EntityPlayer clientPlayer = ctx.side.isClient() ? Lightsabers.proxy.getPlayer() : ctx.getServerHandler().playerEntity;
+            EntityPlayer clientPlayer = ctx.side.isClient() ? Lightsabers.proxy.getPlayer() : ctx.getServerHandler().player;
             EntityPlayer player = null;
-            World world = clientPlayer.worldObj;
+            World world = clientPlayer.getEntityWorld();
             int action = message.action;
             int x = message.x;
             int y = message.y;
             int z = message.z;
 
-            if (world.getTileEntity(x, y, z) instanceof TileEntitySithCoffin)
+            if (world.getTileEntity(new BlockPos(x, y, z)) instanceof TileEntitySithCoffin)
             {
-                TileEntitySithCoffin tile = (TileEntitySithCoffin) world.getTileEntity(x, y, z);
+                TileEntitySithCoffin tile = (TileEntitySithCoffin) world.getTileEntity(new BlockPos(x, y, z));
 
                 if (tile != null)
                 {
@@ -89,25 +93,25 @@ public class PacketTileAction implements IMessage
                             if (tile.lidOpenTimer == 0)
                             {
                                 tile.isLidOpen = true;
-                                player.playSound(ALSounds.block_sith_sarcophagus_open, 1.0F, 1.0F);
+                                player.playSound(new SoundEvent(ALSounds.BLOCK_SITH_SARCOPHAGUS_OPEN.getSoundName()), 1.0F, 1.0F);//TODO fix?
                             }
                             else if (tile.lidOpenTimer == TileEntitySithCoffin.LID_OPEN_MAX)
                             {
                                 tile.isLidOpen = false;
-                                player.playSound(ALSounds.block_sith_sarcophagus_close, 1.0F, 1.0F);
+                                player.playSound(new SoundEvent(ALSounds.BLOCK_SITH_SARCOPHAGUS_CLOSE.getSoundName()), 1.0F, 1.0F);//TODO fix?
                             }
                         }
                     }
 
                     if (ctx.side.isServer())
                     {
-                        ALNetworkManager.wrapper.sendToAll(new PacketTileAction(player, tile.xCoord, tile.yCoord, tile.zCoord, action));
+                        ALNetworkManager.wrapper.sendToAll(new PacketTileAction(player, tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), action));
                     }
                 }
             }
-            else if (world.getTileEntity(x, y, z) instanceof TileEntitySithStoneCoffin)
+            else if (world.getTileEntity(new BlockPos(x, y, z)) instanceof TileEntitySithStoneCoffin)
             {
-                TileEntitySithStoneCoffin tile = (TileEntitySithStoneCoffin) world.getTileEntity(x, y, z);
+                TileEntitySithStoneCoffin tile = (TileEntitySithStoneCoffin) world.getTileEntity(new BlockPos(x, y, z));
 
                 if (tile != null)
                 {
@@ -119,11 +123,11 @@ public class PacketTileAction implements IMessage
 
                         if (tile.baseplateOnly)
                         {
-                            world.setBlockToAir(x, y + 1, z);
+                            world.setBlockToAir(new BlockPos(x, y + 1, z));
                         }
                         else
                         {
-                            world.setBlock(x, y + 1, z, ModBlocks.sithStoneCoffin, tile.getBlockMetadata() + 4, 2);
+                            //world.setBlockState(new BlockPos(x, y + 1, z), ModBlocks.sithStoneCoffin, tile.getBlockMetadata() + 4, 2);//TODO
                         }
 
                         Entity entity = world.getEntityByID(message.id);
@@ -138,22 +142,22 @@ public class PacketTileAction implements IMessage
                                 double d1 = rand.nextFloat() * 2.4F - 1;
                                 double d2 = (double) (rand.nextFloat() * 2 - 1) * 1.2F;
                                 double d3 = entity.posX + d0 * entity.width;
-                                double d4 = entity.boundingBox.minY + d1 * entity.height;
+                                double d4 = entity.getCollisionBoundingBox().minY + d1 * entity.height;
                                 double d5 = entity.posZ + d2 * entity.width;
-                                world.spawnParticle("largesmoke", d3, d4, d5, 0, 0, 0);
+                                world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, d3, d4, d5, 0, 0, 0);
                             }
                         }
                     }
 
                     if (ctx.side.isServer())
                     {
-                        ALNetworkManager.wrapper.sendToAll(new PacketTileAction(player, tile.xCoord, tile.yCoord, tile.zCoord, action));
+                        ALNetworkManager.wrapper.sendToAll(new PacketTileAction(player, tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), action));
                     }
                 }
             }
-            else if (world.getTileEntity(x, y, z) instanceof TileEntityHolocron)
+            else if (world.getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityHolocron)
             {
-                TileEntityHolocron tile = (TileEntityHolocron) world.getTileEntity(x, y, z);
+                TileEntityHolocron tile = (TileEntityHolocron) world.getTileEntity(new BlockPos(x, y, z));
 
                 if (tile != null)
                 {
@@ -175,7 +179,7 @@ public class PacketTileAction implements IMessage
 
                     if (ctx.side.isServer())
                     {
-                        ALNetworkManager.wrapper.sendToAll(new PacketTileAction(player, tile.xCoord, tile.yCoord, tile.zCoord, action));
+                        ALNetworkManager.wrapper.sendToAll(new PacketTileAction(player, tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), action));
                     }
                 }
             }

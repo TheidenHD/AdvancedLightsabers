@@ -1,14 +1,14 @@
 package fiskfille.utils.common.interaction;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.common.network.FiskNetworkManager;
 import fiskfille.utils.common.network.MessageInteraction;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+//import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 public enum InteractionHandler
 {
@@ -17,32 +17,33 @@ public enum InteractionHandler
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event)
     {
-        EntityPlayer player = event.entityPlayer;
-        Action action = event.action;
-        int x = event.x;
-        int y = event.y;
-        int z = event.z;
+        EntityPlayer player = event.getEntityPlayer();
+ //       Action action = event..action; //TODO
+        int x = event.getPos().getX();
+        int y = event.getPos().getY();
+        int z = event.getPos().getZ();
 
-        if (action == Action.RIGHT_CLICK_AIR)
-        {
-            x = MathHelper.floor_double(player.posX);
-            y = MathHelper.floor_double(player.boundingBox.minY);
-            z = MathHelper.floor_double(player.posZ);
-        }
-
-        if (interact(player, InteractionType.get(action), x, y, z))
-        {
-            event.setCanceled(true);
-            return;
-        }
+//        if (action == Action.RIGHT_CLICK_AIR) //TODO
+//        {
+//            x = MathHelper.floor(player.posX);
+//            y = MathHelper.floor(player.getEntityBoundingBox().minY);
+//            z = MathHelper.floor(player.posZ);
+//        }
+//
+//        if (interact(player, InteractionType.get(action), x, y, z))
+//        {
+//            event.setCanceled(true);
+//            return;
+//        }
     }
     
     public static boolean interact(EntityPlayer player, InteractionType type, int x, int y, int z)
     {
-        if (player.worldObj.isRemote)
+        if (player.getEntityWorld().isRemote)
         {
-            for (Interaction interaction : Interaction.REGISTRY)
+            for ( Object interaction_o : Interaction.REGISTRY)
             {
+            	Interaction interaction = (Interaction)interaction_o;
                 if (interaction.listen(player, player, type, Side.CLIENT, x, y, z))
                 {
                     if (interaction.syncWithServer())
@@ -71,19 +72,19 @@ public enum InteractionHandler
         RIGHT_CLICK_BLOCK,
         LEFT_CLICK_BLOCK;
         
-        public static InteractionType get(Action action)
-        {
-            switch (action)
-            {
-            case RIGHT_CLICK_AIR:
-                return RIGHT_CLICK_AIR;
-            case RIGHT_CLICK_BLOCK:
-                return RIGHT_CLICK_BLOCK;
-            case LEFT_CLICK_BLOCK:
-                return LEFT_CLICK_BLOCK;
-            }
-            
-            return KEY_PRESS;
-        }
+//        public static InteractionType get(Action action) //TODO
+//        {
+//            switch (action)
+//            {
+//            case RIGHT_CLICK_AIR:
+//                return RIGHT_CLICK_AIR;
+//            case RIGHT_CLICK_BLOCK:
+//                return RIGHT_CLICK_BLOCK;
+//            case LEFT_CLICK_BLOCK:
+//                return LEFT_CLICK_BLOCK;
+//            }
+//            
+//            return KEY_PRESS;
+//        }
     }
 }

@@ -4,10 +4,13 @@ import java.util.Random;
 
 import com.fiskmods.lightsabers.common.generator.structure.EnumStructure;
 
-import cpw.mods.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraft.init.Biomes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.storage.WorldInfo;
 
 public enum WorldGeneratorStructures implements IWorldGenerator
@@ -15,9 +18,9 @@ public enum WorldGeneratorStructures implements IWorldGenerator
     INSTANCE;
     
     @Override
-    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
+    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
     {
-        switch (world.provider.dimensionId)
+        switch (world.provider.getDimension())
         {
         case 0:
             generateOverworld(world, random, chunkX * 16 + 8, chunkZ * 16 + 8);
@@ -61,7 +64,7 @@ public enum WorldGeneratorStructures implements IWorldGenerator
 
         if (xOriginal == x2 && zOriginal == z2)
         {
-            return structure.biomePredicate.apply(world.getWorldChunkManager().getBiomeGenAt(xOriginal, zOriginal));
+            return structure.biomePredicate.apply(world.getBiomeProvider().getBiome(new BlockPos(xOriginal, 0, zOriginal), Biomes.PLAINS));
         }
 
         return false;
@@ -70,7 +73,7 @@ public enum WorldGeneratorStructures implements IWorldGenerator
     public static void generateStructure(World world, int x, int z, EnumStructure structure) throws Exception
     {
         Random rand = getRandomForCoords(world, x, z);
-        int y = Math.max(world.getTopSolidOrLiquidBlock(x, z), world.provider.getAverageGroundLevel());
+        int y = Math.max(world.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z)).getY(), world.provider.getAverageGroundLevel());
         
         structure.construct(world, x, y, z, rand).spawnStructure(rand);
     }

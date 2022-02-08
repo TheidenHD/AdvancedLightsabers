@@ -37,10 +37,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
+//import net.minecraft.util.IIcon; TODO
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class ALRenderHelper
@@ -87,33 +87,34 @@ public class ALRenderHelper
         setGlColor(color, (float) color.getAlpha() / 255);
     }
 
-    public static void setVecColor(Vec3 vec)
+    public static void setVecColor(Vec3d vec)
     {
-        GL11.glColor4f((float) vec.xCoord, (float) vec.yCoord, (float) vec.zCoord, 1);
+        GL11.glColor4f((float) vec.x, (float) vec.y, (float) vec.z, 1);
     }
 
     public static void applyColorFromItemStack(ItemStack itemstack, int pass)
     {
-        int color = itemstack.getItem().getColorFromItemStack(itemstack, pass);
+        //int color = itemstack.getItem().getColorFromItemStack(itemstack, pass);//TODO
+    	int color = 0;
         float r = (color >> 16 & 255) / 255F;
         float g = (color >> 8 & 255) / 255F;
         float b = (color & 255) / 255F;
         GL11.glColor4f(r, g, b, 1);
     }
 
-    public static Vec3 getColorFromHex(int hex)
+    public static Vec3d getColorFromHex(int hex)
     {
         float r = (hex >> 16 & 255) / 255F;
         float g = (hex >> 8 & 255) / 255F;
         float b = (hex & 255) / 255F;
-        return Vec3.createVectorHelper(r, g, b);
+        return new Vec3d(r, g, b);
     }
 
-    public static int getHex(Vec3 color)
+    public static int getHex(Vec3d color)
     {
-        int r = (int) Math.round(color.xCoord * 255);
-        int g = (int) Math.round(color.yCoord * 255);
-        int b = (int) Math.round(color.zCoord * 255);
+        int r = (int) Math.round(color.x * 255);
+        int g = (int) Math.round(color.y * 255);
+        int b = (int) Math.round(color.z * 255);
         return r << 16 | g << 8 | b;
     }
 
@@ -257,36 +258,36 @@ public class ALRenderHelper
         {
             if (itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey(ALConstants.TAG_LIGHTSABER_SPECIAL, NBT.TAG_STRING))
             {
-                Item item = (Item) Item.itemRegistry.getObject(itemstack.getTagCompound().getString(ALConstants.TAG_LIGHTSABER_SPECIAL));
-                
-                if (item != null)
-                {
-                    IIcon icon = item.getIconFromDamage(0);
-                    Tessellator tessellator = Tessellator.instance;
-                    float f = mc.thePlayer.ticksExisted + ClientEventHandler.renderTick;
-                    
-                    if (icon == null)
-                    {
-                        icon = ((TextureMap) mc.getTextureManager().getTexture(TextureMap.locationItemsTexture)).getAtlasSprite("missingno");
-                    }
-
-                    mc.getTextureManager().bindTexture(TextureMap.locationItemsTexture);
-                    TextureUtil.func_152777_a(false, false, 1.0F);
-                    GL11.glPushMatrix();
-                    GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-                    GL11.glScaled(-2, -2 + MathHelper.cos(f) * 0.1F, 2 + MathHelper.sin(f) * 0.15F);
-                    GL11.glRotated(-(1 - 2 * MathHelper.cos(f / 2 + 1)), 0, 0, 1);
-                    GL11.glRotated((1 - 2 * MathHelper.sin(f / 2 + 3)), 1, 0, 0);
-                    GL11.glRotatef(-90, 0, 1, 0);
-                    GL11.glTranslatef(0.705F, 0.4F, 0.0625F / 2);
-                    GL11.glRotatef(135, 0, 0, 1);
-                    GL11.glColor4f(1, 1, 1, 1);
-                    ItemRenderer.renderItemIn2D(tessellator, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.0625F);
-                    GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-                    GL11.glPopMatrix();
-                    TextureUtil.func_147945_b();
-                    return;
-                }
+//  TODO              Item item = (Item) Item.itemRegistry.getObject(itemstack.getTagCompound().getString(ALConstants.TAG_LIGHTSABER_SPECIAL));
+//                
+//                if (item != null)
+//                {
+//                    IIcon icon = item.getIconFromDamage(0);
+//                    Tessellator tessellator = Tessellator.instance;
+//                    float f = mc.thePlayer.ticksExisted + ClientEventHandler.renderTick;
+//                    
+//                    if (icon == null)
+//                    {
+//                        icon = ((TextureMap) mc.getTextureManager().getTexture(TextureMap.locationItemsTexture)).getAtlasSprite("missingno");
+//                    }
+//
+//                    mc.getTextureManager().bindTexture(TextureMap.locationItemsTexture);
+//                    TextureUtil.func_152777_a(false, false, 1.0F);
+//                    GL11.glPushMatrix();
+//                    GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+//                    GL11.glScaled(-2, -2 + MathHelper.cos(f) * 0.1F, 2 + MathHelper.sin(f) * 0.15F);
+//                    GL11.glRotated(-(1 - 2 * MathHelper.cos(f / 2 + 1)), 0, 0, 1);
+//                    GL11.glRotated((1 - 2 * MathHelper.sin(f / 2 + 3)), 1, 0, 0);
+//                    GL11.glRotatef(-90, 0, 1, 0);
+//                    GL11.glTranslatef(0.705F, 0.4F, 0.0625F / 2);
+//                    GL11.glRotatef(135, 0, 0, 1);
+//                    GL11.glColor4f(1, 1, 1, 1);
+//                    ItemRenderer.renderItemIn2D(tessellator, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.0625F);
+//                    GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+//                    GL11.glPopMatrix();
+//                    TextureUtil.func_147945_b();
+//                    return;
+//                }
             }
             
             Part emitter = data.getPart(PartType.EMITTER);
@@ -297,7 +298,7 @@ public class ALRenderHelper
             GL11.glPushMatrix();
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
-            ALRenderHelper.setLighting(MathHelper.ceiling_float_int(LIGHTING_LUMINOUS * ModConfig.renderLightingMultiplier));
+            //ALRenderHelper.setLighting(MathHelper.ceiling_float_int(LIGHTING_LUMINOUS * ModConfig.renderLightingMultiplier)); TODO
             GL11.glDepthMask(false);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_CONSTANT_ALPHA);
@@ -374,30 +375,30 @@ public class ALRenderHelper
         float f = 0.0625F;
         float f1 = f / 2;
 
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawingQuads();
-        tessellator.addVertex(size, size, 0);
-        tessellator.addVertex(-size, size, 0);
-        tessellator.addVertex(-size + f1, -size - tip, -f1);
-        tessellator.addVertex(size - f1, -size - tip, -f1);
-        tessellator.addVertex(size, size, -f);
-        tessellator.addVertex(-size, size, -f);
-        tessellator.addVertex(-size + f1, -size - tip, -f + f1);
-        tessellator.addVertex(size - f1, -size - tip, -f + f1);
-        tessellator.addVertex(-f1, size, size - f1);
-        tessellator.addVertex(-f1, size, -size - f1);
-        tessellator.addVertex(0, -size - tip, -size);
-        tessellator.addVertex(0, -size - tip, size - f);
-        tessellator.addVertex(f1, size, size - f1);
-        tessellator.addVertex(f1, size, -size - f1);
-        tessellator.addVertex(0, -size - tip, -size);
-        tessellator.addVertex(0, -size - tip, size - f);
+        Tessellator tessellator = Tessellator.getInstance();
+//        tessellator.startDrawingQuads(); //TODO
+//        tessellator.addVertex(size, size, 0);
+//        tessellator.addVertex(-size, size, 0);
+//        tessellator.addVertex(-size + f1, -size - tip, -f1);
+//        tessellator.addVertex(size - f1, -size - tip, -f1);
+//        tessellator.addVertex(size, size, -f);
+//        tessellator.addVertex(-size, size, -f);
+//        tessellator.addVertex(-size + f1, -size - tip, -f + f1);
+//        tessellator.addVertex(size - f1, -size - tip, -f + f1);
+//        tessellator.addVertex(-f1, size, size - f1);
+//        tessellator.addVertex(-f1, size, -size - f1);
+//        tessellator.addVertex(0, -size - tip, -size);
+//        tessellator.addVertex(0, -size - tip, size - f);
+//        tessellator.addVertex(f1, size, size - f1);
+//        tessellator.addVertex(f1, size, -size - f1);
+//        tessellator.addVertex(0, -size - tip, -size);
+//        tessellator.addVertex(0, -size - tip, size - f);
         tessellator.draw();
     }
 
     public static void startGlScissor(int x, int y, int width, int height)
     {
-        ScaledResolution reso = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+        ScaledResolution reso = new ScaledResolution(mc);
 
         double scaleW = mc.displayWidth / reso.getScaledWidth_double();
         double scaleH = mc.displayHeight / reso.getScaledHeight_double();
@@ -431,17 +432,16 @@ public class ALRenderHelper
 
     public static void startShaders(ResourceLocation resourcelocation)
     {
-        if (OpenGlHelper.shadersSupported && (mc.entityRenderer.theShaderGroup == null || !mc.entityRenderer.theShaderGroup.getShaderGroupName().equals(resourcelocation.toString())))
+        if (OpenGlHelper.shadersSupported && (mc.entityRenderer.getShaderGroup() == null || !mc.entityRenderer.getShaderGroup().getShaderGroupName().equals(resourcelocation.toString())))
         {
-            if (mc.entityRenderer.theShaderGroup != null)
+            if (mc.entityRenderer.getShaderGroup() != null)
             {
-                mc.entityRenderer.theShaderGroup.deleteShaderGroup();
+                mc.entityRenderer.getShaderGroup().deleteShaderGroup();
             }
 
             try
             {
-                mc.entityRenderer.theShaderGroup = new ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), resourcelocation);
-                mc.entityRenderer.theShaderGroup.createBindFramebuffers(mc.displayWidth, mc.displayHeight);
+                mc.entityRenderer.loadShader(resourcelocation);
             }
             catch (Exception e)
             {
@@ -452,7 +452,7 @@ public class ALRenderHelper
 
     public static void stopShaders()
     {
-        mc.entityRenderer.deactivateShader();
+        //mc.entityRenderer.deactivateShader(); TODO
     }
 
     public static boolean canGazeEntity(EntityPlayer player, EntityLivingBase entity, int amplifier)
@@ -488,7 +488,7 @@ public class ALRenderHelper
             GL11.glRotatef(lightning.rotateAngleX, 1.0F, 0.0F, 0.0F);
         }
 
-        drawLightningLine(Vec3.createVectorHelper(0, 0, 0), Vec3.createVectorHelper(0, lightning.length, 0), 5, 1, lightning.lightningColor, opacity);
+        drawLightningLine(new Vec3d(0, 0, 0), new Vec3d(0, lightning.length, 0), 5, 1, lightning.lightningColor, opacity);
         GL11.glTranslatef(0, lightning.length, 0);
 
         for (Lightning lightning1 : lightning.children)
@@ -499,33 +499,33 @@ public class ALRenderHelper
         }
     }
 
-    public static void drawLightningLine(Vec3 start, Vec3 end, float lineWidth, float innerLineWidth, Vec3 color, float alpha)
+    public static void drawLightningLine(Vec3d start, Vec3d end, float lineWidth, float innerLineWidth, Vec3d color, float alpha)
     {
         if (start == null || end == null)
         {
             return;
         }
 
-        Tessellator tessellator = Tessellator.instance;
+        Tessellator tessellator = Tessellator.getInstance();
         float prevWidth = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 
         if (lineWidth > 0.0F)
         {
             GL11.glLineWidth(lineWidth);
-            tessellator.startDrawing(3);
-            tessellator.setColorRGBA_F((float) color.xCoord, (float) color.yCoord, (float) color.zCoord, alpha);
-            tessellator.addVertex(start.xCoord, start.yCoord, start.zCoord);
-            tessellator.addVertex(end.xCoord, end.yCoord, end.zCoord);
+//            tessellator.startDrawing(3);
+//            tessellator.setColorRGBA_F((float) color.xCoord, (float) color.yCoord, (float) color.zCoord, alpha);
+//            tessellator.addVertex(start.xCoord, start.yCoord, start.zCoord);
+//            tessellator.addVertex(end.xCoord, end.yCoord, end.zCoord); //TODO
             tessellator.draw();
         }
 
         if (innerLineWidth > 0.0F)
         {
             GL11.glLineWidth(innerLineWidth);
-            tessellator.startDrawing(3);
-            tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, MathHelper.clamp_float(alpha - 0.2F, 0.0F, 1.0F));
-            tessellator.addVertex(start.xCoord, start.yCoord, start.zCoord);
-            tessellator.addVertex(end.xCoord, end.yCoord, end.zCoord);
+//            tessellator.startDrawing(3);
+//            tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, MathHelper.clamp(alpha - 0.2F, 0.0F, 1.0F));
+//            tessellator.addVertex(start.xCoord, start.yCoord, start.zCoord);
+//            tessellator.addVertex(end.xCoord, end.yCoord, end.zCoord); //TODO
             tessellator.draw();
         }
 
@@ -587,12 +587,12 @@ public class ALRenderHelper
         GL11.glColor4f(1, 1, 1, 1);
     }
 
-    public static void faceVec(Vec3 src, Vec3 dst)
+    public static void faceVec(Vec3d src, Vec3d dst)
     {
-        double d0 = dst.xCoord - src.xCoord;
-        double d1 = dst.yCoord - src.yCoord;
-        double d2 = dst.zCoord - src.zCoord;
-        double d3 = MathHelper.sqrt_double(d0 * d0 + d2 * d2);
+        double d0 = dst.x - src.x;
+        double d1 = dst.y - src.y;
+        double d2 = dst.z - src.z;
+        double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
         float yaw = (float) (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0F;
         float pitch = (float) (-(Math.atan2(d1, d3) * 180.0D / Math.PI));
         GL11.glRotated(-yaw, 0, 1, 0);

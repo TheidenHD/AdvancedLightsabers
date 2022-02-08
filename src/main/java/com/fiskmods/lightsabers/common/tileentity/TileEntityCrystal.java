@@ -2,10 +2,13 @@ package com.fiskmods.lightsabers.common.tileentity;
 
 import com.fiskmods.lightsabers.common.lightsaber.CrystalColor;
 
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityCrystal extends TileEntity
@@ -34,24 +37,45 @@ public class TileEntityCrystal extends TileEntity
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+    	NBTTagCompound ret = super.writeToNBT(nbt);
         nbt.setInteger("color", crystalColor.id);
+        return ret;
+    }
+
+    public void setItemValues(ItemStack item)
+    {
+        this.setColor(CrystalColor.get(item.getItemDamage()));
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public NBTTagCompound getUpdateTag()
     {
-        NBTTagCompound syncData = new NBTTagCompound();
-        writeToNBT(syncData);
-
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, syncData);
+        NBTTagCompound tag = super.getUpdateTag();
+        tag.setInteger("color", crystalColor.id);
+        return tag;
     }
 
     @Override
-    public void onDataPacket(NetworkManager netManager, S35PacketUpdateTileEntity packet)
+    public void handleUpdateTag(NBTTagCompound tag)
     {
-        readFromNBT(packet.func_148857_g());
+        super.handleUpdateTag(tag);
+        crystalColor = CrystalColor.get(tag.getInteger("color"));
+    }
+
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket()
+    {
+        return new SPacketUpdateTileEntity(pos, getBlockMetadata(), getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
+    {
+        if(net.getDirection() == EnumPacketDirection.CLIENTBOUND)
+        {
+            readFromNBT(pkt.getNbtCompound());
+        }
     }
 }

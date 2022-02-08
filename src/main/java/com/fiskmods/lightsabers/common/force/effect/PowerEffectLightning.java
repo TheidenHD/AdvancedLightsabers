@@ -8,12 +8,12 @@ import com.fiskmods.lightsabers.common.force.PowerDesc.Target;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Unit;
 import com.fiskmods.lightsabers.helper.ALHelper;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class PowerEffectLightning extends PowerEffectStatus
@@ -26,7 +26,7 @@ public class PowerEffectLightning extends PowerEffectStatus
     @Override
     public String[] getDesc()
     {
-        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", 4 + amplifier * 2, Unit.DAMAGE, EnumChatFormatting.GRAY + "/"), Target.TARGET)};
+        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", 4 + amplifier * 2, Unit.DAMAGE, TextFormatting.GRAY + "/"), Target.TARGET)};
     }
 
     @Override
@@ -47,7 +47,7 @@ public class PowerEffectLightning extends PowerEffectStatus
     @Override
     public boolean execute(EntityPlayer player, Side side)
     {
-        World world = player.worldObj;
+        World world = player.getEntityWorld();
         boolean flag = super.execute(player, side);
 
         if (flag)

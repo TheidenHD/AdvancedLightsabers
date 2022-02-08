@@ -1,7 +1,9 @@
 package com.fiskmods.lightsabers.client.particle;
 
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 public class EntityALHealFX extends EntityALFX
@@ -17,20 +19,20 @@ public class EntityALHealFX extends EntityALFX
         flameScale = particleScale;
         particleRed = particleGreen = particleBlue = 1.0F;
         particleMaxAge = (int) (10.0D / (Math.random() * 0.25D + 0.75D)) + 10;
-        noClip = false;
+        canCollide = true;
         setParticleTextureIndex(0);
     }
 
     @Override
-    public void renderParticle(Tessellator tesselator, float partialTicks, float f, float f1, float f2, float f3, float f4)
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float f, float f1, float f2, float f3, float f4)
     {
         float f5 = (particleAge + partialTicks) / particleMaxAge;
         particleScale = flameScale * (1.0F - f5 * f5 * 0.5F);
-        super.renderParticle(tesselator, partialTicks, f, f1, f2, f3, f4);
+        super.renderParticle(buffer, entityIn, partialTicks, f, f1, f2, f3, f4);
     }
 
     @Override
-    public EntityFX multipleParticleScaleBy(float scale)
+    public Particle multipleParticleScaleBy(float scale)
     {
         flameScale *= scale;
         return this;
@@ -43,12 +45,6 @@ public class EntityALHealFX extends EntityALFX
     }
 
     @Override
-    public float getBrightness(float partialTicks)
-    {
-        return 1.0F;
-    }
-
-    @Override
     public void onUpdate()
     {
         prevPosX = posX;
@@ -58,10 +54,10 @@ public class EntityALHealFX extends EntityALFX
 
         if (particleAge++ >= particleMaxAge)
         {
-            setDead();
+        	setExpired();
         }
 
-        moveEntity(motionX, motionY, motionZ);
+        setPosition(motionX, motionY, motionZ);
         motionX *= 0.9599999785423279D;
         motionY *= 0.9599999785423279D;
         motionZ *= 0.9599999785423279D;

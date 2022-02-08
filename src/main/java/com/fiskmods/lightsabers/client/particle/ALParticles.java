@@ -6,7 +6,7 @@ import java.util.List;
 import com.fiskmods.lightsabers.Lightsabers;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -17,24 +17,24 @@ public class ALParticles
 
     public static final int fxLayersSize = 16;
 
-    public static EntityFX spawnParticle(ALParticleType particleType, double x, double y, double z, double motionX, double motionY, double motionZ)
+    public static Particle spawnParticle(ALParticleType particleType, double x, double y, double z, double motionX, double motionY, double motionZ)
     {
-        if (mc != null && mc.renderViewEntity != null && mc.effectRenderer != null && mc.theWorld != null)
+        if (mc != null && mc.getRenderViewEntity() != null && mc.effectRenderer != null && mc.world != null)
         {
-            if (mc.theWorld.isRemote)
+            if (mc.world.isRemote)
             {
                 int particleSetting = mc.gameSettings.particleSetting;
 
-                if (particleSetting == 1 && mc.theWorld.rand.nextInt(3) == 0)
+                if (particleSetting == 1 && mc.world.rand.nextInt(3) == 0)
                 {
                     particleSetting = 2;
                 }
 
-                double diffX = mc.renderViewEntity.posX - x;
-                double diffY = mc.renderViewEntity.posY - y;
-                double diffZ = mc.renderViewEntity.posZ - z;
+                double diffX = mc.getRenderViewEntity().posX - x;
+                double diffY = mc.getRenderViewEntity().posY - y;
+                double diffZ = mc.getRenderViewEntity().posZ - z;
 
-                EntityFX particle = null;
+                Particle particle = null;
                 double maxRenderDistance = 16.0D;
                 boolean flag = false;
 
@@ -51,7 +51,7 @@ public class ALParticles
                     try
                     {
                         Constructor c = particleType.particleClass.getConstructor(World.class, double.class, double.class, double.class, double.class, double.class, double.class);
-                        particle = (EntityFX) c.newInstance(mc.theWorld, x, y, z, motionX, motionY, motionZ);
+                        particle = (Particle) c.newInstance(mc.world, x, y, z, motionX, motionY, motionZ);
 
                         mc.effectRenderer.addEffect(particle);
 

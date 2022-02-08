@@ -1,6 +1,7 @@
 package com.fiskmods.lightsabers.client.gui;
 
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +18,8 @@ import com.fiskmods.lightsabers.common.force.PowerType;
 import com.fiskmods.lightsabers.helper.ALHelper;
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
@@ -46,8 +47,8 @@ public class GuiSelectPowers extends GuiScreen
     {
         super.initGui();
         slots.clear();
-        selectedPowers = ALData.SELECTED_POWERS.get(mc.thePlayer).toArray(selectedPowers);
-        List<PowerData> list = ALHelper.getRelevantPowers(mc.thePlayer);
+        selectedPowers = ALData.SELECTED_POWERS.get(mc.player).toArray(selectedPowers);
+        List<PowerData> list = ALHelper.getRelevantPowers(mc.player);
         Collections.sort(list);
         
         PowerData[] powers = list.toArray(new PowerData[16]);
@@ -63,7 +64,7 @@ public class GuiSelectPowers extends GuiScreen
     }
 
     @Override
-    protected void keyTyped(char c, int key)
+    protected void keyTyped(char c, int key) throws IOException
     {
         super.keyTyped(c, key);
 
@@ -75,7 +76,7 @@ public class GuiSelectPowers extends GuiScreen
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int button)
+    protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, button);
         int x = (width - xSize) / 2;
@@ -124,7 +125,7 @@ public class GuiSelectPowers extends GuiScreen
 
         if (flag)
         {
-            ALData.SELECTED_POWERS.setWithoutNotify(mc.thePlayer, Lists.newArrayList(selectedPowers));
+            ALData.SELECTED_POWERS.setWithoutNotify(mc.player, Lists.newArrayList(selectedPowers));
         }
     }
 
@@ -156,9 +157,9 @@ public class GuiSelectPowers extends GuiScreen
     }
 
     @Override
-    protected void mouseMovedOrUp(int mouseX, int mouseY, int signature)
+    protected void mouseReleased(int mouseX, int mouseY, int signature)
     {
-        super.mouseMovedOrUp(mouseX, mouseY, signature);
+        super.mouseReleased(mouseX, mouseY, signature);
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
 
@@ -175,7 +176,7 @@ public class GuiSelectPowers extends GuiScreen
                         if (slot != null)
                         {
                             selectedPowers[i] = slot.power;
-                            ALData.SELECTED_POWERS.setWithoutNotify(mc.thePlayer, Lists.newArrayList(selectedPowers));
+                            ALData.SELECTED_POWERS.setWithoutNotify(mc.player, Lists.newArrayList(selectedPowers));
                         }
                     }
                 }
@@ -282,13 +283,13 @@ public class GuiSelectPowers extends GuiScreen
 
         if (hoverPower != null)
         {
-            Tessellator tessellator = Tessellator.instance;
+            Tessellator tessellator = Tessellator.getInstance();
             float f = 1F / 256;
             float scale = 70;
 
             if (hoverPower.hasIcon())
             {
-                TextureUtil.func_152777_a(false, false, 1);
+                //TextureUtil.func_152777_a(false, false, 1); TODO
                 GL11.glPushMatrix();
                 GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                 GL11.glTranslatef(x + 126, y + 60.5F, zLevel + 20);
@@ -296,16 +297,16 @@ public class GuiSelectPowers extends GuiScreen
                 GL11.glTranslatef(-0.5F, -0.25F, -(0.0625F + 0.021875F) * 0.5F);
                 GL11.glTranslatef(0, 0, 0.0625F + 0.021875F);
                 GL11.glColor4f(1, 1, 1, 1);
-                ItemRenderer.renderItemIn2D(tessellator, hoverPower.getIconX() * 16 * f, hoverPower.getIconY() * 16 * f, (hoverPower.getIconX() * 16 + 16) * f, (hoverPower.getIconY() * 16 + 16) * f, 16, 16, 0);
+                //ItemRenderer.renderItemIn2D(tessellator, hoverPower.getIconX() * 16 * f, hoverPower.getIconY() * 16 * f, (hoverPower.getIconX() * 16 + 16) * f, (hoverPower.getIconY() * 16 + 16) * f, 16, 16, 0); TODO
                 GL11.glDisable(GL12.GL_RESCALE_NORMAL);
                 GL11.glPopMatrix();
-                TextureUtil.func_147945_b();
+                //TextureUtil.func_147945_b(); TODO
             }
 
             String name = hoverPower.getLocalizedName();
             int x1 = x + 8;
             int y1 = y + 84;
-            int fieldWidth = Math.max(fontRendererObj.getStringWidth(name), 160);
+            int fieldWidth = Math.max(fontRenderer.getStringWidth(name), 160);
 
             List<String> list = Lists.newArrayList();
             PowerStats stats = hoverPower.powerStats;
@@ -322,27 +323,27 @@ public class GuiSelectPowers extends GuiScreen
 
             for (String desc : list)
             {
-                fieldWidth = Math.max(fontRendererObj.getStringWidth(desc), fieldWidth);
+                fieldWidth = Math.max(fontRenderer.getStringWidth(desc), fieldWidth);
             }
 
-            drawGradientRect(x1, y1, x1 + fieldWidth, y1 + Math.max((fontRendererObj.FONT_HEIGHT + 2) * list.size() + fontRendererObj.FONT_HEIGHT * 2 + 12, 52), 0xA5222222, 0xA5222222);
-            int height = y1 + fontRendererObj.FONT_HEIGHT + 4;
+            drawGradientRect(x1, y1, x1 + fieldWidth, y1 + Math.max((fontRenderer.FONT_HEIGHT + 2) * list.size() + fontRenderer.FONT_HEIGHT * 2 + 12, 52), 0xA5222222, 0xA5222222);
+            int height = y1 + fontRenderer.FONT_HEIGHT + 4;
 
             if (name != null)
             {
-                fontRendererObj.drawStringWithShadow(name, x1 + 3, y1 + 3, -1);
+                fontRenderer.drawStringWithShadow(name, x1 + 3, y1 + 3, -1);
             }
 
             if (stats.useCost > 0)
             {
-                fontRendererObj.drawStringWithShadow(I18n.format(stats.powerType == PowerType.PER_USE ? "forcepower.perUse" : "forcepower.perSecond", ItemStack.field_111284_a.format(stats.useCost)), x1 + 3, height + 3, 0xa4a4a4);
-                height += 5 + fontRendererObj.FONT_HEIGHT;
+                fontRenderer.drawStringWithShadow(I18n.format(stats.powerType == PowerType.PER_USE ? "forcepower.perUse" : "forcepower.perSecond", ItemStack.DECIMALFORMAT.format(stats.useCost)), x1 + 3, height + 3, 0xa4a4a4);
+                height += 5 + fontRenderer.FONT_HEIGHT;
             }
 
             for (String desc : list)
             {
-                fontRendererObj.drawStringWithShadow(desc, x1 + 3, height + 3, 0xa4a4a4);
-                height += 2 + fontRendererObj.FONT_HEIGHT;
+                fontRenderer.drawStringWithShadow(desc, x1 + 3, height + 3, 0xa4a4a4);
+                height += 2 + fontRenderer.FONT_HEIGHT;
             }
 
             GL11.glEnable(GL11.GL_BLEND);
@@ -368,7 +369,7 @@ public class GuiSelectPowers extends GuiScreen
     @Override
     public void onGuiClosed()
     {
-        ALData.SELECTED_POWERS.sync(mc.thePlayer);
+        ALData.SELECTED_POWERS.sync(mc.player);
     }
 
     private class PowerSlot

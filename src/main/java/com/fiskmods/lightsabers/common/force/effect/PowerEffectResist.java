@@ -5,7 +5,7 @@ import com.fiskmods.lightsabers.common.force.PowerDesc;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Target;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Unit;
 
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 public class PowerEffectResist extends PowerEffectInstant
 {
@@ -17,7 +17,7 @@ public class PowerEffectResist extends PowerEffectInstant
     @Override
     public String[] getDesc()
     {
-        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", PowerDesc.translateFormatted("forcepower.stat.divide", Unit.ENERGY_DAMAGE, getModifierAmount(amplifier)), EnumChatFormatting.GRAY, duration), Target.CASTER)};
+        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", PowerDesc.translateFormatted("forcepower.stat.divide", Unit.ENERGY_DAMAGE, getModifierAmount(amplifier)), TextFormatting.GRAY, duration), Target.CASTER)};
     }
 
     public static float getModifierAmount(int amplifier)

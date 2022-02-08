@@ -16,14 +16,14 @@ import com.fiskmods.lightsabers.common.lightsaber.LightsaberData;
 import com.fiskmods.lightsabers.common.lightsaber.PartType;
 import com.google.common.collect.Maps;
 
-import mods.battlegear2.api.core.BattlegearUtils;
-import mods.battlegear2.client.utils.BattlegearRenderHelper;
+//import mods.battlegear2.api.core.BattlegearUtils;//TODO
+//import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelHelper
 {
@@ -39,10 +39,10 @@ public class ModelHelper
         model.bipedRightArm.rotationPointY = ARMS.get(model.getClass());
         model.bipedLeftArm.rotationPointY = ARMS.get(model.getClass());
 
-        if (Lightsabers.isBattlegearLoaded)
-        {
-            BattlegearRenderHelper.moveOffHandArm(entity, model, f5);
-        }
+//        if (Lightsabers.isBattlegearLoaded) //TODO
+//        {
+//            BattlegearRenderHelper.moveOffHandArm(entity, model, f5);
+//        }
 
         setRotationAngles(model, f, f1, f2, f3, f4, f5, entity);
     }
@@ -56,55 +56,55 @@ public class ModelHelper
         if (entity1 instanceof EntityLivingBase)
         {
             EntityLivingBase entity = (EntityLivingBase) entity1;
-            ItemStack heldItem = entity.getHeldItem();
+            ItemStack heldItem = entity.getHeldItemMainhand();
 
             if (heldItem != null && heldItem.getItem() instanceof ItemLightsaberBase && !entity.isSneaking())
             {
-                float f6 = model.onGround;
-                float f7 = (f6 > 0.5F ? 1 - f6 : f6) * 2;
-                
-                if (heldItem.getItem() == ModItems.doubleLightsaber)
-                {
-                    if (model.heldItemRight != 0)
-                    {
-                        float f8 = 1 - f1;
-                        model.bipedRightArm.rotateAngleX = model.bipedRightArm.rotateAngleX * f1 - (((float) Math.PI / 2.5F) * model.heldItemRight) * f8;
-                        model.bipedRightArm.rotateAngleY = model.bipedRightArm.rotateAngleY * f1 + (model.bipedRightArm.rotateAngleY * 0.5F - ((float) Math.PI / 15F) * model.heldItemRight) * f8;
-                    }
-
-                    model.bipedRightArm.rotateAngleX -= f7;
-                    model.bipedRightArm.rotateAngleY += f7;
-                }
-                else if (heldItem.getItem() == ModItems.lightsaber)
-                {
-                    if (model.heldItemRight != 0 && !isDualWielding(entity))
-                    {
-                        float f8 = 1 - f1;
-                        model.bipedRightArm.rotateAngleX = model.bipedRightArm.rotateAngleX * f1 - (1 * (float) model.heldItemRight) * f8;
-                        model.bipedRightArm.rotateAngleY = model.bipedRightArm.rotateAngleY * f1 + (model.bipedRightArm.rotateAngleY * 0.5F - 0.5F * model.heldItemRight) * f8;
-                        model.bipedRightArm.rotateAngleZ = model.bipedRightArm.rotateAngleZ * f1 + (model.bipedRightArm.rotateAngleZ * 0.5F - 0.2F * model.heldItemRight) * f8;
-                        model.bipedRightArm.rotationPointX += 0.5F * f8;
-
-                        float f9 = f1 > 0.5F ? 1 : f1 * 2;
-                        float f10 = 1 - f9;
-                        model.bipedLeftArm.rotateAngleX = model.bipedLeftArm.rotateAngleX * f9 - (1 * (float) model.heldItemRight) * f10;
-                        model.bipedLeftArm.rotateAngleY = model.bipedLeftArm.rotateAngleY * f9 + (model.bipedLeftArm.rotateAngleY * 0.5F + 0.75F * model.heldItemRight) * f10;
-                        model.bipedLeftArm.rotateAngleZ = model.bipedLeftArm.rotateAngleZ * f9 + (model.bipedLeftArm.rotateAngleZ * 0.5F + 0.0F * model.heldItemRight) * f10;
-                        model.bipedLeftArm.rotationPointX -= 0.5F * f8;
-                    }
-
-                    if (!isDualWielding(entity))
-                    {
-                        model.bipedRightArm.rotateAngleX -= f7;
-                        model.bipedRightArm.rotateAngleY -= f7 * 0.4F;
-                        model.bipedLeftArm.rotateAngleX -= f7 * 1.6F;
-                        model.bipedLeftArm.rotateAngleY -= f7 * 0.9F;
-                    }
-                }
+//                float f6 = model.onGround; //TODO
+//                float f7 = (f6 > 0.5F ? 1 - f6 : f6) * 2;
+//                
+//                if (heldItem.getItem() == ModItems.doubleLightsaber)
+//                {
+//                    if (model.heldItemRight != 0)
+//                    {
+//                        float f8 = 1 - f1;
+//                        model.bipedRightArm.rotateAngleX = model.bipedRightArm.rotateAngleX * f1 - (((float) Math.PI / 2.5F) * model.heldItemRight) * f8;
+//                        model.bipedRightArm.rotateAngleY = model.bipedRightArm.rotateAngleY * f1 + (model.bipedRightArm.rotateAngleY * 0.5F - ((float) Math.PI / 15F) * model.heldItemRight) * f8;
+//                    }
+//
+//                    model.bipedRightArm.rotateAngleX -= f7;
+//                    model.bipedRightArm.rotateAngleY += f7;
+//                }
+//                else if (heldItem.getItem() == ModItems.lightsaber)
+//                {
+//                    if (model.heldItemRight != 0 && !isDualWielding(entity))
+//                    {
+//                        float f8 = 1 - f1;
+//                        model.bipedRightArm.rotateAngleX = model.bipedRightArm.rotateAngleX * f1 - (1 * (float) model.heldItemRight) * f8;
+//                        model.bipedRightArm.rotateAngleY = model.bipedRightArm.rotateAngleY * f1 + (model.bipedRightArm.rotateAngleY * 0.5F - 0.5F * model.heldItemRight) * f8;
+//                        model.bipedRightArm.rotateAngleZ = model.bipedRightArm.rotateAngleZ * f1 + (model.bipedRightArm.rotateAngleZ * 0.5F - 0.2F * model.heldItemRight) * f8;
+//                        model.bipedRightArm.rotationPointX += 0.5F * f8;
+//
+//                        float f9 = f1 > 0.5F ? 1 : f1 * 2;
+//                        float f10 = 1 - f9;
+//                        model.bipedLeftArm.rotateAngleX = model.bipedLeftArm.rotateAngleX * f9 - (1 * (float) model.heldItemRight) * f10;
+//                        model.bipedLeftArm.rotateAngleY = model.bipedLeftArm.rotateAngleY * f9 + (model.bipedLeftArm.rotateAngleY * 0.5F + 0.75F * model.heldItemRight) * f10;
+//                        model.bipedLeftArm.rotateAngleZ = model.bipedLeftArm.rotateAngleZ * f9 + (model.bipedLeftArm.rotateAngleZ * 0.5F + 0.0F * model.heldItemRight) * f10;
+//                        model.bipedLeftArm.rotationPointX -= 0.5F * f8;
+//                    }
+//
+//                    if (!isDualWielding(entity))
+//                    {
+//                        model.bipedRightArm.rotateAngleX -= f7;
+//                        model.bipedRightArm.rotateAngleY -= f7 * 0.4F;
+//                        model.bipedLeftArm.rotateAngleX -= f7 * 1.6F;
+//                        model.bipedLeftArm.rotateAngleY -= f7 * 0.9F;
+//                    }
+//                }
             }
 
-            float push = MathHelper.clamp_float(MathHelper.sin(ALData.FORCE_PUSHING_TIMER.interpolate(entity) * 3) * 1.5F, 0, 1);
-            float drain = MathHelper.clamp_float(MathHelper.sin(ALData.DRAIN_LIFE_TIMER.interpolate(entity) * 3) * 4F, 0, 1);
+            float push = MathHelper.clamp(MathHelper.sin(ALData.FORCE_PUSHING_TIMER.interpolate(entity) * 3) * 1.5F, 0, 1);
+            float drain = MathHelper.clamp(MathHelper.sin(ALData.DRAIN_LIFE_TIMER.interpolate(entity) * 3) * 4F, 0, 1);
             float right = ALData.RIGHT_ARM_TIMER.interpolate(entity);
             float left = ALData.LEFT_ARM_TIMER.interpolate(entity);
 
@@ -290,6 +290,7 @@ public class ModelHelper
 
     private static boolean isDualWielding(Entity entity)
     {
-        return Lightsabers.isBattlegearLoaded && entity instanceof EntityPlayer && BattlegearUtils.isPlayerInBattlemode((EntityPlayer) entity);
+    //TODO    return Lightsabers.isBattlegearLoaded && entity instanceof EntityPlayer && BattlegearUtils.isPlayerInBattlemode((EntityPlayer) entity);
+    return false;
     }
 }

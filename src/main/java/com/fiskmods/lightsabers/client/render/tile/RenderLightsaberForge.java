@@ -22,7 +22,7 @@ public class RenderLightsaberForge extends TileEntitySpecialRenderer
     {
         int metadata = 0;
 
-        if (tile.getWorldObj() != null)
+        if (tile.getWorld() != null)
         {
             metadata = tile.getBlockMetadata();
         }
@@ -30,20 +30,20 @@ public class RenderLightsaberForge extends TileEntitySpecialRenderer
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         GL11.glScalef(1F, -1F, -1F);
-        GL11.glRotatef(BlockLightsaberForge.getDirection(metadata) * 90 + 180, 0.0F, 1.0F, 0.0F);
-
-        if (!BlockLightsaberForge.isBlockSideOfPanel(metadata))
-        {
-            bindTexture(tile.getBlockType() == ModBlocks.lightsaberForgeDark ? textureDark : textureLight);
-            model.render();
-        }
+//        GL11.glRotatef(BlockLightsaberForge.getDirection(metadata) * 90 + 180, 0.0F, 1.0F, 0.0F); //TODO
+//
+//        if (!BlockLightsaberForge.isBlockSideOfPanel(metadata))
+//        {
+//            bindTexture(tile.getBlockType() == ModBlocks.lightsaberForgeDark ? textureDark : textureLight);
+//            model.render();
+//        }
 
         GL11.glPopMatrix();
     }
 
-    @Override
-    public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTicks)
-    {
-        render((TileEntityLightsaberForge) tileentity, x, y, z, partialTicks);
-    }
+//    @Override //TODO
+//    public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTicks)
+//    {
+//        render((TileEntityLightsaberForge) tileentity, x, y, z, partialTicks);
+//    }
 }

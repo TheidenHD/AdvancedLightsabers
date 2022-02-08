@@ -2,7 +2,7 @@ package com.fiskmods.lightsabers.client.gui;
 
 import java.util.Set;
 
-import cpw.mods.fml.client.IModGuiFactory;
+import net.minecraftforge.fml.client.IModGuiFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -13,11 +13,11 @@ public class GuiFactoryAL implements IModGuiFactory
     {
     }
 
-    @Override
-    public Class<? extends GuiScreen> mainConfigGuiClass()
-    {
-        return GuiALModConfig.class;
-    }
+//    @Override
+//    public Class<? extends GuiScreen> mainConfigGuiClass()
+//    {
+//        return GuiALModConfig.class;
+//    } TODO
 
     @Override
     public Set<RuntimeOptionCategoryElement> runtimeGuiCategories()
@@ -25,9 +25,21 @@ public class GuiFactoryAL implements IModGuiFactory
         return null;
     }
 
-    @Override
-    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element)
-    {
-        return null;
-    }
+//    @Override
+//    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element)
+//    {
+//        return null;
+//    } TODO
+
+	@Override
+	public boolean hasConfigGui() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public GuiScreen createConfigGui(GuiScreen parentScreen) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -19,7 +19,7 @@ public class RenderSithStoneCoffin extends TileEntitySpecialRenderer
     {
         int metadata = 0;
 
-        if (tileentity.getWorldObj() != null)
+        if (tileentity.getWorld() != null)
         {
             metadata = tileentity.getBlockMetadata();
         }
@@ -38,9 +38,9 @@ public class RenderSithStoneCoffin extends TileEntitySpecialRenderer
         GL11.glPopMatrix();
     }
 
-    @Override
-    public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
-    {
-        render((TileEntitySithStoneCoffin) tileentity, d, d1, d2, f);
-    }
+//    @Override //TODO
+//    public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
+//    {
+//        render((TileEntitySithStoneCoffin) tileentity, d, d1, d2, f);
+//    }
 }

@@ -3,12 +3,14 @@ package com.fiskmods.lightsabers.client.sound;
 import com.fiskmods.lightsabers.common.data.ALData;
 import com.fiskmods.lightsabers.helper.ALHelper;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 
 @SideOnly(Side.CLIENT)
 public class MovingSoundLightning extends MovingSound
@@ -17,10 +19,11 @@ public class MovingSoundLightning extends MovingSound
 
     public MovingSoundLightning(EntityLivingBase entity)
     {
-        super(new ResourceLocation(ALSounds.player_force_lightning));
+        //super(new ResourceLocation(ALSounds.player_force_lightning));//TODO
+    	super(SoundEvents.ITEM_ELYTRA_FLYING, SoundCategory.PLAYERS);
         caster = entity;
         repeat = true;
-        field_147665_h = 0;
+        repeatDelay = 0;
         volume = 1.0F;
     }
 
@@ -37,7 +40,7 @@ public class MovingSoundLightning extends MovingSound
         {
             EntityLivingBase target = ALHelper.getForceLightningTarget(caster);
 
-            if (Minecraft.getMinecraft().thePlayer == target)
+            if (Minecraft.getMinecraft().player == target)
             {
                 xPosF = (float) target.posX;
                 yPosF = (float) target.posY;
@@ -51,7 +54,7 @@ public class MovingSoundLightning extends MovingSound
             }
 
             volume = f;
-            field_147663_c = 0.75F + (float) Math.random() * 0.25F;
+            pitch = 0.75F + (float) Math.random() * 0.25F;
         }
     }
 }

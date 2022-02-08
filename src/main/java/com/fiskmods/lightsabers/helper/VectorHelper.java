@@ -6,10 +6,10 @@ package com.fiskmods.lightsabers.helper;
 //import net.minecraft.command.IEntitySelector;
 //import net.minecraft.entity.EntityLivingBase;
 //import net.minecraft.entity.player.EntityPlayer;
-//import net.minecraft.util.AxisAlignedBB;
-//import net.minecraft.util.MathHelper;
+//import net.minecraft.util.math.AxisAlignedBB;
+//import net.minecraft.util.math.MathHelper;
 //import net.minecraft.util.MovingObjectPosition;
-//import net.minecraft.util.Vec3;
+//import net.minecraft.util.math.Vec3d;
 //import net.minecraft.world.World;
 //import com.fiskmods.lightsabers.Lightsabers;
 //
@@ -17,11 +17,11 @@ package com.fiskmods.lightsabers.helper;
 //{
 //	public static Vec3 getOffsetCoords(EntityLivingBase entity, double xOffset, double yOffset, double zOffset, float partialTicks)
 //    {
-//        Vec3 vec3 = Vec3.createVectorHelper(xOffset, yOffset, zOffset);
+//        Vec3 vec3 = new Vec3d(xOffset, yOffset, zOffset);
 //        vec3.rotateAroundX(-(entity.rotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks) * (float) Math.PI / 180.0F);
 //        vec3.rotateAroundY(-(entity.rotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * partialTicks) * (float) Math.PI / 180.0F);
 //
-//        return Vec3.createVectorHelper(entity.posX + vec3.xCoord, getAccuratePlayerY(entity) + vec3.yCoord, entity.posZ + vec3.zCoord);
+//        return new Vec3d(entity.posX + vec3.xCoord, getAccuratePlayerY(entity) + vec3.yCoord, entity.posZ + vec3.zCoord);
 //    }
 //
 //    public static Vec3 getOffsetCoords(EntityLivingBase entity, double xOffset, double yOffset, double zOffset)
@@ -31,7 +31,7 @@ package com.fiskmods.lightsabers.helper;
 //
 //    public static Vec3 copy(Vec3 vec3)
 //    {
-//        return Vec3.createVectorHelper(vec3.xCoord, vec3.yCoord, vec3.zCoord);
+//        return new Vec3d(vec3.xCoord, vec3.yCoord, vec3.zCoord);
 //    }
 //
 //    public static Vec3 add(Vec3 vec3, Vec3 vec31)
@@ -71,7 +71,7 @@ package com.fiskmods.lightsabers.helper;
 //        float yScale = MathHelper.sin(-pitch * 0.017453292F);
 //        float xScale = f4 * f5;
 //        float zScale = f3 * f5;
-//        return Vec3.createVectorHelper(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
+//        return new Vec3d(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
 //    }
 //
 //    public static Vec3 getFrontCoords(EntityLivingBase entity, double amount, boolean applyPitch)
@@ -88,7 +88,7 @@ package com.fiskmods.lightsabers.helper;
 //        float yScale = MathHelper.sin(-pitch * 0.017453292F);
 //        float xScale = f4 * f5;
 //        float zScale = f3 * f5;
-//        return Vec3.createVectorHelper(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
+//        return new Vec3d(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
 //    }
 //
 //    public static Vec3 getAboveCoords(EntityLivingBase entity, float pitch, double amount)
@@ -100,7 +100,7 @@ package com.fiskmods.lightsabers.helper;
 //        float yScale = MathHelper.sin(-pitch * 0.017453292F);
 //        float xScale = f4 * f5;
 //        float zScale = f3 * f5;
-//        return Vec3.createVectorHelper(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
+//        return new Vec3d(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
 //    }
 //
 //    public static Vec3 getVerticalCoords(EntityLivingBase entity, float pitchOffset, double amount)
@@ -112,7 +112,7 @@ package com.fiskmods.lightsabers.helper;
 //        float yScale = MathHelper.sin(-pitch * 0.017453292F);
 //        float xScale = f4 * f5;
 //        float zScale = f3 * f5;
-//        return Vec3.createVectorHelper(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
+//        return new Vec3d(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
 //    }
 //
 //    public static MovingObjectPosition rayTraceBlocks(World world, EntityLivingBase entity, double distance, boolean flag)
@@ -125,7 +125,7 @@ package com.fiskmods.lightsabers.helper;
 //        float yScale = MathHelper.sin(-pitch * 0.017453292F);
 //        float xScale = f4 * f5;
 //        float zScale = f3 * f5;
-//        Vec3 entityPos = Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ);
+//        Vec3 entityPos = new Vec3d(entity.posX, entity.posY, entity.posZ);
 //        Vec3 vec31 = entityPos.addVector(xScale * distance, yScale * distance, zScale * distance);
 //        return world.func_147447_a(entityPos, vec31, flag, !flag, false);
 //    }
@@ -151,7 +151,7 @@ package com.fiskmods.lightsabers.helper;
 //        float yScale = MathHelper.sin(-pitch * 0.017453292F);
 //        float xScale = f4 * f5;
 //        float zScale = f3 * f5;
-//        return Vec3.createVectorHelper(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
+//        return new Vec3d(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
 //    }
 //
 //    public static Vec3 getFrontCoordsRenderYawOffset(EntityLivingBase entity, double amount, boolean applyPitch)
@@ -165,7 +165,7 @@ package com.fiskmods.lightsabers.helper;
 //        float yScale = MathHelper.sin(-pitch * 0.017453292F);
 //        float xScale = f4 * f5;
 //        float zScale = f3 * f5;
-//        return Vec3.createVectorHelper(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
+//        return new Vec3d(entity.posX, getAccuratePlayerY(entity), entity.posZ).addVector(xScale * amount, yScale * amount, zScale * amount);
 //    }
 //
 //    public static double getAccuratePlayerY(EntityLivingBase entity)

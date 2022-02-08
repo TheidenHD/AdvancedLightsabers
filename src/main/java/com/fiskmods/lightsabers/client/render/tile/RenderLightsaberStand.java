@@ -32,7 +32,7 @@ public class RenderLightsaberStand extends TileEntitySpecialRenderer
         model.rStandTip.rotationPointX = 2.5F;
         model.lStandTip.rotationPointX = -3.5F;
         
-        if (tile.getWorldObj() != null)
+        if (tile.getWorld() != null)
         {
             adjustRotation(tile, tile.getBlockMetadata());
             
@@ -49,7 +49,7 @@ public class RenderLightsaberStand extends TileEntitySpecialRenderer
         bindTexture(texture);
         model.render();
         
-        if (tile.getWorldObj() != null && stack != null)
+        if (tile.getWorld() != null && stack != null)
         {
             GL11.glTranslatef(0, 1.36F, 0);
             GL11.glRotatef(90, 0, 0, 1);
@@ -90,9 +90,9 @@ public class RenderLightsaberStand extends TileEntitySpecialRenderer
         GL11.glTranslatef(0, -1, 0);
     }
 
-    @Override
-    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks)
-    {
-        render((TileEntityLightsaberStand) tile, x, y, z, partialTicks);
-    }
+//    @Override //TODO
+//    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks)
+//    {
+//        render((TileEntityLightsaberStand) tile, x, y, z, partialTicks);
+//    }
 }

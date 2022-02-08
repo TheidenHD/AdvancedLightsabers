@@ -5,8 +5,8 @@ import com.fiskmods.lightsabers.common.force.Power;
 import com.fiskmods.lightsabers.common.force.PowerManager;
 import com.fiskmods.lightsabers.common.keybinds.ALKeyBinds;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import fiskfille.utils.common.interaction.key.KeyPressBase;
 import fiskfille.utils.common.keybinds.FiskKeyBinding;

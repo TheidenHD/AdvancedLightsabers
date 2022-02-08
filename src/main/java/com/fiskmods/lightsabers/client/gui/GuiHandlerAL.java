@@ -12,9 +12,10 @@ import com.fiskmods.lightsabers.common.tileentity.TileEntityHolocron;
 import com.fiskmods.lightsabers.common.tileentity.TileEntityLightsaberForge;
 import com.fiskmods.lightsabers.common.tileentity.TileEntitySithCoffin;
 
-import cpw.mods.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class GuiHandlerAL implements IGuiHandler
@@ -22,14 +23,14 @@ public class GuiHandlerAL implements IGuiHandler
     @Override
     public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
     {
-        TileEntity tile = world.getTileEntity(x, y, z);
+        TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
 
         switch (id)
         {
         case 0:
-            return world.getBlock(x, y, z) instanceof BlockLightsaberForge ? new ContainerLightsaberForge(player.inventory, (TileEntityLightsaberForge) tile) : null;
+            return tile.getBlockType() instanceof BlockLightsaberForge ? new ContainerLightsaberForge(player.inventory, (TileEntityLightsaberForge) tile) : null;
         case 1:
-            return world.getBlock(x, y, z) == ModBlocks.sithCoffin ? new ContainerSithCoffin(player.inventory, (TileEntitySithCoffin) tile) : null;
+            return tile.getBlockType() == ModBlocks.sithCoffin ? new ContainerSithCoffin(player.inventory, (TileEntitySithCoffin) tile) : null;
         case 3:
             return new ContainerCrystalPouch(player.inventory, new InventoryCrystalPouch(player, x));
         case 4:
@@ -42,16 +43,16 @@ public class GuiHandlerAL implements IGuiHandler
     @Override
     public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
     {
-        TileEntity tile = world.getTileEntity(x, y, z);
+        TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
 
         switch (id)
         {
         case 0:
-            return world.getBlock(x, y, z) instanceof BlockLightsaberForge ? new GuiLightsaberForge(player.inventory, (TileEntityLightsaberForge) tile) : null;
+            return tile.getBlockType() instanceof BlockLightsaberForge ? new GuiLightsaberForge(player.inventory, (TileEntityLightsaberForge) tile) : null;
         case 1:
-            return world.getBlock(x, y, z) == ModBlocks.sithCoffin ? new GuiSithCoffin(player.inventory, (TileEntitySithCoffin) tile) : null;
+            return tile.getBlockType() == ModBlocks.sithCoffin ? new GuiSithCoffin(player.inventory, (TileEntitySithCoffin) tile) : null;
         case 2:
-            return world.getBlock(x, y, z) == ModBlocks.holocron ? new GuiForcePowers(null, player, (TileEntityHolocron) tile) : null;
+            return tile.getBlockType() == ModBlocks.holocron ? new GuiForcePowers(null, player, (TileEntityHolocron) tile) : null;
         case 3:
             return new GuiCrystalPouch(player.inventory, new InventoryCrystalPouch(player, x));
         case 4:

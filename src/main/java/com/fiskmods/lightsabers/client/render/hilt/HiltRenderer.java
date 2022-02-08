@@ -20,7 +20,7 @@ public abstract class HiltRenderer extends FiskRegistryEntry<HiltRenderer>
     
     public static void register(Hilt key, HiltRenderer value)
     {
-        register(key.delegate.name(), value);
+        register(key.delegate.name().toString(), value);
     }
     
     public static HiltRenderer get(String key)
@@ -30,7 +30,7 @@ public abstract class HiltRenderer extends FiskRegistryEntry<HiltRenderer>
     
     public static HiltRenderer get(Hilt key)
     {
-        return key == null ? null : get(key.delegate.name());
+        return key == null ? null : get(key.delegate.name().toString());
     }
     
     public abstract ModelBase getEmitter();
@@ -58,11 +58,11 @@ public abstract class HiltRenderer extends FiskRegistryEntry<HiltRenderer>
     
     public ResourceLocation getTexture(PartType type)
     {
-        return new ResourceLocation(getDomain(), String.format("textures/models/lightsaber/%s_%s.png", type.textureName, getRegistryName().getResourcePath()));
+        return new ResourceLocation(getDomain(), String.format("textures/models/lightsaber/%s_%s.png", type.textureName, getRegistryName().getPath()));
     }
     
     public final Hilt getHilt()
     {
-        return Hilt.REGISTRY.getObject(delegate.name());
+        return Hilt.REGISTRY.getObject(delegate.name().toString());//TODO check
     }
 }

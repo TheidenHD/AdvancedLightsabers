@@ -19,11 +19,11 @@ public class EntityAIRest extends EntityAIBase
     @Override
     public boolean shouldExecute()
     {
-        return continueExecuting();
+        return shouldContinueExecuting();
     }
 
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return entity.taskFinished == 2 && entity.hasRestingPlace;
     }

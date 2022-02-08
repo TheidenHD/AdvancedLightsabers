@@ -19,8 +19,8 @@ import com.fiskmods.lightsabers.common.lightsaber.PartType;
 import com.fiskmods.lightsabers.helper.ALHelper;
 import com.google.common.collect.ImmutableMap;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -29,10 +29,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 
-public class TileEntityDisassemblyStation extends TileEntity implements ISidedInventory
+public class TileEntityDisassemblyStation extends TileEntity implements ISidedInventory, ITickable
 {
     public static final int TICKS_DISASSEMBLY = 2400;
     public static final int INPUT = 0;
@@ -50,7 +52,7 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
     public int progress;
 
     @Override
-    public void updateEntity()
+    public void update()
     {
         boolean burning = fuelTicks > 0;
         boolean dirty = false;
@@ -60,7 +62,7 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
             --fuelTicks;
         }
 
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             if (fuelTicks != 0 || itemstacks[FUEL] != null && itemstacks[INPUT] != null)
             {
@@ -70,9 +72,9 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
 
                     if (itemstacks[FUEL] != null)
                     {
-                        --itemstacks[FUEL].stackSize;
+                    	itemstacks[FUEL].setCount(itemstacks[FUEL].getCount()-1);
 
-                        if (itemstacks[FUEL].stackSize <= 0)
+                        if (itemstacks[FUEL].getCount() <= 0)
                         {
                             itemstacks[FUEL] = null;
                         }
@@ -143,15 +145,15 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
 
             for (Map.Entry<ItemStack, Float> e : drops.entrySet())
             {
-                if (e.getValue() > worldObj.rand.nextFloat())
+                if (e.getValue() > world.rand.nextFloat())
                 {
                     addOutputItem(e.getKey());
                 }
             }
 
-            --itemstacks[INPUT].stackSize;
+            itemstacks[INPUT].setCount(itemstacks[INPUT].getCount()-1);
 
-            if (itemstacks[INPUT].stackSize <= 0)
+            if (itemstacks[INPUT].getCount() <= 0)
             {
                 itemstacks[INPUT] = null;
             }
@@ -171,18 +173,18 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
             }
             else if (ItemStack.areItemStacksEqual(stack, itemstacks[i]))
             {
-                int j = Math.min(stack.stackSize, stack.getMaxStackSize() - itemstacks[i].stackSize);
-                itemstacks[i].stackSize += j;
-                stack.stackSize -= j;
+                int j = Math.min(stack.getCount(), stack.getMaxStackSize() - itemstacks[i].getCount());
+                itemstacks[i].setCount(itemstacks[i].getCount() + j);
+                stack.setCount(stack.getCount() - j);
                 
-                if (stack.stackSize <= 0)
+                if (stack.getCount() <= 0)
                 {
                     return;
                 }
             }
         }
         
-        ALHelper.dropItem(worldObj, xCoord, yCoord, zCoord, stack, worldObj.rand);
+        ALHelper.dropItem(world, pos.getX(), pos.getY(), pos.getZ(), stack, world.rand);
     }
 
     public static Map<ItemStack, Float> getOutput(ItemStack stack)
@@ -258,14 +260,14 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
     {
         if (itemstacks[slot] != null)
         {
-            if (itemstacks[slot].stackSize <= amount)
+            if (itemstacks[slot].getCount() <= amount)
             {
-                return getStackInSlotOnClosing(slot);
+                return removeStackFromSlot(slot);
             }
 
             ItemStack stack = itemstacks[slot].splitStack(amount);
 
-            if (itemstacks[slot].stackSize <= 0)
+            if (itemstacks[slot].getCount() <= 0)
             {
                 itemstacks[slot] = null;
             }
@@ -276,47 +278,47 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
         return null;
     }
 
-    @Override
-    public ItemStack getStackInSlotOnClosing(int slot)
-    {
-        if (itemstacks[slot] != null)
-        {
-            ItemStack stack = itemstacks[slot];
-            itemstacks[slot] = null;
-
-            return stack;
-        }
-
-        return null;
-    }
+//    @Override//TODO
+//    public ItemStack getStackInSlotOnClosing(int slot)
+//    {
+//        if (itemstacks[slot] != null)
+//        {
+//            ItemStack stack = itemstacks[slot];
+//            itemstacks[slot] = null;
+//
+//            return stack;
+//        }
+//
+//        return null;
+//    }
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack)
     {
         itemstacks[slot] = stack;
 
-        if (stack != null && stack.stackSize > getInventoryStackLimit())
+        if (stack != null && stack.getCount() > getInventoryStackLimit())
         {
-            stack.stackSize = getInventoryStackLimit();
+            stack.setCount(getInventoryStackLimit());
         }
     }
 
-    @Override
-    public String getInventoryName()
-    {
-        return "gui.disassembly_station";
-    }
-
-    @Override
-    public boolean hasCustomInventoryName()
-    {
-        return false;
-    }
+//    @Override //TODO
+//    public String getInventoryName()
+//    {
+//        return "gui.disassembly_station";
+//    }
+//
+//    @Override
+//    public boolean hasCustomInventoryName()
+//    {
+//        return false;
+//    }
     
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1).expand(1.5, 1, 1.5);
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(),pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).expand(1.5, 1, 1.5);
     }
 
     @Override
@@ -333,7 +335,7 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
 
             if (slot >= 0 && slot < itemstacks.length)
             {
-                itemstacks[slot] = ItemStack.loadItemStackFromNBT(tag);
+                itemstacks[slot] = new ItemStack(tag);
             }
         }
 
@@ -343,9 +345,9 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+    	NBTTagCompound ret = super.writeToNBT(nbt);
         nbt.setShort("BurnTime", (short) fuelTicks);
         nbt.setShort("DisassemblyTime", (short) progress);
         NBTTagList list = new NBTTagList();
@@ -361,6 +363,7 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
         }
 
         nbt.setTag("Items", list);
+        return ret;
     }
 
     @Override
@@ -380,20 +383,20 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player)
+    public boolean isUsableByPlayer(EntityPlayer player)
     {
-        return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this && player.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) <= 64.0D;
+        return world.getTileEntity(pos) == this && player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
-    @Override
-    public void openInventory()
-    {
-    }
-
-    @Override
-    public void closeInventory()
-    {
-    }
+//    @Override //TODO
+//    public void openInventory()
+//    {
+//    }
+//
+//    @Override
+//    public void closeInventory()
+//    {
+//    }
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack)
@@ -401,22 +404,22 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
         return slot == INPUT && canDisassemble(stack) || slot == FUEL && isItemFuel(stack);
     }
 
-    @Override
-    public int[] getAccessibleSlotsFromSide(int side)
-    {
-        return side == 0 ? SLOTS_BOTTOM : side == 1 ? SLOTS_TOP : SLOTS_SIDES;
-    }
+//    @Override //TODO
+//    public int[] getAccessibleSlotsFromSide(int side)
+//    {
+//        return side == 0 ? SLOTS_BOTTOM : side == 1 ? SLOTS_TOP : SLOTS_SIDES;
+//    }
 
     @Override
-    public boolean canInsertItem(int slot, ItemStack stack, int side)
+    public boolean canInsertItem(int slot, ItemStack stack, EnumFacing direction)
     {
         return isItemValidForSlot(slot, stack);
     }
 
     @Override
-    public boolean canExtractItem(int slot, ItemStack stack, int side)
+    public boolean canExtractItem(int slot, ItemStack stack, EnumFacing direction)
     {
-        return side != 0 || slot != FUEL;
+        return direction != EnumFacing.UP || slot != FUEL; //TODO check correct side
     }
     
     private static final Map<ItemStack, Integer> FUELS = new HashMap<>();
@@ -446,7 +449,74 @@ public class TileEntityDisassemblyStation extends TileEntity implements ISidedIn
     
     static
     {
-        registerFuel(new ItemStack(Items.redstone), 300);
-        registerFuel(new ItemStack(Blocks.redstone_block), 2700);
+        registerFuel(new ItemStack(Items.REDSTONE), 300);
+        registerFuel(new ItemStack(Blocks.REDSTONE_BLOCK), 2700);
     }
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int[] getSlotsForFace(EnumFacing side) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

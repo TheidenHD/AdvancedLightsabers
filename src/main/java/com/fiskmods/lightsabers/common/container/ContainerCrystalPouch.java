@@ -50,7 +50,7 @@ public class ContainerCrystalPouch extends ContainerBasic
     @Override
     public boolean canInteractWith(EntityPlayer player)
     {
-        return inventory.isUseableByPlayer(player);
+        return inventory.isUsableByPlayer(player);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ContainerCrystalPouch extends ContainerBasic
                 return null;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.getCount() == 0)
             {
                 slot.putStack(null);
             }

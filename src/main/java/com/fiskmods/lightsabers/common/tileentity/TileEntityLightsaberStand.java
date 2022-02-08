@@ -11,9 +11,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class TileEntityLightsaberStand extends TileEntity
@@ -26,7 +26,7 @@ public class TileEntityLightsaberStand extends TileEntity
         if (isItemValid(stack) && !ItemStack.areItemStacksEqual(displayStack, stack))
         {
             displayStack = stack;
-            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+            //world.notifyBlockUpdate(pos);//TODO
             markDirty();
 
             return true;
@@ -94,7 +94,7 @@ public class TileEntityLightsaberStand extends TileEntity
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1).expand(0.5, 0.5, 0.5);
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).expand(0.5, 0.5, 0.5);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class TileEntityLightsaberStand extends TileEntity
 
         if (nbt.hasKey("DisplayStack", NBT.TAG_COMPOUND))
         {
-            displayStack = ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("DisplayStack"));
+            displayStack = new ItemStack(nbt.getCompoundTag("DisplayStack"));
         }
         else
         {
@@ -123,9 +123,9 @@ public class TileEntityLightsaberStand extends TileEntity
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+    	NBTTagCompound ret = super.writeToNBT(nbt);
 
         if (displayStack != null)
         {
@@ -139,20 +139,21 @@ public class TileEntityLightsaberStand extends TileEntity
             compound.setLong("UUIDLeast", owner.getLeastSignificantBits());
             nbt.setTag("Owner", compound);
         }
+        return ret;
     }
 
-    @Override
-    public Packet getDescriptionPacket()
-    {
-        NBTTagCompound syncData = new NBTTagCompound();
-        writeToNBT(syncData);
+//    @Override //TODO
+//    public Packet getDescriptionPacket()
+//    {
+//        NBTTagCompound syncData = new NBTTagCompound();
+//        writeToNBT(syncData);
+//
+//        return new SPacketUpdateTileEntity(pos, 1, syncData);
+//    }
 
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, syncData);
-    }
-
     @Override
-    public void onDataPacket(NetworkManager netManager, S35PacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager netManager, SPacketUpdateTileEntity packet)
     {
-        readFromNBT(packet.func_148857_g());
+        readFromNBT(packet.getNbtCompound());
     }
 }

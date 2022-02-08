@@ -4,11 +4,11 @@ import java.util.Locale;
 
 import com.google.common.reflect.TypeToken;
 
-import cpw.mods.fml.common.FMLContainer;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.InjectedModContainer;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
+import net.minecraftforge.fml.common.FMLContainer;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.InjectedModContainer;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraft.util.ResourceLocation;
 
 public class FiskRegistryEntry<T>
@@ -21,7 +21,7 @@ public class FiskRegistryEntry<T>
 
     private ResourceLocation registryName = null;
 
-    public final T setRegistryName(String name)
+    public final T setRegistryName(ResourceLocation name)
     {
         if (getRegistryName() != null)
         {
@@ -30,9 +30,9 @@ public class FiskRegistryEntry<T>
 
         delegate.setName(name);
 
-        int index = name.lastIndexOf(':');
-        String oldPrefix = index == -1 ? "" : name.substring(0, index);
-        name = index == -1 ? name : name.substring(index + 1);
+        int index = name.toString().lastIndexOf(':');
+        String oldPrefix = index == -1 ? "" : name.toString().substring(0, index);
+        String name2 = index == -1 ? name.toString() : name.toString().substring(index + 1);
 
         ModContainer mc = Loader.instance().activeModContainer();
         String prefix = mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase(Locale.ROOT);
@@ -43,19 +43,14 @@ public class FiskRegistryEntry<T>
             prefix = oldPrefix;
         }
 
-        registryName = new ResourceLocation(prefix, name);
+        registryName = new ResourceLocation(prefix, name2);
 
         return (T) this;
     }
 
-    public final T setRegistryName(ResourceLocation name)
-    {
-        return setRegistryName(name.toString());
-    }
-
     public final T setRegistryName(String domain, String name)
     {
-        return setRegistryName(domain + ":" + name);
+        return setRegistryName(new ResourceLocation(domain + ":" + name));
     }
 
     public final ResourceLocation getRegistryName()
@@ -65,7 +60,7 @@ public class FiskRegistryEntry<T>
 
     public final String getDomain()
     {
-        return registryName.getResourceDomain();
+        return registryName.getPath(); //TODO check
     }
 
     public final Class<T> getRegistryType()
@@ -76,6 +71,6 @@ public class FiskRegistryEntry<T>
     @Override
     public String toString()
     {
-        return delegate.name();
+        return delegate.name().toString();
     }
 }

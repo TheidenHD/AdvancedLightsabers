@@ -13,7 +13,7 @@ public interface IExtendedDamage
             @Override
             public boolean isPresent(DamageType type, DamageSource source)
             {
-                return source == DamageSource.fall || super.isPresent(type, source);
+                return source == DamageSource.FALL || super.isPresent(type, source);
             }
         }),
         INTERNAL(new DamageTypeCallback.Impl()
@@ -21,7 +21,7 @@ public interface IExtendedDamage
             @Override
             public boolean isPresent(DamageType type, DamageSource source)
             {
-                return source == DamageSource.drown || source == DamageSource.starve || super.isPresent(type, source);
+                return source == DamageSource.DROWN || source == DamageSource.STARVE || super.isPresent(type, source);
             }
         }),
         COLD,

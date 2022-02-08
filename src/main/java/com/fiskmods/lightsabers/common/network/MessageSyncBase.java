@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fiskmods.lightsabers.common.data.ALData;
-import com.fiskmods.lightsabers.common.data.ALPlayerData;
 import com.fiskmods.lightsabers.common.data.effect.StatusEffect;
 import com.google.common.collect.Lists;
 
@@ -24,7 +23,7 @@ public abstract class MessageSyncBase<REQ extends MessageSyncBase> extends Abstr
 
     protected MessageSyncBase(EntityPlayer player)
     {
-        playerData = ALPlayerData.getData(player).data;
+        //playerData = ALPlayerData.getData(player).data;//TODO
         activeEffects = StatusEffect.get(player);
     }
 

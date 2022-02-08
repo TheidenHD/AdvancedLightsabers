@@ -9,8 +9,8 @@ import com.fiskmods.lightsabers.common.item.ItemCrystal;
 import com.fiskmods.lightsabers.common.lightsaber.CrystalColor;
 import com.fiskmods.lightsabers.helper.ALRenderHelper;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -30,8 +30,8 @@ public class GuiCrystalPouch extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        fontRendererObj.drawString(I18n.format("gui.crystal_pouch"), 8, 6, 4210752);
-        fontRendererObj.drawString(I18n.format("container.inventory"), 8, ySize - 93, 4210752);
+        fontRenderer.drawString(I18n.format("gui.crystal_pouch"), 8, 6, 4210752);
+        fontRenderer.drawString(I18n.format("container.inventory"), 8, ySize - 93, 4210752);
     }
 
     @Override
@@ -43,8 +43,8 @@ public class GuiCrystalPouch extends GuiContainer
         
         ALRenderHelper.setupRenderItemIntoGUI();
         GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.125F);
-        boolean prevColor = itemRender.renderWithColor;
-        itemRender.renderWithColor = false;
+        //boolean prevColor = itemRender.renderWithColor; //TODO
+        //itemRender.renderWithColor = false;
         
         ContainerCrystalPouch container = (ContainerCrystalPouch) inventorySlots;
         InventoryCrystalPouch inventory = container.inventory;
@@ -56,11 +56,11 @@ public class GuiCrystalPouch extends GuiContainer
                 int[] pos = {8 + (i % 9) * 18, 18 + i / 9 * 18};
                 
                 GL11.glColor4f(1, 1, 1, 0.25F);
-                itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), ItemCrystal.create(CrystalColor.values()[i]), guiLeft + pos[0], guiTop + pos[1]);
+                itemRender.renderItemAndEffectIntoGUI(ItemCrystal.create(CrystalColor.values()[i]), guiLeft + pos[0], guiTop + pos[1]);
             }
         }
         
-        itemRender.renderWithColor = prevColor;
+        //itemRender.renderWithColor = prevColor; //TODO
         ALRenderHelper.finishRenderItemIntoGUI();
         GL11.glColor4f(1, 1, 1, 1);
     }

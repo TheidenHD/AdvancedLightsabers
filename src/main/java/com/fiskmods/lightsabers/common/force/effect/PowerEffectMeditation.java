@@ -10,13 +10,11 @@ import com.fiskmods.lightsabers.common.data.effect.Effect;
 import com.fiskmods.lightsabers.common.data.effect.StatusEffect;
 import com.fiskmods.lightsabers.helper.ALHelper;
 
-import cpw.mods.fml.relauncher.Side;
-import net.minecraft.command.IEntitySelector;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.TextFormatting;
 
 public class PowerEffectMeditation extends PowerEffectInstant
 {
@@ -37,7 +35,7 @@ public class PowerEffectMeditation extends PowerEffectInstant
     {
         return new String[]
         {
-            create("effect", format("%s %s%s", translateFormatted("forcepower.stat.multiply", ATTACK_DAMAGE, getModifierAmount(amplifier)), EnumChatFormatting.GRAY, 90), CASTER),
+            create("effect", format("%s %s%s", translateFormatted("forcepower.stat.multiply", ATTACK_DAMAGE, getModifierAmount(amplifier)), TextFormatting.GRAY, 90), CASTER),
             create("to", format("+%s %s", getAbsorption(amplifier), ABSORPTION), CASTER)
         };
     }

@@ -10,14 +10,14 @@ import com.fiskmods.lightsabers.common.force.PowerDesc;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Unit;
 import com.fiskmods.lightsabers.helper.ALRenderHelper;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 
 public class PowerEffectFortify extends PowerEffectStatus
 {
@@ -44,7 +44,7 @@ public class PowerEffectFortify extends PowerEffectStatus
     @SideOnly(Side.CLIENT)
     public void playSound(EntityPlayer player)
     {
-        Minecraft.getMinecraft().getSoundHandler().playSound(new MovingSoundStatusEffect(player, Effect.FORTIFY, ALSounds.ambient_fortify));
+        Minecraft.getMinecraft().getSoundHandler().playSound(new MovingSoundStatusEffect(player, Effect.FORTIFY, ALSounds.AMBIENT_FORTIFY));
     }
 
     @SideOnly(Side.CLIENT)
@@ -54,7 +54,7 @@ public class PowerEffectFortify extends PowerEffectStatus
         Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(Lightsabers.MODID, "textures/misc/force_shield.png"));
 
         GL11.glPushMatrix();
-        Tessellator tessellator = Tessellator.instance;
+        Tessellator tessellator = Tessellator.getInstance();
         boolean prevLighting = GL11.glGetBoolean(GL11.GL_LIGHTING);
         float prevWidth = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 
@@ -84,19 +84,19 @@ public class PowerEffectFortify extends PowerEffectStatus
         for (int i = 0; i < amount; ++i)
         {
             GL11.glPushMatrix();
-            tessellator.startDrawing(3);
-            tessellator.setColorRGBA(54 + (int) (146 * f), 84 + (int) (-84 * f), 181 + (int) (19 * f), 50);
+//            tessellator.startDrawing(3); //TODO
+//            tessellator.setColorRGBA(54 + (int) (146 * f), 84 + (int) (-84 * f), 181 + (int) (19 * f), 50);
 
             for (int j = 0; j < coverage / angleIncr; ++j)
             {
-                Vec3 vec3 = Vec3.createVectorHelper(0, range, 0);
+                Vec3d vec3 = new Vec3d(0, range, 0);
                 float pitch = 90 + j * angleIncr;
                 float yaw = 180;
                 float roll = i * spread;
-                vec3.rotateAroundX(-pitch * (float) Math.PI / 180.0F);
-                vec3.rotateAroundY(-yaw * (float) Math.PI / 180.0F);
-                vec3.rotateAroundZ(-roll * (float) Math.PI / 180.0F);
-                tessellator.addVertexWithUV(vec3.xCoord, vec3.yCoord, vec3.zCoord, 0, j / (coverage / angleIncr));
+//                vec3.rotateAroundX(-pitch * (float) Math.PI / 180.0F); //TODO
+//                vec3.rotateAroundY(-yaw * (float) Math.PI / 180.0F);
+//                vec3.rotateAroundZ(-roll * (float) Math.PI / 180.0F);
+//                tessellator.addVertexWithUV(vec3.x, vec3.x, vec3.x, 0, j / (coverage / angleIncr));
             }
 
             tessellator.draw();

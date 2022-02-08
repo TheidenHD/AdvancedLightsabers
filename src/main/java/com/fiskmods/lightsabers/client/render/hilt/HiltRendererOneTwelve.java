@@ -15,6 +15,6 @@ public class HiltRendererOneTwelve extends HiltRendererBase
     @Override
     public ResourceLocation getTexture(PartType type)
     {
-        return new ResourceLocation(getDomain(), String.format("textures/models/lightsaber/%s.png", getRegistryName().getResourcePath()));
+        return new ResourceLocation(getDomain(), String.format("textures/models/lightsaber/%s.png", getRegistryName().getPath()));
     }
 }

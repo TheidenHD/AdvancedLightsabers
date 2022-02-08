@@ -15,8 +15,8 @@ import com.fiskmods.lightsabers.common.tileentity.TileEntityLightsaberForge;
 import com.fiskmods.lightsabers.helper.ALRenderHelper;
 import com.google.common.collect.Iterables;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -40,8 +40,8 @@ public class GuiLightsaberForge extends GuiContainer
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         String s = I18n.format("gui.lightsaber_forge");
-        fontRendererObj.drawString(s, xSize / 2 - fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
-        fontRendererObj.drawString(I18n.format("container.inventory"), 8, ySize - 94, 4210752);
+        fontRenderer.drawString(s, xSize / 2 - fontRenderer.getStringWidth(s) / 2, 6, 4210752);
+        fontRenderer.drawString(I18n.format("container.inventory"), 8, ySize - 94, 4210752);
         
         ContainerLightsaberForge container = (ContainerLightsaberForge) inventorySlots;
         InventoryLightsaberForge inventory = container.craftMatrix;
@@ -56,12 +56,12 @@ public class GuiLightsaberForge extends GuiContainer
                 drawTexturedModalRect(131, 65, 176, 0, 26, 17);
                 
                 GL11.glTranslatef(0, 0, 300);
-                drawString(fontRendererObj, I18n.format("gui.lightsaber_forge.too_short"), 45, 64 - fontRendererObj.FONT_HEIGHT, 0xD74848);
+                drawString(fontRenderer, I18n.format("gui.lightsaber_forge.too_short"), 45, 64 - fontRenderer.FONT_HEIGHT, 0xD74848);
             }
             else
             {
                 GL11.glTranslatef(0, 0, 300);
-                drawString(fontRendererObj, I18n.format("%s cm", ItemStack.field_111284_a.format(data.getHeightCm())), 45, 64 - fontRendererObj.FONT_HEIGHT, -1);
+                drawString(fontRenderer, I18n.format("%s cm", ItemStack.DECIMALFORMAT.format(data.getHeightCm())), 45, 64 - fontRenderer.FONT_HEIGHT, -1);
             }
             
             GL11.glTranslatef(0, 0, -300);
@@ -81,7 +81,7 @@ public class GuiLightsaberForge extends GuiContainer
 
         if (data != null)
         {
-            float spin = mc.thePlayer.ticksExisted + partialTicks;
+            float spin = mc.player.ticksExisted + partialTicks;
 
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
@@ -126,13 +126,13 @@ public class GuiLightsaberForge extends GuiContainer
             
             if (hilt == null)
             {
-                hilt = Iterables.get(Hilt.REGISTRY, (mc.thePlayer.ticksExisted / 20) % Hilt.REGISTRY.getKeys().size());
+                hilt = (Hilt) Iterables.get(Hilt.REGISTRY, (mc.player.ticksExisted / 20) % Hilt.REGISTRY.getKeys().size());
             }
             
             ALRenderHelper.setupRenderItemIntoGUI();
             GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.125F);
-            boolean prevColor = itemRender.renderWithColor;
-            itemRender.renderWithColor = false;
+            //boolean prevColor = itemRender.renderWithColor;
+            //itemRender.renderWithColor = false; TODO
             
             if (hilt != null)
             {
@@ -141,7 +141,7 @@ public class GuiLightsaberForge extends GuiContainer
                     if (inventory.getStackInSlot(slot) == null)
                     {
                         int[] pos = ContainerLightsaberForge.SLOTS[slot];
-                        itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), ItemLightsaberPart.create(PartType.values()[slot], hilt), guiLeft + pos[0], guiTop + pos[1]);
+                        itemRender.renderItemAndEffectIntoGUI(ItemLightsaberPart.create(PartType.values()[slot], hilt), guiLeft + pos[0], guiTop + pos[1]);
                     }
                 }
                 
@@ -150,11 +150,11 @@ public class GuiLightsaberForge extends GuiContainer
                     int[] pos = ContainerLightsaberForge.SLOTS[5];
                     
                     GL11.glColor4f(1, 1, 1, 0.25F);
-                    itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), ItemCrystal.create(hilt.getColor()), guiLeft + pos[0], guiTop + pos[1]);
+                    itemRender.renderItemAndEffectIntoGUI(ItemCrystal.create(hilt.getColor()), guiLeft + pos[0], guiTop + pos[1]);
                 }
             }
             
-            itemRender.renderWithColor = prevColor;
+            //itemRender.renderWithColor = prevColor; TODO
             GL11.glColor4f(1, 1, 1, 1);
             ALRenderHelper.finishRenderItemIntoGUI();
         }

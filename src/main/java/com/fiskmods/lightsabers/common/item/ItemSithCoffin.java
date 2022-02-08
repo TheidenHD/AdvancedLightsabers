@@ -1,80 +1,92 @@
 package com.fiskmods.lightsabers.common.item;
 
+import com.fiskmods.lightsabers.common.block.BlockSithCoffin;
+
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class ItemSithCoffin extends ItemBlock
 {
-    public ItemSithCoffin(Block block)
+	public ItemSithCoffin(Block block)
     {
         super(block);
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side, float f, float f1, float f2)
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (world.isRemote)
+        if (worldIn.isRemote)
         {
-            return true;
+            return EnumActionResult.SUCCESS;
         }
-        else if (side != 1)
+        else if (facing != EnumFacing.UP)
         {
-            return false;
+            return EnumActionResult.FAIL;
         }
         else
         {
-            int dir = MathHelper.floor_double(player.rotationYaw * 4F / 360F + 0.5) & 3;
-            byte x1 = 0;
-            byte z1 = 0;
+                        
+        	IBlockState iblockstate = worldIn.getBlockState(pos);
+            Block block = iblockstate.getBlock();
+            boolean flag = block.isReplaceable(worldIn, pos);
 
-            if (dir == 0)
+            if (!flag)
             {
-                z1 = 1;
+                pos = pos.up();
             }
 
-            if (dir == 1)
-            {
-                x1 = -1;
-            }
-
-            if (dir == 2)
-            {
-                z1 = -1;
-            }
-
-            if (dir == 3)
-            {
-                x1 = 1;
-            }
+            int i = MathHelper.floor((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+            EnumFacing enumfacing = EnumFacing.byHorizontalIndex(i);
+            BlockPos blockpos = pos.offset(enumfacing);
+            ItemStack itemstack = player.getHeldItem(hand);
             
-            ++y;
-
-            if (player.canPlayerEdit(x, y, z, side, itemstack) && player.canPlayerEdit(x + x1, y, z + z1, side, itemstack))
+            if (player.canPlayerEdit(pos, facing, itemstack) && player.canPlayerEdit(blockpos, facing, itemstack))
             {
-                if (world.isAirBlock(x, y, z) && world.isAirBlock(x + x1, y, z + z1) && World.doesBlockHaveSolidTopSurface(world, x, y - 1, z) && World.doesBlockHaveSolidTopSurface(world, x + x1, y - 1, z + z1))
-                {
-                    world.setBlock(x, y, z, field_150939_a, dir, 3);
+            	IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
+                boolean flag1 = iblockstate1.getBlock().isReplaceable(worldIn, blockpos);
+                boolean flag2 = flag || worldIn.isAirBlock(pos);
+                boolean flag3 = flag1 || worldIn.isAirBlock(blockpos);
 
-                    if (world.getBlock(x, y, z) == field_150939_a)
+                if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isTopSolid() && worldIn.getBlockState(blockpos.down()).isTopSolid())
+                {
+                	IBlockState iblockstate2 = block.getDefaultState().withProperty(BlockSithCoffin.FACING, enumfacing);
+                	worldIn.setBlockState(pos, iblockstate2, 3);
+                	worldIn.setBlockState(blockpos, iblockstate2.withProperty(BlockSithCoffin.FACING, enumfacing.getOpposite()), 3);
+                    SoundType soundtype = iblockstate2.getBlock().getSoundType(iblockstate2, worldIn, pos, player);
+                    worldIn.playSound((EntityPlayer)null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                    
+                    worldIn.notifyNeighborsRespectDebug(pos, block, false);
+                    worldIn.notifyNeighborsRespectDebug(blockpos, iblockstate1.getBlock(), false);
+
+                    if (player instanceof EntityPlayerMP)
                     {
-                        world.setBlock(x + x1, y, z + z1, field_150939_a, dir + 8, 3);
+                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, itemstack);
                     }
 
-                    --itemstack.stackSize;
-                    return true;
+                    itemstack.shrink(1);
+                    return EnumActionResult.SUCCESS;
                 }
                 else
                 {
-                    return false;
+                    return EnumActionResult.FAIL;
                 }
             }
             else
             {
-                return false;
+                return EnumActionResult.FAIL;
             }
         }
     }

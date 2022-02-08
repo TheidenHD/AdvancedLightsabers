@@ -12,9 +12,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 import fiskfille.utils.helper.FiskPredicates;
-import net.minecraft.util.RegistrySimple;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.RegistrySimple;
 
-public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends RegistrySimple implements Iterable<T>
+public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends RegistrySimple<String, T>// implements Iterable<T>
 {
     protected final Map nameLookup;
 
@@ -34,6 +35,7 @@ public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends Registry
         return defaultValue;
     }
 
+    @Override //TODO check
     public void putObject(String key, T value)
     {
         key = namespace(key);
@@ -48,14 +50,8 @@ public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends Registry
             defaultValue = value;
         }
 
-        value.setRegistryName(key);
+        value.setRegistryName(new ResourceLocation(key));
         super.putObject(key, value);
-    }
-
-    @Override
-    public void putObject(Object key, Object value)
-    {
-        putObject((String) key, (T) value);
     }
 
     @Override
@@ -64,6 +60,7 @@ public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends Registry
         return HashBiMap.create();
     }
 
+    @Override
     public T getObject(String key)
     {
         return castDefault((T) super.getObject(namespace(key)));
@@ -74,6 +71,7 @@ public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends Registry
         return (String) nameLookup.get(value);
     }
 
+    @Override
     public boolean containsKey(String key)
     {
         return super.containsKey(namespace(key));
@@ -90,21 +88,9 @@ public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends Registry
         return key != null && key.indexOf(':') == -1 ? defaultDomain + ":" + key : key;
     }
 
-    @Override
-    public boolean containsKey(Object key)
-    {
-        return containsKey((String) key);
-    }
-
     public boolean containsValue(T value)
     {
         return registryObjects.values().contains(value);
-    }
-
-    @Override
-    public T getObject(Object key)
-    {
-        return getObject((String) key);
     }
 
     @Override
@@ -130,7 +116,7 @@ public class FiskSimpleRegistry<T extends FiskRegistryEntry<T>> extends Registry
 
     public T getRandom(Random rand)
     {
-        return Iterables.get(this, rand.nextInt(getKeys().size()));
+        return (T) Iterables.get(this, rand.nextInt(getKeys().size()));
     }
 
     public T getRandom()

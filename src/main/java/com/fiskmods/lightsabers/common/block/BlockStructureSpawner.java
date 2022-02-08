@@ -5,44 +5,47 @@ import java.util.Random;
 import org.lwjgl.input.Keyboard;
 
 import com.fiskmods.lightsabers.common.generator.structure.Structure;
-import com.fiskmods.lightsabers.common.generator.structure.StructureSithTomb;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockStructureSpawner extends BlockBasic
 {
     public BlockStructureSpawner()
     {
-        super(Material.rock);
+        super(Material.ROCK);
     }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z)
-    {
-        if (Keyboard.isKeyDown(Keyboard.KEY_M))
-        {
-            spawnStructure(world, x, y, z);
-        }
+//    @Override //TODO
+//    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, BlockPos pos)
+//    {
+//        if (Keyboard.isKeyDown(Keyboard.KEY_M))
+//        {
+//            spawnStructure(world, pos);
+//        }
+//
+//        return super.getCollisionBoundingBoxFromPool(world, pos);
+//    }
 
-        return super.getCollisionBoundingBoxFromPool(world, x, y, z);
-    }
-
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int metadata, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        spawnStructure(world, x, y, z);
+        spawnStructure(world, pos);
         return true;
     }
 
-    private void spawnStructure(World world, int x, int y, int z)
+    private void spawnStructure(World world, BlockPos pos)
     {
-        Structure structure = new StructureSithTomb(world, x, y, z);
-        Random rand = new Random();
+        //Structure structure = new StructureSithTomb(world, pos); //TODO
+        //Random rand = new Random();
 
-//		rand.setSeed(574935734654L);
-        structure.spawnStructure(rand);
+//		//rand.setSeed(574935734654L);
+        //structure.spawnStructure(rand);
     }
 }

@@ -4,7 +4,7 @@ import com.fiskmods.lightsabers.Lightsabers;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+//import net.minecraft.client.renderer.texture.IIconRegister;
 
 public class BlockBasic extends Block
 {
@@ -19,9 +19,9 @@ public class BlockBasic extends Block
         return this;
     }
 
-    @Override
-    public void registerBlockIcons(IIconRegister par1IIconRegister)
-    {
-        blockIcon = par1IIconRegister.registerIcon(Lightsabers.MODID + ":" + getUnlocalizedName().substring(5));
-    }
+//    @Override //TODO
+//    public void registerBlockIcons(IIconRegister par1IIconRegister)
+//    {
+//        blockIcon = par1IIconRegister.registerIcon(Lightsabers.MODID + ":" + getUnlocalizedName().substring(5));
+//    }
 }

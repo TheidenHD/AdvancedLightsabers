@@ -2,8 +2,8 @@ package fiskfille.utils.helper;
 
 import java.util.Random;
 
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,8 +16,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class FiskServerUtils
@@ -80,42 +82,42 @@ public class FiskServerUtils
     {
         if (entity.isPotionActive(potion))
         {
-            entity.removePotionEffect(potion.id);
+            entity.removePotionEffect(potion);
             return true;
         }
 
         return false;
     }
 
-    public static boolean canEntityEdit(Entity entity, int x, int y, int z, int side, ItemStack heldItem)
+    public static boolean canEntityEdit(Entity entity, BlockPos pos, EnumFacing side, ItemStack heldItem)
     {
         if (entity instanceof EntityPlayer)
         {
-            return ((EntityPlayer) entity).canPlayerEdit(x, y, z, side, heldItem);
+            return ((EntityPlayer) entity).canPlayerEdit(pos, side, heldItem);
         }
         else if (entity instanceof EntityLivingBase)
         {
-            return entity.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
+            return entity.getEntityWorld().getGameRules().getBoolean("mobGriefing");
         }
 
         return false;
     }
 
-    public static boolean canEntityEdit(Entity entity, MovingObjectPosition mop, ItemStack heldItem)
+    public static boolean canEntityEdit(Entity entity, RayTraceResult mop, ItemStack heldItem)
     {
-        return canEntityEdit(entity, mop.blockX, mop.blockY, mop.blockZ, mop.sideHit, heldItem);
+        return canEntityEdit(entity, mop.getBlockPos(), mop.sideHit, heldItem);
     }
 
     public static boolean isMeleeDamage(DamageSource source)
     {
-        return source.getEntity() != null && !source.isMagicDamage() && !source.isExplosion() && !source.isProjectile() && !source.isFireDamage();
+        return source.getTrueSource() != null && !source.isMagicDamage() && !source.isExplosion() && !source.isProjectile() && !source.isFireDamage();
     }
 
     public static boolean isEntityLookingAt(EntityLivingBase observer, Entity entity, double accuracy)
     {
-        Vec3 vec3 = observer.getLookVec().normalize();
-        Vec3 vec31 = Vec3.createVectorHelper(entity.posX - observer.posX, entity.boundingBox.minY + entity.height / 2.0F - (observer.posY + observer.getEyeHeight()), entity.posZ - observer.posZ);
-        double d0 = vec31.lengthVector();
+        Vec3d vec3 = observer.getLookVec().normalize();
+        Vec3d vec31 = new Vec3d(entity.posX - observer.posX, entity.getCollisionBoundingBox().minY + entity.height / 2.0F - (observer.posY + observer.getEyeHeight()), entity.posZ - observer.posZ);
+        double d0 = vec31.length();
         double d1 = vec3.dotProduct(vec31.normalize());
 
         return d1 > 1 - accuracy / d0;
@@ -175,9 +177,9 @@ public class FiskServerUtils
         return null;
     }
 
-    public static void dropItems(World world, int x, int y, int z)
+    public static void dropItems(World world, BlockPos pos)
     {
-        TileEntity tile = world.getTileEntity(x, y, z);
+        TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof IInventory)
         {
@@ -193,28 +195,28 @@ public class FiskServerUtils
                     float f1 = rand.nextFloat() * 0.8F + 0.1F;
                     float f2 = rand.nextFloat() * 0.8F + 0.1F;
 
-                    while (itemstack.stackSize > 0)
+                    while (itemstack.getCount() > 0)
                     {
                         int j = rand.nextInt(21) + 10;
 
-                        if (j > itemstack.stackSize)
+                        if (j > itemstack.getCount())
                         {
-                            j = itemstack.stackSize;
+                            j = itemstack.getCount();
                         }
 
-                        itemstack.stackSize -= j;
-                        EntityItem entityitem = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
+                        itemstack.setCount(itemstack.getCount()-j);
+                        EntityItem entityitem = new EntityItem(world, pos.getX() + f, pos.getY() + f1, pos.getZ() + f2, new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
 
                         if (itemstack.hasTagCompound())
                         {
-                            entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
+                            entityitem.getItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
                         }
 
                         float f3 = 0.05F;
                         entityitem.motionX = rand.nextGaussian() * f3;
                         entityitem.motionY = rand.nextGaussian() * f3 + 0.2;
                         entityitem.motionZ = rand.nextGaussian() * f3;
-                        world.spawnEntityInWorld(entityitem);
+                        world.spawnEntity(entityitem);
                     }
                 }
             }

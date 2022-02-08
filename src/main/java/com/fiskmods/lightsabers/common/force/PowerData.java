@@ -8,7 +8,7 @@ import java.util.Map;
 import com.fiskmods.lightsabers.common.data.ALData;
 import com.fiskmods.lightsabers.common.data.ALData.DataFactory;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import fiskfille.utils.helper.NBTHelper;
 import fiskfille.utils.helper.NBTHelper.ISaveAdapter;
 import fiskfille.utils.helper.NBTHelper.ISerializableObject;

@@ -6,9 +6,9 @@ import com.fiskmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.fiskmods.lightsabers.common.item.ItemLightsaberBase;
 import com.fiskmods.lightsabers.common.tileentity.TileEntityLightsaberForge;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -17,7 +17,7 @@ import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+//import net.minecraft.util.IIcon;//TODO
 
 public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsaberForge>
 {
@@ -50,9 +50,9 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
         {
             ItemStack itemstack = craftMatrix.getStackInSlot(5);
             
-            if (itemstack != null && itemstack.getItem() == Items.fish)
+            if (itemstack != null && itemstack.getItem() == Items.FISH)
             {
-                result.getTagCompound().setString(ALConstants.TAG_LIGHTSABER_SPECIAL, Item.itemRegistry.getNameForObject(itemstack.getItem()));
+                result.getTagCompound().setString(ALConstants.TAG_LIGHTSABER_SPECIAL, Item.REGISTRY.getNameForObject(itemstack.getItem()).getPath());//TODO check
             }
         }
         
@@ -64,15 +64,15 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
     {
         super.onContainerClosed(player);
 
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             for (int i = 0; i < craftMatrix.getSizeInventory(); ++i)
             {
-                ItemStack itemstack = craftMatrix.getStackInSlotOnClosing(i);
+                ItemStack itemstack = craftMatrix.getStackInSlot(i); //TODO check
 
                 if (itemstack != null)
                 {
-                    player.dropPlayerItemWithRandomChoice(itemstack, false);
+                    player.dropItem(itemstack, false);
                 }
             }
         }
@@ -139,7 +139,7 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
                 return null;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.getCount() == 0)
             {
                 slot.putStack((ItemStack) null);
             }
@@ -148,21 +148,21 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.getCount() == itemstack.getCount())
             {
                 return null;
             }
 
-            slot.onPickupFromSlot(player, itemstack1);
+            slot.onTake(player, itemstack1);
         }
 
         return itemstack;
     }
 
     @Override
-    public boolean func_94530_a(ItemStack itemstack, Slot slot)
+    public boolean canMergeSlot(ItemStack itemstack, Slot slot)
     {
-        return slot.inventory != craftResult && super.func_94530_a(itemstack, slot);
+        return slot.inventory != craftResult && super.canMergeSlot(itemstack, slot);
     }
     
     private class Input extends Slot
@@ -185,7 +185,7 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
             
             if (!(item instanceof ILightsaberComponent) || !((ILightsaberComponent) item).isCompatibleSlot(itemstack, getSlotIndex()))
             {
-                if (getSlotIndex() != 5 || item != Items.fish)
+                if (getSlotIndex() != 5 || item != Items.FISH)
                 {
                     return false;
                 }
@@ -204,12 +204,12 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
             return true;
         }
         
-        @Override
-        @SideOnly(Side.CLIENT)
-        public IIcon getBackgroundIconIndex()
-        {
-            return getSlotIndex() == 6 || getSlotIndex() == 7 ? ItemFocusingCrystal.outlineIcon : null;
-        }
+//        @Override //TODO
+//        @SideOnly(Side.CLIENT)
+//        public IIcon getBackgroundIconIndex()
+//        {
+//            return getSlotIndex() == 6 || getSlotIndex() == 7 ? ItemFocusingCrystal.outlineIcon : null;
+//        }
     }
     
     private class Output extends Slot
@@ -232,7 +232,7 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
         }
 
         @Override
-        public void onPickupFromSlot(EntityPlayer player, ItemStack itemstack)
+        public ItemStack onTake(EntityPlayer player, ItemStack itemstack)
         {
             FMLCommonHandler.instance().firePlayerCraftingEvent(player, itemstack, craftMatrix);
             onCrafting(itemstack);
@@ -248,6 +248,7 @@ public class ContainerLightsaberForge extends ContainerBasic<TileEntityLightsabe
             }
             
             ItemLightsaberBase.setActive(itemstack, false);
+            return itemstack;
         }
     }
 }

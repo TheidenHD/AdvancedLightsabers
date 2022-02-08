@@ -2,6 +2,8 @@ package com.fiskmods.lightsabers.common.command;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.fiskmods.lightsabers.common.data.ALData;
 import com.fiskmods.lightsabers.common.force.Power;
 import com.fiskmods.lightsabers.common.force.PowerData;
@@ -14,10 +16,12 @@ import com.google.common.collect.Lists;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.storage.WorldInfo;
@@ -25,7 +29,7 @@ import net.minecraft.world.storage.WorldInfo;
 public class CommandForce extends CommandBase
 {
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "force";
     }
@@ -37,16 +41,16 @@ public class CommandForce extends CommandBase
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.force.usage";
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         World world = sender.getEntityWorld();
-        String usage = getCommandUsage(sender);
+        String usage = getUsage(sender);
 
         if (args.length > 0)
         {
@@ -66,7 +70,7 @@ public class CommandForce extends CommandBase
 
                     if (args.length == 3)
                     {
-                        player = getPlayer(sender, args[2]);
+                        player = getPlayer(server, sender, args[2]);
                     }
                     else
                     {
@@ -75,7 +79,7 @@ public class CommandForce extends CommandBase
 
                     if (ALData.BASE_POWER.set(player, ALHelper.getBasePower(player)))
                     {
-                        func_152373_a(sender, this, String.format("commands.force.%s.%s.success", func, arg), player.getCommandSenderName());
+                    	notifyCommandListener(sender, this, String.format("commands.force.%s.%s.success", func, arg), player.getCommandSenderEntity());
                         return;
                     }
                 }
@@ -86,14 +90,14 @@ public class CommandForce extends CommandBase
 
                     if (args.length == 4)
                     {
-                        player = getPlayer(sender, args[3]);
+                        player = getPlayer(server, sender, args[3]);
                     }
                     else
                     {
                         player = getCommandSenderAsPlayer(sender);
                     }
 
-                    float amount = parseIntWithMin(sender, args[2], 0);
+                    float amount = parseInt(args[2], 0);
                     float f = func.equals("xp") ? ALData.FORCE_XP.get(player) : 0;
 
                     if (arg.equals("give"))
@@ -111,7 +115,7 @@ public class CommandForce extends CommandBase
 
                     f = Math.max(f, 0);
 
-                    List translationKeys = arg.equals("set") ? Lists.newArrayList(player.getCommandSenderName(), MathHelper.floor_float(amount)) : Lists.newArrayList(MathHelper.floor_float(amount), player.getCommandSenderName());
+                    List translationKeys = arg.equals("set") ? Lists.newArrayList(player.getCommandSenderEntity(), MathHelper.floor(amount)) : Lists.newArrayList(MathHelper.floor(amount), player.getCommandSenderEntity());
 
                     if (func.equals("xp"))
                     {
@@ -119,10 +123,10 @@ public class CommandForce extends CommandBase
                     }
                     else
                     {
-                        ALData.BASE_POWER.set(player, (byte) MathHelper.floor_float(f));
+                        ALData.BASE_POWER.set(player, (byte) MathHelper.floor(f));
                     }
 
-                    func_152373_a(sender, this, String.format("commands.force.%s.%s.success", func, arg), translationKeys.toArray());
+                    notifyCommandListener(sender, this, String.format("commands.force.%s.%s.success", func, arg), translationKeys.toArray());
                     return;
                 }
 
@@ -136,7 +140,7 @@ public class CommandForce extends CommandBase
 
                     if (args.length == 4)
                     {
-                        player = getPlayer(sender, args[3]);
+                        player = getPlayer(server, sender, args[3]);
                     }
                     else
                     {
@@ -163,17 +167,17 @@ public class CommandForce extends CommandBase
                                 }
                             }
 
-                            func_152373_a(sender, this, "commands.force.power.give.success.all", player.getCommandSenderName());
+                            notifyCommandListener(sender, this, "commands.force.power.give.success.all", player.getCommandSenderEntity());
                         }
                         else
                         {
                             if (!PowerManager.unlockPower(player, power))
                             {
-                                throw new CommandException("commands.force.power.alreadyHave", player.getCommandSenderName(), args[2]);
+                                throw new CommandException("commands.force.power.alreadyHave", player.getCommandSenderEntity(), args[2]);
                             }
                             else
                             {
-                                func_152373_a(sender, this, "commands.force.power.give.success.one", player.getCommandSenderName(), power.getChatFormattedName());
+                            	notifyCommandListener(sender, this, "commands.force.power.give.success.one", player.getCommandSenderEntity(), power.getChatFormattedName());
                             }
                         }
 
@@ -193,17 +197,17 @@ public class CommandForce extends CommandBase
                                 }
                             }
 
-                            func_152373_a(sender, this, "commands.force.power.take.success.all", player.getCommandSenderName());
+                            notifyCommandListener(sender, this, "commands.force.power.take.success.all", player.getCommandSenderEntity());
                         }
                         else
                         {
                             if (!PowerManager.removePower(player, power))
                             {
-                                throw new CommandException("commands.force.power.dontHave", player.getCommandSenderName(), args[2]);
+                                throw new CommandException("commands.force.power.dontHave", player.getCommandSenderEntity(), args[2]);
                             }
                             else
                             {
-                                func_152373_a(sender, this, "commands.force.power.take.success.one", power.getChatFormattedName(), player.getCommandSenderName());
+                            	notifyCommandListener(sender, this, "commands.force.power.take.success.one", power.getChatFormattedName(), player.getCommandSenderEntity());
                             }
                         }
 
@@ -217,7 +221,7 @@ public class CommandForce extends CommandBase
             }
             else if (func.equals("structure"))
             {
-                if (sender.canCommandSenderUseCommand(3, getCommandName()))
+                if (sender.canUseCommand(3, getName()))
                 {
                     if (arg.equals("locate") ? (args.length == 4 || args.length == 6) : (args.length == 3 || args.length == 5))
                     {
@@ -233,13 +237,13 @@ public class CommandForce extends CommandBase
                         }
 
                         boolean targetAll = arg.equals("locate") && args[2].equals("*");
-                        int x = sender.getPlayerCoordinates().posX;
-                        int z = sender.getPlayerCoordinates().posZ;
+                        int x = sender.getCommandSenderEntity().getPosition().getX();
+                        int z = sender.getCommandSenderEntity().getPosition().getZ();
 
                         if (arg.equals("locate") ? args.length == 6 : args.length == 5)
                         {
-                            x = MathHelper.floor_double(func_110666_a(sender, x, arg.equals("locate") ? args[4] : args[3]));
-                            z = MathHelper.floor_double(func_110666_a(sender, z, arg.equals("locate") ? args[5] : args[4]));
+                            x = MathHelper.floor(parseDouble(x, arg.equals("locate") ? args[4] : args[3], true));
+                            z = MathHelper.floor(parseDouble(z, arg.equals("locate") ? args[5] : args[4], true));
                         }
 
                         if (structure == null && !targetAll)
@@ -251,17 +255,17 @@ public class CommandForce extends CommandBase
                         {
                             WorldInfo info = world.getWorldInfo();
 
-                            if (info.getTerrainType() == WorldType.FLAT || !info.isMapFeaturesEnabled() || world.provider.dimensionId != 0)
+                            if (info.getTerrainType() == WorldType.FLAT || !info.isMapFeaturesEnabled() || world.provider.getDimension() != 0)
                             {
                                 throw new CommandException("commands.force.structure.locate.doesNotGenerate", args[2]);
                             }
 
-                            new Thread(new StructureLocator(this, sender, structure, targetAll, parseIntWithMin(sender, args[3], 0), x, z)).start();
+                            new Thread(new StructureLocator(this, sender, structure, targetAll, parseInt(args[3], 0), x, z)).start();
                             return;
                         }
                         else if (arg.equals("generate"))
                         {
-                            if (!world.blockExists(x, 64, z))
+                            if (!world.isValid( new BlockPos(x, 64, z)))
                             {
                                 throw new CommandException("commands.force.structure.generate.outOfWorld", arg);
                             }
@@ -269,7 +273,7 @@ public class CommandForce extends CommandBase
                             try
                             {
                                 WorldGeneratorStructures.generateStructure(world, x, z, structure);
-                                func_152373_a(sender, this, "commands.force.structure.generate.success", ALHelper.getUnconventionalName(structure.name()), x, z);
+                                notifyCommandListener(sender, this, "commands.force.structure.generate.success", ALHelper.getUnconventionalName(structure.name()), x, z);
 
                                 return;
                             }
@@ -298,7 +302,7 @@ public class CommandForce extends CommandBase
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args , @Nullable BlockPos targetPos)
     {
         World world = sender.getEntityWorld();
 
@@ -318,7 +322,7 @@ public class CommandForce extends CommandBase
                     }
                     else if (args.length == 4)
                     {
-                        return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+                        return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
                     }
                 }
                 else if (args[0].equals("base"))
@@ -329,7 +333,7 @@ public class CommandForce extends CommandBase
                     }
                     else if (args.length == 4 || args.length == 3 && args[1].equals("reset"))
                     {
-                        return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+                        return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
                     }
                 }
                 else if (args[0].equals("power"))
@@ -351,7 +355,7 @@ public class CommandForce extends CommandBase
                     }
                     else if (args.length == 4)
                     {
-                        return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+                        return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
                     }
                 }
                 else if (args[0].equals("structure"))

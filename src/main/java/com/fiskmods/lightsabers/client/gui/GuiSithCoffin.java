@@ -5,8 +5,8 @@ import org.lwjgl.opengl.GL11;
 import com.fiskmods.lightsabers.common.container.ContainerSithCoffin;
 import com.fiskmods.lightsabers.common.tileentity.TileEntitySithCoffin;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -28,9 +28,9 @@ public class GuiSithCoffin extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        String s = tileentity.hasCustomInventoryName() ? tileentity.getInventoryName() : I18n.format(tileentity.getInventoryName(), new Object[0]);
-        fontRendererObj.drawString(s, 8, 6, 4210752);
-        fontRendererObj.drawString(I18n.format("container.inventory", new Object[0]), 8, ySize - 94, 4210752);
+        String s = tileentity.hasCustomName() ? tileentity.getName() : I18n.format(tileentity.getDisplayName().getUnformattedText(), new Object[0]);//TODO dobelcheck
+        fontRenderer.drawString(s, 8, 6, 4210752);
+        fontRenderer.drawString(I18n.format("container.inventory", new Object[0]), 8, ySize - 94, 4210752);
     }
 
     @Override

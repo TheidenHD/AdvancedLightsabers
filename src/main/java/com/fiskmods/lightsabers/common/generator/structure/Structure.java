@@ -5,19 +5,21 @@ import java.util.Random;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraft.tileentity.TileEntityLockableLoot;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class Structure
 {
-    protected final World worldObj;
-    protected int xCoord;
-    protected int yCoord;
-    protected int zCoord;
+    protected final World world;
+    protected BlockPos pos;
 
     protected boolean mirrorX;
     protected boolean mirrorZ;
@@ -26,42 +28,40 @@ public abstract class Structure
     protected boolean simulate = false;
     protected List<StructurePoint> coverage = Lists.newArrayList();
 
-    public Structure(World world, int x, int y, int z)
+    public Structure(World world, BlockPos pos)
     {
-        worldObj = world;
-        xCoord = x;
-        yCoord = y;
-        zCoord = z;
+        this.world = world;
+        this.pos = pos;
     }
 
     public abstract void spawnStructure(Random random);
 
-    public void setBlock(Block block, int metadata, int x, int y, int z)
+    public void setBlockState(IBlockState block, EnumFacing metadata, BlockPos pos2)
     {
-        if (mirrorX && x > 0)
+        if (mirrorX && pos2.getX() > 0)
         {
-            setBlock(xCoord - x, yCoord + y, zCoord + z, block, StructureHelper.mirrorMetadata(block, metadata));
+            setBlockState(pos.add(-pos2.getX(), pos2.getY(), pos2.getZ()), block, StructureHelper.mirrorMetadata(block.getBlock(), metadata));
         }
 
-        if (mirrorZ && z > 0)
+        if (mirrorZ && pos2.getZ() > 0)
         {
-            setBlock(xCoord + x, yCoord + y, zCoord - z, block, StructureHelper.mirrorMetadata(block, metadata));
+        	setBlockState(pos.add(pos2.getX(), pos2.getY(), -pos2.getZ()), block, StructureHelper.mirrorMetadata(block.getBlock(), metadata));
         }
 
-        setBlock(xCoord + x, yCoord + y, zCoord + z, block, metadata);
+        setBlockState(pos.add(pos2), block, metadata);
     }
 
-    private void setBlock(int x, int y, int z, Block block, int metadata)
+    private void setBlockState(BlockPos pos2, IBlockState block, EnumFacing metadata)
     {
-        Block block1 = null;
+    	IBlockState block1 = null;
         
-        if (simulate || ((block1 = worldObj.getBlock(x, y, z)) != block || worldObj.getBlockMetadata(x, y, z) != metadata) && block1.getBlockHardness(worldObj, x, y, z) != -1)
+        if (simulate || ((block1 = world.getBlockState(pos)) != block || (EnumFacing)world.getBlockState(pos).getValue(BlockHorizontal.FACING) != metadata) && block1.getBlockHardness(world, pos) != -1)
         {
             if (simulate)
             {
-                maxY = Math.max(maxY, y);
+                maxY = Math.max(maxY, pos.getY());
 
-                StructurePoint p = new StructurePoint(x, y, z);
+                StructurePoint p = new StructurePoint(pos);
 
                 if (coverage.contains(p))
                 {
@@ -71,7 +71,7 @@ public abstract class Structure
 
                         if (p.equals(p1))
                         {
-                            p1.posY = Math.min(p1.posY, y);
+                            p1 = new StructurePoint(p1.getX(), Math.min(p1.getY(), pos.getY()), p1.getZ());
                             break;
                         }
                     }
@@ -83,30 +83,28 @@ public abstract class Structure
             }
             else
             {
-                placeBlock(x, y, z, block, metadata, 2);
+                placeBlockState(pos, block, metadata, 2);
             }
         }
     }
     
-    public void placeBlock(int x, int y, int z, Block block, int metadata, int flags)
+    public void placeBlockState(BlockPos pos2, IBlockState block, EnumFacing metadata, int flags)
     {
-        worldObj.setBlock(x, y, z, block, metadata, flags);
+        world.setBlockState(pos2, block, flags);//TODO metadata
     }
 
-    protected boolean generateStructureChestContents(Random random, int x, int y, int z, WeightedRandomChestContent[] chestContent, int itemsToGenerate)
+    protected boolean generateStructureChestContents(Random random, BlockPos pos2, ResourceLocation chestContent)
     {
-        int i = xCoord + x;
-        int j = yCoord + y;
-        int k = zCoord + z;
+    	BlockPos i = pos.add(pos2);
 
-        if (worldObj.getBlock(i, j, k) != Blocks.chest)
+        if (world.getBlockState(i) != Blocks.CHEST)
         {
-            worldObj.setBlock(i, j, k, Blocks.chest, 0, 2);
-            TileEntityChest tile = (TileEntityChest) worldObj.getTileEntity(i, j, k);
-
-            if (tile != null)
+            world.setBlockState(i, Blocks.CHEST.correctFacing(world, pos2, Blocks.CHEST.getDefaultState()), 2);
+            TileEntity tile = world.getTileEntity(i);
+            
+            if (tile instanceof TileEntityChest)
             {
-                WeightedRandomChestContent.generateChestContents(random, chestContent, tile, itemsToGenerate);
+                ((TileEntityChest)tile).setLootTable(chestContent, random.nextLong());
             }
 
             return true;
@@ -117,19 +115,17 @@ public abstract class Structure
         }
     }
 
-    protected boolean fillStructureInventory(Block block, Random random, int x, int y, int z, WeightedRandomChestContent[] chestContent, int itemsToGenerate)
+    protected boolean fillStructureInventory(IBlockState block, Random random, BlockPos pos2, ResourceLocation chestContent)
     {
-        int i = xCoord + x;
-        int j = yCoord + y;
-        int k = zCoord + z;
+    	BlockPos i = pos.add(pos2);
 
-        if (worldObj.getBlock(i, j, k) == block)
+        if (world.getBlockState(i) == block)
         {
-            IInventory inventory = (IInventory) worldObj.getTileEntity(i, j, k);
+        	TileEntity inventory = world.getTileEntity(i);
 
-            if (inventory != null)
+            if (inventory instanceof TileEntityLockableLoot)
             {
-                WeightedRandomChestContent.generateChestContents(random, chestContent, inventory, itemsToGenerate);
+                ((TileEntityLockableLoot)inventory).setLootTable(chestContent, random.nextLong());
             }
 
             return true;

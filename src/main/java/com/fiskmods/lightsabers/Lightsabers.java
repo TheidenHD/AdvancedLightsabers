@@ -8,25 +8,28 @@ import com.fiskmods.lightsabers.common.item.ModItems;
 import com.fiskmods.lightsabers.common.network.ALNetworkManager;
 import com.fiskmods.lightsabers.common.proxy.CommonProxy;
 
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
+import com.fiskmods.lightsabers.handlers.RegistryHandler;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import fiskfille.utils.FiskUtils;
 import fiskfille.utils.FiskUtils.Hook;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = Lightsabers.MODID, name = Lightsabers.NAME, version = Lightsabers.VERSION, dependencies = "required-after:Forge@[10.13.4.1558,);after:" + ALConstants.BATTLEGEAR + ";after:" + ALConstants.DYNAMIC_LIGHTS, guiFactory = "com.fiskmods.lightsabers.client.gui.GuiFactoryAL")
-public class Lightsabers
+@Mod(modid = Lightsabers.MODID, name = Lightsabers.NAME, version = Lightsabers.VERSION, dependencies = "required-after:forge@[14.23.0.2486,)", guiFactory = "com.fiskmods.lightsabers.client.gui.GuiFactoryAL")
+public class Lightsabers //;after: + ALConstants.BATTLEGEAR + ";after:" + ALConstants.DYNAMIC_LIGHTS
 {
     public static final String NAME = "Advanced Lightsabers";
     public static final String MODID = "lightsabers";
@@ -35,15 +38,17 @@ public class Lightsabers
     @Instance
     public static Lightsabers instance;
 
+    public static SimpleNetworkWrapper network;
+
     @SidedProxy(clientSide = "com.fiskmods.lightsabers.common.proxy.ClientProxy", serverSide = "com.fiskmods.lightsabers.common.proxy.CommonProxy")
     public static CommonProxy proxy;
 
     public static final CreativeTabs CREATIVE_TAB = new CreativeTabs(MODID)
     {
         @Override
-        public Item getTabIconItem()
+        public ItemStack createIcon()
         {
-            return ModItems.lightsaber;
+            return new ItemStack(ModItems.lightsaber);
         }
     };
 
@@ -54,7 +59,7 @@ public class Lightsabers
     public void preInit(FMLPreInitializationEvent event)
     {
         FiskUtils.hook(Hook.PREINIT);
-        
+
         isBattlegearLoaded = Loader.isModLoaded(ALConstants.BATTLEGEAR);
         isDynamicLightsLoaded = Loader.isModLoaded(ALConstants.DYNAMIC_LIGHTS);
 
@@ -66,7 +71,9 @@ public class Lightsabers
         {
             config.save();
         }
-        
+
+        RegistryHandler.preInitRegistries(event);
+
         proxy.preInit();
     }
 
@@ -74,9 +81,10 @@ public class Lightsabers
     public void init(FMLInitializationEvent event)
     {
         FiskUtils.hook(Hook.INIT);
+        RegistryHandler.initRegistries();
         proxy.init();
     }
-    
+
     @EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
@@ -84,8 +92,8 @@ public class Lightsabers
     }
 
     @EventHandler
-    public void serverStart(FMLServerStartingEvent event)
+    public void serverInit(FMLServerStartingEvent event)
     {
-        event.registerServerCommand(new CommandForce());
+        RegistryHandler.serverRegistries(event);
     }
 }

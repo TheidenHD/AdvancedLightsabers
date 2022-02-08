@@ -1,12 +1,14 @@
 package com.fiskmods.lightsabers.common.entity.ai;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public abstract class EntityAIBlockInteract extends EntityAIBase
 {
@@ -28,23 +30,23 @@ public abstract class EntityAIBlockInteract extends EntityAIBase
     @Override
     public boolean shouldExecute()
     {
-        if (!theEntity.isCollidedHorizontally)
+        if (!theEntity.collidedHorizontally)
         {
             return false;
         }
         else
         {
-            PathNavigate pathnavigate = theEntity.getNavigator();
-            PathEntity pathentity = pathnavigate.getPath();
+        	PathNavigateGround pathnavigate = (PathNavigateGround)theEntity.getNavigator();
+            Path pathentity = pathnavigate.getPath();
 
-            if (pathentity != null && !pathentity.isFinished() && pathnavigate.getCanBreakDoors())
+            if (pathentity != null && !pathentity.isFinished() && pathnavigate.getEnterDoors())
             {
                 for (int i = 0; i < Math.min(pathentity.getCurrentPathIndex() + 2, pathentity.getCurrentPathLength()); ++i)
                 {
                     PathPoint pathpoint = pathentity.getPathPointFromIndex(i);
-                    entityPosX = pathpoint.xCoord;
-                    entityPosY = pathpoint.yCoord + 1;
-                    entityPosZ = pathpoint.zCoord;
+                    entityPosX = pathpoint.x;
+                    entityPosY = pathpoint.y + 1;
+                    entityPosZ = pathpoint.z;
 
                     if (theEntity.getDistanceSq(entityPosX, theEntity.posY, entityPosZ) <= 2.25D)
                     {
@@ -57,9 +59,9 @@ public abstract class EntityAIBlockInteract extends EntityAIBase
                     }
                 }
 
-                entityPosX = MathHelper.floor_double(theEntity.posX);
-                entityPosY = MathHelper.floor_double(theEntity.posY + 1.0D);
-                entityPosZ = MathHelper.floor_double(theEntity.posZ);
+                entityPosX = MathHelper.floor(theEntity.posX);
+                entityPosY = MathHelper.floor(theEntity.posY + 1.0D);
+                entityPosZ = MathHelper.floor(theEntity.posZ);
                 field_151504_e = func_151503_a(entityPosX, entityPosY, entityPosZ);
                 return field_151504_e != null;
             }
@@ -71,7 +73,7 @@ public abstract class EntityAIBlockInteract extends EntityAIBase
     }
 
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return !hasStoppedBlockInteraction;
     }
@@ -99,7 +101,7 @@ public abstract class EntityAIBlockInteract extends EntityAIBase
 
     private Block func_151503_a(int x, int y, int z)
     {
-        Block block = theEntity.worldObj.getBlock(x, y, z);
-        return block.getBlockHardness(theEntity.worldObj, x, y, z) < 0 ? null : block;
+        IBlockState block = theEntity.getEntityWorld().getBlockState(new BlockPos(x, y, z));
+        return block.getBlockHardness(theEntity.getEntityWorld(), new BlockPos(x, y, z)) < 0 ? null : block.getBlock();
     }
 }

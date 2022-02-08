@@ -12,12 +12,13 @@ import com.fiskmods.lightsabers.common.force.PowerDesc.Unit;
 import com.fiskmods.lightsabers.helper.ALHelper;
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.command.IEntitySelector;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class PowerEffectHeal extends PowerEffect
 {
@@ -38,9 +39,8 @@ public class PowerEffectHeal extends PowerEffect
 
         if (aoeHeal > 0)
         {
-            AxisAlignedBB aabb = player.boundingBox.copy().expand(6, 6, 6);
-            List<EntityLivingBase> list = player.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, aabb, IEntitySelector.selectAnything);
-
+            AxisAlignedBB aabb = player.getEntityBoundingBox().expand(6, 6, 6);
+            List<EntityLivingBase> list = player.getEntityWorld().<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, aabb, EntitySelectors.IS_ALIVE);
             for (EntityLivingBase entity : list)
             {
                 if (ALHelper.isAlly(player, entity) || entity == player)
@@ -83,9 +83,9 @@ public class PowerEffectHeal extends PowerEffect
     }
 
     @Override
-    public String getCastSound(ForceSide side)
+    public SoundEvent getCastSound(ForceSide side)
     {
-        return ALSounds.player_force_heal;
+        return ALSounds.PLAYER_FORCE_HEAL;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class PowerEffectHeal extends PowerEffect
     {
         for (int i = 0; i < 16; ++i)
         {
-            ALParticles.spawnParticle(ALParticleType.FORCE_HEAL, entity.posX + (rand.nextFloat() * 2 - 1) * entity.width, entity.boundingBox.minY + entity.height / 3 + (entity.height / 3) * 2 * rand.nextFloat(), entity.posZ + (rand.nextFloat() * 2 - 1) * entity.width, 0, 0, 0);
+            ALParticles.spawnParticle(ALParticleType.FORCE_HEAL, entity.posX + (rand.nextFloat() * 2 - 1) * entity.width, entity.getEntityBoundingBox().minY + entity.height / 3 + (entity.height / 3) * 2 * rand.nextFloat(), entity.posZ + (rand.nextFloat() * 2 - 1) * entity.width, 0, 0, 0);
         }
     }
 }

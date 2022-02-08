@@ -9,8 +9,8 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -174,7 +174,7 @@ public class FiskPredicates
                 @Override
                 public boolean apply(Item input)
                 {
-                    return input.delegate.name().startsWith(mod.getModId() + ":");
+                    return input.delegate.name().getNamespace() == mod.getModId(); //TODO check
                 }
             });
         }

@@ -3,8 +3,8 @@ package fiskfille.utils.common.interaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.FiskUtils;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import fiskfille.utils.registry.FiskRegistryEntry;

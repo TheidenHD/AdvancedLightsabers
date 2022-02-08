@@ -7,16 +7,13 @@ import com.fiskmods.lightsabers.ALConstants;
 import com.fiskmods.lightsabers.common.hilt.Hilt;
 import com.fiskmods.lightsabers.common.lightsaber.PartType;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.WeightedRandomChestContent;
-import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class ItemLightsaberPart extends Item implements ILightsaberComponent
@@ -42,33 +39,33 @@ public class ItemLightsaberPart extends Item implements ILightsaberComponent
         return slot == partType.ordinal();
     }
 
-    @Override
-    public WeightedRandomChestContent getChestGenBase(ChestGenHooks chest, Random rand, WeightedRandomChestContent original)
-    {
-        return new WeightedRandomChestContent(create(getRandomType(rand), Hilt.REGISTRY.getRandom(rand)), original.theMinimumChanceToGenerateItem, original.theMaximumChanceToGenerateItem, original.itemWeight);
-    }
-
-    @Override
-    public void getSubItems(Item item, CreativeTabs tab, List list)
-    {
-        for (Hilt hilt : Hilt.REGISTRY)
-        {
-            list.add(create(partType, hilt));
-        }
-    }
-
-    @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag)
-    {
-        list.add(get(itemstack).getLocalizedName());
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister iconRegister)
-    {
-    }
-
+//    @Override //TODO
+//    public WeightedRandomChestContent getChestGenBase(ChestGenHooks chest, Random rand, WeightedRandomChestContent original)
+//    {
+//        return new WeightedRandomChestContent(create(getRandomType(rand), Hilt.REGISTRY.getRandom(rand)), original.theMinimumChanceToGenerateItem, original.theMaximumChanceToGenerateItem, original.itemWeight);
+//    }
+//
+//    @Override
+//    public void getSubItems(Item item, CreativeTabs tab, List list)
+//    {
+//        for (Hilt hilt : Hilt.REGISTRY)
+//        {
+//            list.add(create(partType, hilt));
+//        }
+//    }
+//
+//    @Override
+//    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag)
+//    {
+//        list.add(get(itemstack).getLocalizedName());
+//    }
+//
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public void registerIcons(IIconRegister iconRegister)
+//    {
+//    }
+//
     public static Hilt get(ItemStack itemstack)
     {
         int id = 0;

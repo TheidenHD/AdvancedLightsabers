@@ -22,7 +22,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTBase.NBTPrimitive;
+import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -117,7 +117,7 @@ public class LightsaberData extends AbstractLightsaberData implements ISerializa
      * Sets the {@link Hilt} design of the lightsaber component in the given {@link PartType} slot.
      *
      * @param type - The component slot
-     * @param id - The hilt design
+     * //@param id - The hilt design
      * @return this
      */
     @Override
@@ -240,7 +240,7 @@ public class LightsaberData extends AbstractLightsaberData implements ISerializa
         {
             if (tag instanceof NBTPrimitive)
             {
-                return new LightsaberData(((NBTPrimitive) tag).func_150291_c());
+                return new LightsaberData(((NBTPrimitive) tag).getLong());
             }
 
             return null;

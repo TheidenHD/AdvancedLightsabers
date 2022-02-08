@@ -4,10 +4,10 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class WorldGenCrystal extends WorldGenerator
 {
@@ -21,7 +21,7 @@ public class WorldGenCrystal extends WorldGenerator
     }
 
     @Override
-    public boolean generate(World world, Random rand, int x, int y, int z)
+    public boolean generate(World world, Random rand, BlockPos pos)
     {
         boolean flag = false;
         int range = 3;
@@ -30,8 +30,8 @@ public class WorldGenCrystal extends WorldGenerator
         {
             for (int j = -range; j <= range; ++j)
             {
-                int xPosition = x >> 4 + i;
-                int zPosition = z >> 4 + j;
+                int xPosition = pos.getX() >> 4 + i;
+                int zPosition = pos.getZ() >> 4 + j;
                 Random random = new Random(world.getSeed() + (long) (xPosition * xPosition * 0x4c1906) + (long) (xPosition * 0x5ac0db) + (long) (zPosition * zPosition) * 0x4307a7L + (long) (zPosition * 0x5f24f) ^ 0x3ad8025f);
                 
                 if (random.nextInt(300) == 0)
@@ -42,13 +42,13 @@ public class WorldGenCrystal extends WorldGenerator
             }
         }
 
-        if (flag && world.getBlock(x, y, z) == Blocks.air)
+        if (flag && world.isAirBlock(pos))
         {
-            for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+            for (EnumFacing dir : EnumFacing.VALUES)
             {
-                if (world.getBlock(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ).getMaterial() == growthMaterial)
+                if (world.getBlockState(pos.add(dir.getXOffset(), dir.getYOffset(), dir.getZOffset())).getMaterial() == growthMaterial)
                 {
-                    return world.setBlock(x, y, z, target, dir.getOpposite().ordinal(), 2);
+                    return world.setBlockState(pos, target.getDefaultState(), 2);//TODO add rotation
                 }
             }
         }

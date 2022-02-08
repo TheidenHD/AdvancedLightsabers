@@ -20,7 +20,7 @@ public class RenderSithCoffin extends TileEntitySpecialRenderer
     {
         int metadata = 0;
 
-        if (tileentity.getWorldObj() != null)
+        if (tileentity.getWorld() != null)
         {
             metadata = tileentity.getBlockMetadata();
         }
@@ -30,18 +30,18 @@ public class RenderSithCoffin extends TileEntitySpecialRenderer
         GL11.glScalef(1.0F, -1F, -1F);
         GL11.glRotatef(metadata * 90 + 180, 0.0F, 1.0F, 0.0F);
 
-        if (!BlockSithCoffin.isBlockFrontOfCoffin(metadata))
-        {
-            bindTexture(texture);
-            model.render(tileentity);
-        }
+//        if (!BlockSithCoffin.isBlockFrontOfCoffin(metadata)) //TODO
+//        {
+//            bindTexture(texture);
+//            model.render(tileentity);
+//        }
 
         GL11.glPopMatrix();
     }
 
-    @Override
-    public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTicks)
-    {
-        render((TileEntitySithCoffin) tileentity, x, y, z, partialTicks);
-    }
+//    @Override //TODO
+//    public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTicks)
+//    {
+//        render((TileEntitySithCoffin) tileentity, x, y, z, partialTicks);
+//    }
 }

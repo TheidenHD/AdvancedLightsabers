@@ -8,9 +8,10 @@ import com.fiskmods.lightsabers.common.item.ModItems;
 import com.fiskmods.lightsabers.common.lightsaber.LightsaberData;
 import com.fiskmods.lightsabers.helper.ALRenderHelper;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -18,7 +19,11 @@ import net.minecraft.util.ResourceLocation;
 @SideOnly(Side.CLIENT)
 public class RenderLightsaber extends Render
 {
-    public void render(EntityLightsaber entity, double x, double y, double z, float f, float partialTicks)
+    protected RenderLightsaber(RenderManager renderManager) {
+		super(renderManager);
+	}
+
+	public void render(EntityLightsaber entity, double x, double y, double z, float f, float partialTicks)
     {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x, (float) y + 0.03F, (float) z);

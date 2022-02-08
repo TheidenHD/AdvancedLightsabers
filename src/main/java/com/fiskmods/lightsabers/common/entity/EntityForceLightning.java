@@ -14,7 +14,7 @@ public class EntityForceLightning extends Entity
         super(world);
         setSize(0.1F, 0.1F);
         ignoreFrustumCheck = true;
-        renderDistanceWeight = 100D;
+        setRenderDistanceWeight(100D);
     }
 
     public EntityForceLightning(World world, EntityLivingBase entity)

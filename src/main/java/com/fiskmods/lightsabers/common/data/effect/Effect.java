@@ -10,8 +10,7 @@ import com.google.common.collect.Lists;
 
 import fiskfille.utils.registry.FiskRegistryEntry;
 import fiskfille.utils.registry.FiskRegistryNamespaced;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.StringUtils;
 
 public class Effect extends FiskRegistryEntry<Effect>
@@ -76,12 +75,12 @@ public class Effect extends FiskRegistryEntry<Effect>
 
     public String getUnlocalizedName()
     {
-        return "statusEffect." + delegate.name().replace(':', '.');
+        return "statusEffect." + delegate.name().getPath().replace(':', '.');
     }
 
     public String getLocalizedName()
     {
-        return StatCollector.translateToLocal(getUnlocalizedName());
+        return ""; //StatCollector.translateToLocal(getUnlocalizedName()); //TODO
     }
 
     public String getFormattedString(StatusEffect effect)
@@ -90,7 +89,7 @@ public class Effect extends FiskRegistryEntry<Effect>
 
         if (effect.amplifier > 0 && effect.amplifier < 10)
         {
-            s += " " + StatCollector.translateToLocal("enchantment.level." + (effect.amplifier + 1));
+            s = s + " "; //+ StatCollector.translateToLocal("enchantment.level." + (effect.amplifier + 1)); //TODO
         }
 
         return s;
@@ -108,7 +107,7 @@ public class Effect extends FiskRegistryEntry<Effect>
 
     public Power getPower(int i)
     {
-        return !powers.isEmpty() ? powers.get(MathHelper.clamp_int(i, 0, powers.size() - 1)) : null;
+        return !powers.isEmpty() ? powers.get(MathHelper.clamp(i, 0, powers.size() - 1)) : null;
     }
 
     public static void register()

@@ -3,7 +3,6 @@ package com.fiskmods.lightsabers.common.network;
 import java.util.Collections;
 import java.util.List;
 
-import com.fiskmods.lightsabers.common.data.ALEntityData;
 import com.fiskmods.lightsabers.common.data.effect.StatusEffect;
 import com.google.common.collect.Lists;
 
@@ -59,7 +58,7 @@ public class MessageUpdateEffects extends AbstractMessage<MessageUpdateEffects>
     @Override
     public void receive() throws MessageException
     {
-        ALEntityData.getData(getEntity(EntityLivingBase.class, id)).activeEffects = activeEffects;
+        //ALEntityData.getData(getEntity(EntityLivingBase.class, id)).activeEffects = activeEffects;//TODO
 
         if (!activeEffects.isEmpty())
         {

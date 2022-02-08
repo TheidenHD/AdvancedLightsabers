@@ -6,14 +6,13 @@ import com.fiskmods.lightsabers.common.force.PowerDesc;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Target;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Unit;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.helper.VectorHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PowerEffectChoke extends PowerEffect
@@ -26,13 +25,13 @@ public class PowerEffectChoke extends PowerEffect
     @Override
     public boolean execute(EntityPlayer player, Side side)
     {
-        World world = player.worldObj;
+        World world = player.getEntityWorld();
         double range = 16;
 
-        Vec3 src = VectorHelper.getOffsetCoords(player, 0, 0, 0);
-        Vec3 dest = VectorHelper.getOffsetCoords(player, 0, 0, range);
-        Vec3 hitVec = null;
-        MovingObjectPosition rayTrace = world.rayTraceBlocks(VectorHelper.copy(src), VectorHelper.copy(dest));
+        Vec3d src = VectorHelper.getOffsetCoords(player, 0, 0, 0);
+        Vec3d dest = VectorHelper.getOffsetCoords(player, 0, 0, range);
+        Vec3d hitVec = null;
+        RayTraceResult rayTrace = world.rayTraceBlocks(VectorHelper.copy(src), VectorHelper.copy(dest));
 
         if (rayTrace == null)
         {
@@ -43,27 +42,25 @@ public class PowerEffectChoke extends PowerEffect
             hitVec = rayTrace.hitVec;
         }
 
-        double distance = player.getDistance(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord);
+        double distance = player.getDistance(hitVec.x, hitVec.y, hitVec.z);
 
         for (double point = 0; point <= distance; point += 0.15D)
         {
-            Vec3 particleVec = VectorHelper.getOffsetCoords(player, 0, 0, point);
+            Vec3d particleVec = VectorHelper.getOffsetCoords(player, 0, 0, point);
 
             for (EntityLivingBase entity : VectorHelper.getEntitiesNear(EntityLivingBase.class, world, particleVec, 0.5F))
             {
-                if (entity != null && entity != player && player.ridingEntity != entity)
+                if (entity != null && entity != player && player.getRidingEntity() != entity)
                 {
-                    hitVec.xCoord = entity.posX;
-                    hitVec.yCoord = entity.posY;
-                    hitVec.zCoord = entity.posZ;
-                    rayTrace = new MovingObjectPosition(entity, hitVec);
-                    distance = player.getDistance(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord);
+                    hitVec = new Vec3d(entity.posX, entity.posY, entity.posZ);
+                    rayTrace = new RayTraceResult(entity, hitVec);
+                    distance = player.getDistance(hitVec.x, hitVec.y, hitVec.z);
                     break;
                 }
             }
         }
 
-        if (rayTrace != null && rayTrace.typeOfHit == MovingObjectType.ENTITY && rayTrace.entityHit instanceof EntityLivingBase)
+        if (rayTrace != null && rayTrace.typeOfHit == RayTraceResult.Type.ENTITY && rayTrace.entityHit instanceof EntityLivingBase)
         {
             StatusEffect.add((EntityLivingBase) rayTrace.entityHit, player, Effect.CHOKE, 60, amplifier);
             return true;
@@ -75,7 +72,7 @@ public class PowerEffectChoke extends PowerEffect
     @Override
     public String[] getDesc()
     {
-        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", 2 + amplifier * 2, Unit.DAMAGE, EnumChatFormatting.GRAY + "/"), Target.TARGET), PowerDesc.create("effect", PowerDesc.format("%s %s%s", Effect.STUN, EnumChatFormatting.GRAY, getStunDuration(amplifier)), Target.TARGET)};
+        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", 2 + amplifier * 2, Unit.DAMAGE, TextFormatting.GRAY + "/"), Target.TARGET), PowerDesc.create("effect", PowerDesc.format("%s %s%s", Effect.STUN, TextFormatting.GRAY, getStunDuration(amplifier)), Target.TARGET)};
     }
 
     public static float getStunDuration(int amplifier)

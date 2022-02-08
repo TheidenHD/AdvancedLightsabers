@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class InventoryCrystalPouch implements IInventory
@@ -63,7 +64,7 @@ public class InventoryCrystalPouch implements IInventory
 
     private boolean addItemStackToInventoryTemp(final ItemStack itemstack)
     {
-        if (itemstack != null && itemstack.stackSize != 0 && itemstack.getItem() != null)
+        if (itemstack != null && itemstack.getCount() != 0 && itemstack.getItem() != null)
         {
             try
             {
@@ -73,9 +74,9 @@ public class InventoryCrystalPouch implements IInventory
 
                     if (slot >= 0)
                     {
-                        itemstacks[slot] = ItemStack.copyItemStack(itemstack);
-                        itemstacks[slot].animationsToGo = 5;
-                        itemstack.stackSize = 0;
+                        itemstacks[slot] = itemstack.copy();
+                        itemstacks[slot].setAnimationsToGo(5);
+                        itemstack.setCount(0);
                         return true;
                     }
 
@@ -86,12 +87,12 @@ public class InventoryCrystalPouch implements IInventory
 
                 do
                 {
-                    stackSize = itemstack.stackSize;
-                    itemstack.stackSize = storePartialItemStack(itemstack);
+                    stackSize = itemstack.getCount();
+                    itemstack.setCount(storePartialItemStack(itemstack));
                 }
-                while (itemstack.stackSize > 0 && itemstack.stackSize < stackSize);
+                while (itemstack.getCount() > 0 && itemstack.getCount() < stackSize);
 
-                return itemstack.stackSize < stackSize;
+                return itemstack.getCount() < stackSize;
             }
             catch (Throwable throwable)
             {
@@ -99,15 +100,15 @@ public class InventoryCrystalPouch implements IInventory
                 CrashReportCategory category = crash.makeCategory("Item being added");
                 category.addCrashSection("Item ID", Item.getIdFromItem(itemstack.getItem()));
                 category.addCrashSection("Item data", itemstack.getItemDamage());
-                category.addCrashSectionCallable("Item name", new Callable()
-                {
-                    @Override
-                    public String call()
-                    {
-                        return itemstack.getDisplayName();
-                    }
-                });
-                throw new ReportedException(crash);
+//                category.addCrashSectionCallable("Item name", new Callable() //TODO
+//                {
+//                    @Override
+//                    public String call()
+//                    {
+//                        return itemstack.getDisplayName();
+//                    }
+//                });
+//                throw new ReportedException(crash);
             }
         }
 
@@ -130,7 +131,7 @@ public class InventoryCrystalPouch implements IInventory
     private int storePartialItemStack(ItemStack itemstack)
     {
         Item item = itemstack.getItem();
-        int toAdd = itemstack.stackSize;
+        int toAdd = itemstack.getCount();
         int slot;
 
         if (itemstack.getMaxStackSize() == 1)
@@ -144,7 +145,7 @@ public class InventoryCrystalPouch implements IInventory
 
             if (itemstacks[slot] == null)
             {
-                itemstacks[slot] = ItemStack.copyItemStack(itemstack);
+                itemstacks[slot] = itemstack.copy();
             }
 
             return 0;
@@ -174,14 +175,14 @@ public class InventoryCrystalPouch implements IInventory
 
         int i = toAdd;
 
-        if (toAdd > itemstacks[slot].getMaxStackSize() - itemstacks[slot].stackSize)
+        if (toAdd > itemstacks[slot].getMaxStackSize() - itemstacks[slot].getCount())
         {
-            i = itemstacks[slot].getMaxStackSize() - itemstacks[slot].stackSize;
+            i = itemstacks[slot].getMaxStackSize() - itemstacks[slot].getCount();
         }
 
-        if (i > getInventoryStackLimit() - itemstacks[slot].stackSize)
+        if (i > getInventoryStackLimit() - itemstacks[slot].getCount())
         {
-            i = getInventoryStackLimit() - itemstacks[slot].stackSize;
+            i = getInventoryStackLimit() - itemstacks[slot].getCount();
         }
 
         if (i == 0)
@@ -189,8 +190,8 @@ public class InventoryCrystalPouch implements IInventory
             return toAdd;
         }
 
-        itemstacks[slot].stackSize += i;
-        itemstacks[slot].animationsToGo = 5;
+        itemstacks[slot].setCount(i + itemstacks[slot].getCount());
+        itemstacks[slot].setAnimationsToGo(5);
 
         return toAdd - i;
     }
@@ -199,7 +200,7 @@ public class InventoryCrystalPouch implements IInventory
     {
         for (int i = 0; i < itemstacks.length; ++i)
         {
-            if (itemstacks[i] != null && itemstacks[i].getItem() == itemstack.getItem() && itemstacks[i].isStackable() && itemstacks[i].stackSize < itemstacks[i].getMaxStackSize() && itemstacks[i].stackSize < getInventoryStackLimit() && (!itemstacks[i].getHasSubtypes() || itemstacks[i].getItemDamage() == itemstack.getItemDamage()) && ItemStack.areItemStackTagsEqual(itemstacks[i], itemstack))
+            if (itemstacks[i] != null && itemstacks[i].getItem() == itemstack.getItem() && itemstacks[i].isStackable() && itemstacks[i].getCount() < itemstacks[i].getMaxStackSize() && itemstacks[i].getCount() < getInventoryStackLimit() && (!itemstacks[i].getHasSubtypes() || itemstacks[i].getItemDamage() == itemstack.getItemDamage()) && ItemStack.areItemStackTagsEqual(itemstacks[i], itemstack))
             {
                 return i;
             }
@@ -216,7 +217,7 @@ public class InventoryCrystalPouch implements IInventory
         for (int i = 0; i < Math.min(list.tagCount(), getSizeInventory()); ++i)
         {
             NBTTagCompound tag = list.getCompoundTagAt(i);
-            itemstacks[tag.getByte("Slot")] = ItemStack.loadItemStackFromNBT(tag);
+            itemstacks[tag.getByte("Slot")] = new ItemStack(tag);
         }
     }
 
@@ -259,7 +260,7 @@ public class InventoryCrystalPouch implements IInventory
 
         if (stack != null)
         {
-            if (stack.stackSize > amount)
+            if (stack.getCount() > amount)
             {
                 stack = stack.splitStack(amount);
                 markDirty();
@@ -273,39 +274,39 @@ public class InventoryCrystalPouch implements IInventory
         return stack;
     }
 
-    @Override
-    public ItemStack getStackInSlotOnClosing(int slot)
-    {
-        ItemStack stack = getStackInSlot(slot);
-        setInventorySlotContents(slot, null);
-
-        return stack;
-    }
+//    @Override //TODO
+//    public ItemStack getStackInSlotOnClosing(int slot)
+//    {
+//        ItemStack stack = getStackInSlot(slot);
+//        setInventorySlotContents(slot, null);
+//
+//        return stack;
+//    }
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack)
     {
         itemstacks[slot] = stack;
 
-        if (stack != null && stack.stackSize > getInventoryStackLimit())
+        if (stack != null && stack.getCount() > getInventoryStackLimit())
         {
-            stack.stackSize = getInventoryStackLimit();
+            //stack.getCount() = getInventoryStackLimit();//TODO
         }
 
         markDirty();
     }
 
-    @Override
-    public String getInventoryName()
-    {
-        return "Crystal Pouch";
-    }
-
-    @Override
-    public boolean hasCustomInventoryName()
-    {
-        return false;
-    }
+//    @Override //TODO
+//    public String getInventoryName()
+//    {
+//        return "Crystal Pouch";
+//    }
+//
+//    @Override
+//    public boolean hasCustomInventoryName()
+//    {
+//        return false;
+//    }
 
     @Override
     public int getInventoryStackLimit()
@@ -316,31 +317,103 @@ public class InventoryCrystalPouch implements IInventory
     @Override
     public void markDirty()
     {
-        if (!thePlayer.worldObj.isRemote && isUseableByPlayer(thePlayer))
+        //if (!thePlayer.getEntityWorld().isRemote && isUseableByPlayer(thePlayer)) //TODO
         {
             writeToNBT(getPouchStack().getTagCompound());
         }
     }
 
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer player)
-    {
-        return ItemCrystalPouch.getUUID(getPouchStack()).equals(uuid);
-    }
+//    @Override //TODO
+//    public boolean isUseableByPlayer(EntityPlayer player)
+//    {
+//        return ItemCrystalPouch.getUUID(getPouchStack()).equals(uuid);
+//    }
 
-    @Override
-    public void openInventory()
-    {
-    }
-
-    @Override
-    public void closeInventory()
-    {
-    }
+//    @Override //TODO
+//    public void openInventory()
+//    {
+//    }
+//
+//    @Override
+//    public void closeInventory()
+//    {
+//    }
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack)
     {
         return stack.getItem() == Item.getItemFromBlock(ModBlocks.lightsaberCrystal) && slot == ItemCrystal.getId(stack);
     }
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ITextComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
 }

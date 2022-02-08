@@ -3,9 +3,9 @@ package fiskfille.utils.helper;
 import java.util.Map;
 import java.util.Random;
 
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class FiskMath
 {
@@ -89,12 +89,12 @@ public class FiskMath
         return aabb.minX > within.minX && aabb.minY > within.minY && aabb.minZ > within.minZ && aabb.maxX < within.maxX && aabb.maxY < within.maxY && aabb.maxZ < within.maxZ;
     }
 
-    public static double getScaledDistance(Vec3 src, Vec3 dst, double radius)
+    public static double getScaledDistance(Vec3d src, Vec3d dst, double radius)
     {
         return (radius - Math.min(src.distanceTo(dst), radius)) / radius;
     }
 
-    public static float getScaledDistance(Vec3 src, Vec3 dst, float radius)
+    public static float getScaledDistance(Vec3d src, Vec3d dst, float radius)
     {
         return (float) getScaledDistance(src, dst, (double) radius);
     }
@@ -106,8 +106,8 @@ public class FiskMath
 
     public static float animate(float frame, float duration, float frameStart, float fadeIn, float fadeOut)
     {
-        fadeIn = MathHelper.clamp_float(fadeIn, 0, duration);
-        fadeOut = MathHelper.clamp_float(fadeOut, 0, duration - fadeIn);
+        fadeIn = MathHelper.clamp(fadeIn, 0, duration);
+        fadeOut = MathHelper.clamp(fadeOut, 0, duration - fadeIn);
 
         if (frame >= frameStart && frame <= frameStart + duration)
         {

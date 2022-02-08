@@ -10,11 +10,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
-public class TileEntitySithStoneCoffin extends TileEntity
+public class TileEntitySithStoneCoffin extends TileEntity implements ITickable
 {
     public TileEntitySithCoffin mainCoffin;
     public ItemStack equipment;
@@ -25,18 +27,18 @@ public class TileEntitySithStoneCoffin extends TileEntity
     private int mainCoffinZ;
 
     @Override
-    public void updateEntity()
+    public void update()
     {
         if (mainCoffin != null)
         {
-            int x = mainCoffin.xCoord;
-            int y = mainCoffin.yCoord;
-            int z = mainCoffin.zCoord;
+            int x = mainCoffin.getPos().getX();
+            int y = mainCoffin.getPos().getY();
+            int z = mainCoffin.getPos().getZ();
 
             if (!baseplateOnly)
             {
                 double radius = 14.0D;
-                List<EntityPlayer> list = worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1).expand(radius, 2, radius));
+                List<EntityPlayer> list = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1).expand(radius, 2, radius));
 
                 if (!list.isEmpty())
                 {
@@ -45,19 +47,19 @@ public class TileEntitySithStoneCoffin extends TileEntity
 
                     for (int i = 0; i < 2; ++i)
                     {
-                        worldObj.playAuxSFX(2001, xCoord, yCoord + i, zCoord, Block.getIdFromBlock(worldObj.getBlock(xCoord, yCoord + i, zCoord)) + (worldObj.getBlockMetadata(xCoord, yCoord + i, zCoord) << 12));
+                        world.playEvent(2001, getPos().south(i), Block.getIdFromBlock(world.getTileEntity(getPos().south(i)).getBlockType()) + (world.getTileEntity(getPos().south(i)).getBlockMetadata() << 12));
                     }
 
-                    if (!worldObj.isRemote)
-                    {
-                        BlockSithStoneCoffin.spawnSithGhost(worldObj, xCoord, yCoord, zCoord).setAttackTarget(list.get(0));
+                    if (!world.isRemote)
+                    {//TODO
+                        //BlockSithStoneCoffin.spawnSithGhost(world, getPos().getX(), getPos().getY(), getPos().getZ()).setAttackTarget(list.get(0));
                     }
                 }
             }
         }
         else
         {
-            TileEntity tile = worldObj.getTileEntity(mainCoffinX, mainCoffinY, mainCoffinZ);
+            TileEntity tile = world.getTileEntity(new BlockPos(mainCoffinX, mainCoffinY, mainCoffinZ));
 
             if (tile instanceof TileEntitySithCoffin)
             {
@@ -72,15 +74,15 @@ public class TileEntitySithStoneCoffin extends TileEntity
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+    	NBTTagCompound ret = super.writeToNBT(nbt);//TODO
 
         if (mainCoffin != null)
         {
-            nbt.setInteger("CoffinX", mainCoffin.xCoord);
-            nbt.setInteger("CoffinY", mainCoffin.yCoord);
-            nbt.setInteger("CoffinZ", mainCoffin.zCoord);
+            nbt.setInteger("CoffinX", mainCoffin.getPos().getX());
+            nbt.setInteger("CoffinY", mainCoffin.getPos().getY());
+            nbt.setInteger("CoffinZ", mainCoffin.getPos().getZ());
         }
 
         if (equipment != null)
@@ -92,6 +94,7 @@ public class TileEntitySithStoneCoffin extends TileEntity
 
         nbt.setBoolean("BaseplateOnly", baseplateOnly);
         nbt.setBoolean("TaskFinished", taskFinished);
+        return ret;
     }
 
     @Override
@@ -107,28 +110,28 @@ public class TileEntitySithStoneCoffin extends TileEntity
         if (nbt.hasKey("Equipment"))
         {
             NBTTagCompound nbttagcompound = nbt.getCompoundTag("Equipment");
-            equipment = ItemStack.loadItemStackFromNBT(nbttagcompound);
+            equipment = new ItemStack(nbttagcompound);
         }
     }
 
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 2, zCoord + 1);
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1);
     }
 
-    @Override
-    public Packet getDescriptionPacket()
-    {
-        NBTTagCompound syncData = new NBTTagCompound();
-        writeToNBT(syncData);
+//    @Override //TODO
+//    public Packet getDescriptionPacket()
+//    {
+//        NBTTagCompound syncData = new NBTTagCompound();
+//        writeToNBT(syncData);
+//
+//        return new SPacketUpdateTileEntity(pos, 1, syncData);
+//    }
 
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, syncData);
-    }
-
     @Override
-    public void onDataPacket(NetworkManager netManager, S35PacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager netManager, SPacketUpdateTileEntity packet)
     {
-        readFromNBT(packet.func_148857_g());
+        readFromNBT(packet.getNbtCompound());
     }
 }

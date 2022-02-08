@@ -8,16 +8,15 @@ import com.fiskmods.lightsabers.common.force.PowerDesc;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Target;
 import com.fiskmods.lightsabers.helper.ALHelper;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.helper.VectorHelper;
-import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PowerEffectStun extends PowerEffect
@@ -38,13 +37,13 @@ public class PowerEffectStun extends PowerEffect
     @Override
     public boolean execute(EntityPlayer player, Side side)
     {
-        World world = player.worldObj;
+        World world = player.getEntityWorld();
         double range = 16;
 
         if (aoe)
         {
-            AxisAlignedBB aabb = player.boundingBox.copy().expand(10, 10, 10);
-            List<EntityLivingBase> list = player.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, aabb, IEntitySelector.selectAnything);
+            AxisAlignedBB aabb = player.getEntityBoundingBox().expand(10, 10, 10);
+            List<EntityLivingBase> list = player.getEntityWorld().<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, aabb, EntitySelectors.IS_ALIVE);
 
             for (EntityLivingBase entity : list)
             {
@@ -61,10 +60,10 @@ public class PowerEffectStun extends PowerEffect
         }
         else
         {
-            Vec3 src = VectorHelper.getOffsetCoords(player, 0, 0, 0);
-            Vec3 dest = VectorHelper.getOffsetCoords(player, 0, 0, range);
-            Vec3 hitVec = null;
-            MovingObjectPosition rayTrace = world.rayTraceBlocks(VectorHelper.copy(src), VectorHelper.copy(dest));
+            Vec3d src = VectorHelper.getOffsetCoords(player, 0, 0, 0);
+            Vec3d dest = VectorHelper.getOffsetCoords(player, 0, 0, range);
+            Vec3d hitVec = null;
+            RayTraceResult rayTrace = world.rayTraceBlocks(VectorHelper.copy(src), VectorHelper.copy(dest));
 
             if (rayTrace == null)
             {
@@ -75,21 +74,19 @@ public class PowerEffectStun extends PowerEffect
                 hitVec = rayTrace.hitVec;
             }
 
-            double distance = player.getDistance(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord);
+            double distance = player.getDistance(hitVec.x, hitVec.y, hitVec.z);
 
             for (double point = 0; point <= distance; point += 0.15D)
             {
-                Vec3 particleVec = VectorHelper.getOffsetCoords(player, 0, 0, point);
+                Vec3d particleVec = VectorHelper.getOffsetCoords(player, 0, 0, point);
 
                 for (EntityLivingBase entity : VectorHelper.getEntitiesNear(EntityLivingBase.class, world, particleVec, 0.5F))
                 {
-                    if (entity != null && entity != player && player.ridingEntity != entity)
+                    if (entity != null && entity != player && player.getRidingEntity() != entity)
                     {
-                        hitVec.xCoord = entity.posX;
-                        hitVec.yCoord = entity.posY;
-                        hitVec.zCoord = entity.posZ;
-                        rayTrace = new MovingObjectPosition(entity, hitVec);
-                        distance = player.getDistance(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord);
+                    	hitVec = new Vec3d(entity.posX, entity.posY, entity.posZ);
+                        rayTrace = new RayTraceResult(entity, hitVec);
+                        distance = player.getDistance(hitVec.x, hitVec.y, hitVec.z);
                         break;
                     }
                 }
@@ -97,7 +94,7 @@ public class PowerEffectStun extends PowerEffect
 
             if (rayTrace != null)
             {
-                if (rayTrace.typeOfHit == MovingObjectType.ENTITY && rayTrace.entityHit instanceof EntityLivingBase)
+                if (rayTrace.typeOfHit == RayTraceResult.Type.ENTITY && rayTrace.entityHit instanceof EntityLivingBase)
                 {
                     EntityLivingBase entity = (EntityLivingBase) rayTrace.entityHit;
                     StatusEffect.add(entity, Effect.STUN, durationInt, amplifier);
@@ -113,6 +110,6 @@ public class PowerEffectStun extends PowerEffect
     @Override
     public String[] getDesc()
     {
-        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", Effect.STUN, EnumChatFormatting.GRAY, duration), aoe ? Target.ENEMIES : Target.TARGET)};
+        return new String[] {PowerDesc.create("effect", PowerDesc.format("%s %s%s", Effect.STUN, TextFormatting.GRAY, duration), aoe ? Target.ENEMIES : Target.TARGET)};
     }
 }

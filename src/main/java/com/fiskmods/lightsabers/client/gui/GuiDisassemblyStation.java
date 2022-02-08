@@ -6,8 +6,8 @@ import com.fiskmods.lightsabers.Lightsabers;
 import com.fiskmods.lightsabers.common.container.ContainerDisassemblyStation;
 import com.fiskmods.lightsabers.common.tileentity.TileEntityDisassemblyStation;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -30,9 +30,9 @@ public class GuiDisassemblyStation extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        String s = I18n.format(tileentity.getInventoryName());
-        fontRendererObj.drawString(s, xSize / 2 - fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
-        fontRendererObj.drawString(I18n.format("container.inventory"), 8, ySize - 94, 4210752);
+        String s = I18n.format(tileentity.getDisplayName().getUnformattedText());
+        fontRenderer.drawString(s, xSize / 2 - fontRenderer.getStringWidth(s) / 2, 6, 4210752);
+        fontRenderer.drawString(I18n.format("container.inventory"), 8, ySize - 94, 4210752);
     }
 
     @Override

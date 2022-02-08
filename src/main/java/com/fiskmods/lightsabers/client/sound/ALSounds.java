@@ -1,39 +1,94 @@
 package com.fiskmods.lightsabers.client.sound;
 
 import com.fiskmods.lightsabers.Lightsabers;
+import net.minecraft.init.Bootstrap;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ALSounds
 {
-    public static final String ambient_fortify = create("ambient.fortify");
-    public static final String ambient_stealth = create("ambient.stealth");
-    public static final String ambient_lightsaber_hum_heavy = create("ambient.lightsaber.hum_heavy");
-    public static final String ambient_lightsaber_hum_light = create("ambient.lightsaber.hum_light");
-    public static final String ambient_lightsaber_hum_medium = create("ambient.lightsaber.hum_medium");
-    public static final String block_holocron_invest = create("block.holocron.invest");
-    public static final String block_holocron_unlock = create("block.holocron.unlock");
-    public static final String block_sith_sarcophagus_close = create("block.sith_sarcophagus.close");
-    public static final String block_sith_sarcophagus_open = create("block.sith_sarcophagus.open");
-    public static final String mob_lightsaber_hit = create("mob.lightsaber.hit");
-    public static final String mob_lightsaber_off = create("mob.lightsaber.off");
-    public static final String mob_lightsaber_on = create("mob.lightsaber.on");
-    public static final String mob_lightsaber_swing = create("mob.lightsaber.swing");
-    public static final String mob_sith_ghost_death = create("mob.sith_ghost.death");
-    public static final String mob_sith_ghost_idle = create("mob.sith_ghost.idle");
-    public static final String player_force_cast = create("player.force.cast");
-    public static final String player_force_dark = create("player.force.dark");
-    public static final String player_force_fail = create("player.force.fail");
-    public static final String player_force_heal = create("player.force.heal");
-    public static final String player_force_lightning = create("player.force.lightning");
-    public static final String player_force_stealth_off = create("player.force.stealth.off");
-    public static final String player_force_stealth_on = create("player.force.stealth.on");
-    public static final String player_lightsaber_hit = create("player.lightsaber.hit");
-    public static final String player_lightsaber_off = create("player.lightsaber.off");
-    public static final String player_lightsaber_on = create("player.lightsaber.on");
-    public static final String player_lightsaber_sweet_dreams = create("player.lightsaber.sweet_dreams");
-    public static final String player_lightsaber_swing = create("player.lightsaber.swing");
+    public static SoundEvent AMBIENT_FORTIFY;
+    public static SoundEvent AMBIENT_STEALTH;
+    public static SoundEvent AMBIENT_LIGHTSABER_HUM_HEAVY;
+    public static SoundEvent AMBIENT_LIGHTSABER_HUM_LIGHT;
+    public static SoundEvent AMBIENT_LIGHTSABER_HUM_MEDIUM;
+    public static SoundEvent BLOCK_HOLOCRON_INVEST;
+    public static SoundEvent BLOCK_HOLOCRON_UNLOCK;
+    public static SoundEvent BLOCK_SITH_SARCOPHAGUS_CLOSE;
+    public static SoundEvent BLOCK_SITH_SARCOPHAGUS_OPEN;
+    public static SoundEvent MOB_LIGHTSABER_HIT;
+    public static SoundEvent MOB_LIGHTSABER_OFF;
+    public static SoundEvent MOB_LIGHTSABER_ON;
+    public static SoundEvent MOB_LIGHTSABER_SWING;
+    public static SoundEvent MOB_SITH_GHOST_DEATH;
+    public static SoundEvent MOB_SITH_GHOST_IDLE;
+    public static SoundEvent PLAYER_FORCE_CAST;
+    public static SoundEvent PLAYER_FORCE_DARK;
+    public static SoundEvent PLAYER_FORCE_FAIL;
+    public static SoundEvent PLAYER_FORCE_HEAL;
+    public static SoundEvent PLAYER_FORCE_LIGHTNING;
+    public static SoundEvent PLAYER_FORCE_STEALTH_OFF;
+    public static SoundEvent PLAYER_FORCE_STEALTH_ON;
+    public static SoundEvent PLAYER_LIGHTSABER_HIT;
+    public static SoundEvent PLAYER_LIGHTSABER_OFF;
+    public static SoundEvent PLAYER_LIGHTSABER_ON;
+    public static SoundEvent PLAYER_LIGHTSABER_SWEET_DREAMS;
+    public static SoundEvent PLAYER_LIGHTSABER_SWING;
 
-    private static String create(String s)
+    private static SoundEvent getRegisteredSoundEvent(String id)
     {
-        return Lightsabers.MODID + ":" + s;
+
+        ResourceLocation location = new ResourceLocation(Lightsabers.MODID, id);
+        SoundEvent event = new SoundEvent(location);
+        event.setRegistryName(id);
+        ForgeRegistries.SOUND_EVENTS.register(event);
+
+        if (event == null)
+        {
+            throw new IllegalStateException("Invalid Sound requested: " + id);
+        }
+        else
+        {
+            return event;
+        }
+    }
+
+    public static void registerSounds()
+    {
+        if (!Bootstrap.isRegistered())
+        {
+            throw new RuntimeException("Accessed Sounds before Bootstrap!");
+        }
+        else
+        {
+        	AMBIENT_FORTIFY = getRegisteredSoundEvent("ambient.force.fortify");
+        	AMBIENT_STEALTH = getRegisteredSoundEvent("ambient.force.stealth1");
+            AMBIENT_LIGHTSABER_HUM_HEAVY = getRegisteredSoundEvent("ambient.lightsaber.hum_heavy");
+            AMBIENT_LIGHTSABER_HUM_LIGHT = getRegisteredSoundEvent("ambient.lightsaber.hum_light");
+            AMBIENT_LIGHTSABER_HUM_MEDIUM = getRegisteredSoundEvent("ambient.lightsaber.hum_medium");
+            BLOCK_HOLOCRON_INVEST = getRegisteredSoundEvent("block.holocron.invest");
+            BLOCK_HOLOCRON_UNLOCK = getRegisteredSoundEvent("block.holocron.unlock");
+            BLOCK_SITH_SARCOPHAGUS_CLOSE = getRegisteredSoundEvent("block.sith_sarcophagus.close");
+            BLOCK_SITH_SARCOPHAGUS_OPEN = getRegisteredSoundEvent("block.sith_sarcophagus.open");
+            MOB_LIGHTSABER_HIT = getRegisteredSoundEvent("mob.lightsaber.hit");
+            MOB_LIGHTSABER_OFF = getRegisteredSoundEvent("mob.lightsaber.off");
+            MOB_LIGHTSABER_ON = getRegisteredSoundEvent("mob.lightsaber.on");
+            MOB_LIGHTSABER_SWING = getRegisteredSoundEvent("mob.lightsaber.swing");
+            MOB_SITH_GHOST_DEATH = getRegisteredSoundEvent("mob.sith_ghost.death");
+            MOB_SITH_GHOST_IDLE = getRegisteredSoundEvent("mob.sith_ghost.idle");
+            PLAYER_FORCE_CAST = getRegisteredSoundEvent("player.force.cast");
+            PLAYER_FORCE_DARK = getRegisteredSoundEvent("player.force.dark");
+            PLAYER_FORCE_FAIL = getRegisteredSoundEvent("player.force.fail");
+            PLAYER_FORCE_HEAL = getRegisteredSoundEvent("player.force.heal");
+            PLAYER_FORCE_LIGHTNING = getRegisteredSoundEvent("player.force.lightning");
+            PLAYER_FORCE_STEALTH_OFF = getRegisteredSoundEvent("player.force.stealth.off");
+            PLAYER_FORCE_STEALTH_ON = getRegisteredSoundEvent("player.force.stealth.on");
+            PLAYER_LIGHTSABER_HIT = getRegisteredSoundEvent("player.lightsaber.hit");
+            PLAYER_LIGHTSABER_OFF = getRegisteredSoundEvent("player.lightsaber.off");
+            PLAYER_LIGHTSABER_ON = getRegisteredSoundEvent("player.lightsaber.on");
+            PLAYER_LIGHTSABER_SWEET_DREAMS = getRegisteredSoundEvent("player.lightsaber.sweet_dreams");
+            PLAYER_LIGHTSABER_SWING = getRegisteredSoundEvent("player.lightsaber.swing");
+        }
     }
 }

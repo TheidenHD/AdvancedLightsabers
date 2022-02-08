@@ -1,15 +1,16 @@
 package com.fiskmods.lightsabers.client.sound;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 
 @SideOnly(Side.CLIENT)
 public class SoundAL extends PositionedSound
 {
-    public static SoundAL mediumHum = SoundAL.makeSound(new ResourceLocation(ALSounds.ambient_lightsaber_hum_medium), true, 1.0F, 0.5F);
+    public static SoundAL mediumHum = SoundAL.makeSound(ALSounds.AMBIENT_LIGHTSABER_HUM_MEDIUM.getSoundName(), true, 1.0F, 0.5F);
 
     public static SoundAL makeSound(ResourceLocation resourceLocation, boolean loop)
     {
@@ -38,14 +39,14 @@ public class SoundAL extends PositionedSound
 
     public SoundAL(ResourceLocation location, float volume, float pitch, boolean repeat, int p_i45108_5_, ISound.AttenuationType p_i45108_6_, float x, float y, float z)
     {
-        super(location);
+        super(location, SoundCategory.PLAYERS); //TODO?
         this.volume = volume;
-        field_147663_c = pitch;
+        this.pitch = pitch;
         xPosF = x;
         yPosF = y;
         zPosF = z;
         this.repeat = repeat;
-        field_147665_h = p_i45108_5_;
-        field_147666_i = p_i45108_6_;
+        repeatDelay = p_i45108_5_;
+        attenuationType = p_i45108_6_;
     }
 }

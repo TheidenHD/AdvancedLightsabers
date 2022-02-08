@@ -11,11 +11,11 @@ public class ASMHooks
 {
     public static boolean attackEntityFrom(Entity entity, DamageSource source, float damage) // TODO: Remove?
     {
-        if (source.getEntity() instanceof EntityLivingBase)
+        if (source.getTrueSource() instanceof EntityLivingBase)
         {
-            EntityLivingBase attacker = (EntityLivingBase) source.getEntity();
+            EntityLivingBase attacker = (EntityLivingBase) source.getTrueSource();
 
-            if (attacker.getHeldItem() != null && attacker.getHeldItem().getItem() instanceof ItemLightsaber)
+            if (attacker.getHeldItemMainhand() != null && attacker.getHeldItemMainhand().getItem() instanceof ItemLightsaber)
             {
                 return entity.attackEntityFrom(ALDamageSources.causeLightsaberDamage(attacker), damage);
             }

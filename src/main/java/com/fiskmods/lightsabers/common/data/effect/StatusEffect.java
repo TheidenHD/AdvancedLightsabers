@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import com.fiskmods.lightsabers.common.data.ALEntityData;
+//import com.fiskmods.lightsabers.common.data.ALEntityData; //TODO
 import com.fiskmods.lightsabers.common.network.ALNetworkManager;
 import com.fiskmods.lightsabers.common.network.MessageUpdateEffects;
 import com.google.common.collect.Iterables;
@@ -16,7 +16,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class StatusEffect implements Comparable<StatusEffect>
@@ -103,7 +103,7 @@ public class StatusEffect implements Comparable<StatusEffect>
 
     public NBTTagCompound writeToNBT(NBTTagCompound tag)
     {
-        tag.setString("Id", effect.delegate.name());
+        tag.setString("Id", effect.delegate.name().getPath());//TODO check
         tag.setInteger("Duration", duration);
         tag.setInteger("Amplifier", amplifier);
 
@@ -134,7 +134,7 @@ public class StatusEffect implements Comparable<StatusEffect>
     public static void add(EntityLivingBase entity, EntityLivingBase caster, Effect effect, int duration, int amplifier)
     {
         List<StatusEffect> list = get(entity);
-        duration = MathHelper.clamp_int(duration, Short.MIN_VALUE, Short.MAX_VALUE);
+        duration = MathHelper.clamp(duration, Short.MIN_VALUE, Short.MAX_VALUE);
 
         for (StatusEffect status : list)
         {
@@ -153,7 +153,7 @@ public class StatusEffect implements Comparable<StatusEffect>
 
                 if (prevDuration != status.duration || prevAmplifier != status.amplifier)
                 {
-                    if (!entity.worldObj.isRemote)
+                    if (!entity.getEntityWorld().isRemote)
                     {
                         ALNetworkManager.wrapper.sendToDimension(new MessageUpdateEffects(entity, list), entity.dimension);
                     }
@@ -168,7 +168,7 @@ public class StatusEffect implements Comparable<StatusEffect>
         list.add(new StatusEffect(effect, duration, amplifier, caster));
         Collections.sort(list);
 
-        if (!entity.worldObj.isRemote)
+        if (!entity.getEntityWorld().isRemote)
         {
             ALNetworkManager.wrapper.sendToDimension(new MessageUpdateEffects(entity, list), entity.dimension);
         }
@@ -176,18 +176,18 @@ public class StatusEffect implements Comparable<StatusEffect>
 
     public static List<StatusEffect> get(EntityLivingBase entity)
     {
-        return ALEntityData.getData(entity).activeEffects;
+        return null; //ALEntityData.getData(entity).activeEffects; //TODO
     }
 
     public static StatusEffect get(EntityLivingBase entity, Effect effect)
     {
-        for (StatusEffect status : get(entity))
-        {
-            if (status.effect == effect)
-            {
-                return status;
-            }
-        }
+//        for (StatusEffect status : get(entity)) //TODO
+//        {
+//            if (status.effect == effect)
+//            {
+//                return status;
+//            }
+//        }
 
         return null;
     }
@@ -199,7 +199,7 @@ public class StatusEffect implements Comparable<StatusEffect>
 
     public static void clear(EntityLivingBase entity)
     {
-        if (!entity.worldObj.isRemote)
+        if (!entity.getEntityWorld().isRemote)
         {
             List<StatusEffect> list = get(entity);
 
@@ -213,7 +213,7 @@ public class StatusEffect implements Comparable<StatusEffect>
 
     public static void clear(EntityLivingBase entity, Effect effect)
     {
-        if (!entity.worldObj.isRemote && has(entity, effect))
+        if (!entity.getEntityWorld().isRemote && has(entity, effect))
         {
             List<StatusEffect> list = get(entity);
             Iterator<StatusEffect> iter = list.iterator();
@@ -239,7 +239,7 @@ public class StatusEffect implements Comparable<StatusEffect>
     {
         List<EntityLivingBase> targets = Lists.newArrayList();
 
-        for (EntityLivingBase entity : Iterables.filter(caster.worldObj.loadedEntityList, EntityLivingBase.class))
+        for (EntityLivingBase entity : Iterables.filter(caster.getEntityWorld().loadedEntityList, EntityLivingBase.class))
         {
             StatusEffect status = StatusEffect.get(entity, effect);
 

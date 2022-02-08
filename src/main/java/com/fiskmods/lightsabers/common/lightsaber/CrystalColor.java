@@ -3,8 +3,6 @@ package com.fiskmods.lightsabers.common.lightsaber;
 import java.util.Locale;
 import java.util.Random;
 
-import net.minecraft.util.StatCollector;
-
 public enum CrystalColor
 {
     DEEP_BLUE(0, 0x0000FF),
@@ -55,7 +53,7 @@ public enum CrystalColor
 
     public String getLocalizedName()
     {
-        return StatCollector.translateToLocal(getUnlocalizedName()).trim();
+        return "";//StatCollector.translateToLocal(getUnlocalizedName()).trim();//TODO
     }
     
     public float[] getRGB()

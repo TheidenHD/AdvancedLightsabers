@@ -6,8 +6,9 @@ import com.fiskmods.lightsabers.client.sound.ALSounds;
 import com.fiskmods.lightsabers.common.force.ForceSide;
 import com.fiskmods.lightsabers.common.force.Power;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.SoundEvent;
 
 public class PowerEffect
 {
@@ -29,9 +30,9 @@ public class PowerEffect
         return power.powerStats.useCost;
     }
 
-    public String getCastSound(ForceSide side)
+    public SoundEvent getCastSound(ForceSide side)
     {
-        return side == ForceSide.DARK ? ALSounds.player_force_dark : ALSounds.player_force_cast;
+        return side == ForceSide.DARK ? ALSounds.PLAYER_FORCE_DARK : ALSounds.PLAYER_FORCE_CAST;
     }
 
     public float getCastSoundVolume(ForceSide side)

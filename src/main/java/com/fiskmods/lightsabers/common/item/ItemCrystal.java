@@ -3,31 +3,28 @@ package com.fiskmods.lightsabers.common.item;
 import static com.fiskmods.lightsabers.common.lightsaber.CrystalColor.*;
 import static net.minecraft.item.EnumRarity.*;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.fiskmods.lightsabers.Lightsabers;
+import com.fiskmods.lightsabers.client.render.LightsabersTEISR;
 import com.fiskmods.lightsabers.common.block.ModBlocks;
 import com.fiskmods.lightsabers.common.generator.ModChestGen;
 import com.fiskmods.lightsabers.common.lightsaber.CrystalColor;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.NonNullList;
 import fiskfille.utils.helper.FiskMath;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class ItemCrystal extends ItemBlock implements ILightsaberComponent
@@ -36,6 +33,19 @@ public class ItemCrystal extends ItemBlock implements ILightsaberComponent
     {
         super(block);
         setHasSubtypes(true);
+        setRegistryName(block.getRegistryName());
+        setTileEntityItemStackRenderer(new LightsabersTEISR());
+        ModItems.ITEMS.add(this);
+        setCreativeTab(Lightsabers.CREATIVE_TAB);
+    }
+
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
+        for (CrystalColor color : CrystalColor.values())
+        {
+            items.add(ItemCrystal.create(color));
+        }
     }
 
     @Override
@@ -50,37 +60,37 @@ public class ItemCrystal extends ItemBlock implements ILightsaberComponent
         return slot == 5;
     }
 
-    @Override
-    public WeightedRandomChestContent getChestGenBase(ChestGenHooks chest, Random rand, WeightedRandomChestContent original)
-    {
-        ItemStack itemstack = original.theItemId;
-        String category = "";
-
-        if (itemstack.hasTagCompound())
-        {
-            category = itemstack.getTagCompound().getString("ChestGenCategory");
-        }
-
-        List<CrystalColor> list = Lists.newArrayList();
-
-        for (CrystalColor color : CrystalColor.values())
-        {
-            if (Arrays.asList(chestMap.get(color)).contains(category))
-            {
-                for (int i = rarityMap.get(color).ordinal() - 1; i >= 0; --i)
-                {
-                    list.add(color);
-                }
-            }
-        }
-
-        if (list.isEmpty())
-        {
-            list.addAll(Arrays.asList(CrystalColor.values()));
-        }
-        
-        return new WeightedRandomChestContent(create(list.get(rand.nextInt(list.size()))), original.theMinimumChanceToGenerateItem, original.theMaximumChanceToGenerateItem, original.itemWeight);
-    }
+//    @Override //TODO
+//    public WeightedRandomChestContent getChestGenBase(ChestGenHooks chest, Random rand, WeightedRandomChestContent original)
+//    {
+//        ItemStack itemstack = original.theItemId;
+//        String category = "";
+//
+//        if (itemstack.hasTagCompound())
+//        {
+//            category = itemstack.getTagCompound().getString("ChestGenCategory");
+//        }
+//
+//        List<CrystalColor> list = Lists.newArrayList();
+//
+//        for (CrystalColor color : CrystalColor.values())
+//        {
+//            if (Arrays.asList(chestMap.get(color)).contains(category))
+//            {
+//                for (int i = rarityMap.get(color).ordinal() - 1; i >= 0; --i)
+//                {
+//                    list.add(color);
+//                }
+//            }
+//        }
+//
+//        if (list.isEmpty())
+//        {
+//            list.addAll(Arrays.asList(CrystalColor.values()));
+//        }
+//        
+//        return new WeightedRandomChestContent(create(list.get(rand.nextInt(list.size()))), original.theMinimumChanceToGenerateItem, original.theMaximumChanceToGenerateItem, original.itemWeight);
+//    }
     
     @Override
     public EnumRarity getRarity(ItemStack itemstack)
@@ -100,24 +110,24 @@ public class ItemCrystal extends ItemBlock implements ILightsaberComponent
         }
     }
     
-    @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean advanced)
-    {
-        list.add(get(itemstack).getLocalizedName());
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public int getColorFromItemStack(ItemStack itemstack, int metadata)
-    {
-        return get(itemstack).color;
-    }
-    
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister iconRegister)
-    {
-    }
+//    @Override //TODO
+//    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean advanced)
+//    {
+//        list.add(get(itemstack).getLocalizedName());
+//    }
+//
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public int getColorFromItemStack(ItemStack itemstack, int metadata)
+//    {
+//        return get(itemstack).color;
+//    }
+//    
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public void registerIcons(IIconRegister iconRegister)
+//    {
+//    }
     
     public static int getId(ItemStack itemstack)
     {
@@ -126,7 +136,7 @@ public class ItemCrystal extends ItemBlock implements ILightsaberComponent
             itemstack.setItemDamage(itemstack.getTagCompound().getInteger("color"));
             itemstack.getTagCompound().removeTag("color");
             
-            if (itemstack.getTagCompound().hasNoTags())
+            if (itemstack.getTagCompound().isEmpty())
             {
                 itemstack.setTagCompound(null);
             }
@@ -156,12 +166,12 @@ public class ItemCrystal extends ItemBlock implements ILightsaberComponent
     }
 
     public static Map<CrystalColor, EnumRarity> rarityMap = Maps.newHashMap();
-    public static Map<CrystalColor, String[]> chestMap = Maps.newHashMap();
+    public static Map<CrystalColor, ResourceLocation[]> chestMap = Maps.newHashMap();
 
     private static Map<CrystalColor, Integer> genRarityMap = Maps.newHashMap();
     private static final int[] GEN_RARITY = {90, 30, 10, 1};
 
-    public static void registerRarity(CrystalColor color, EnumRarity rarity, String... chests)
+    public static void registerRarity(CrystalColor color, EnumRarity rarity, ResourceLocation... chests)
     {
         rarityMap.put(color, rarity);
         chestMap.put(color, chests);
@@ -180,27 +190,27 @@ public class ItemCrystal extends ItemBlock implements ILightsaberComponent
 
         hasInit = true;
 
-        registerRarity(DEEP_BLUE, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.DUNGEON_CHEST);
-        registerRarity(MEDIUM_BLUE, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.DUNGEON_CHEST);
-        registerRarity(LIGHT_BLUE, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.DUNGEON_CHEST);
-        registerRarity(AMBER, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.PYRAMID_DESERT_CHEST);
-        registerRarity(YELLOW, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.PYRAMID_DESERT_CHEST);
-        registerRarity(GOLD, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.PYRAMID_DESERT_CHEST);
-        registerRarity(LIME_GREEN, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.PYRAMID_JUNGLE_CHEST, ChestGenHooks.PYRAMID_DESERT_CHEST);
-        registerRarity(GREEN, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.PYRAMID_JUNGLE_CHEST);
-        registerRarity(MINT_GREEN, common, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.PYRAMID_JUNGLE_CHEST);
+        registerRarity(DEEP_BLUE, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_SIMPLE_DUNGEON);
+        registerRarity(MEDIUM_BLUE, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_SIMPLE_DUNGEON);
+        registerRarity(LIGHT_BLUE, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_SIMPLE_DUNGEON);
+        registerRarity(AMBER, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_DESERT_PYRAMID);
+        registerRarity(YELLOW, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_DESERT_PYRAMID);
+        registerRarity(GOLD, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_DESERT_PYRAMID);
+        registerRarity(LIME_GREEN, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_JUNGLE_TEMPLE, LootTableList.CHESTS_DESERT_PYRAMID);
+        registerRarity(GREEN, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_JUNGLE_TEMPLE);
+        registerRarity(MINT_GREEN, COMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_JUNGLE_TEMPLE);
 
-        registerRarity(MAGENTA, uncommon, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.DUNGEON_CHEST);
-        registerRarity(PINK, uncommon, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.DUNGEON_CHEST);
-        registerRarity(RED, uncommon, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.VILLAGE_BLACKSMITH);
-        registerRarity(BLOOD_ORANGE, uncommon, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.PYRAMID_DESERT_CHEST);
+        registerRarity(MAGENTA, UNCOMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_SIMPLE_DUNGEON);
+        registerRarity(PINK, UNCOMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_SIMPLE_DUNGEON);
+        registerRarity(RED, UNCOMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_VILLAGE_BLACKSMITH);
+        registerRarity(BLOOD_ORANGE, UNCOMMON, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_DESERT_PYRAMID);
 
-        registerRarity(INDIGO, rare, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.STRONGHOLD_LIBRARY);
-        registerRarity(PURPLE, rare, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.STRONGHOLD_LIBRARY);
-        registerRarity(CYAN, rare, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, ChestGenHooks.STRONGHOLD_LIBRARY);
+        registerRarity(INDIGO, RARE, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_STRONGHOLD_LIBRARY);
+        registerRarity(PURPLE, RARE, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_STRONGHOLD_LIBRARY);
+        registerRarity(CYAN, RARE, ModChestGen.SITH_TOMB_COFFIN, ModChestGen.SITH_TOMB_TREASURY, ModChestGen.SITH_TOMB_ANNEX, LootTableList.CHESTS_STRONGHOLD_LIBRARY);
 
-        registerRarity(ARCTIC_BLUE, epic, ModChestGen.SITH_TOMB_TREASURY, ChestGenHooks.MINESHAFT_CORRIDOR);
-        registerRarity(WHITE, epic, ModChestGen.SITH_TOMB_TREASURY, ChestGenHooks.MINESHAFT_CORRIDOR);
+        registerRarity(ARCTIC_BLUE, EPIC, ModChestGen.SITH_TOMB_TREASURY, LootTableList.CHESTS_ABANDONED_MINESHAFT);
+        registerRarity(WHITE, EPIC, ModChestGen.SITH_TOMB_TREASURY, LootTableList.CHESTS_ABANDONED_MINESHAFT);
     }
 
     static

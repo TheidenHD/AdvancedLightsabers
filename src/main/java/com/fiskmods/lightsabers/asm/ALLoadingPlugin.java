@@ -9,12 +9,12 @@ import com.fiskmods.lightsabers.asm.transformers.ClassTransformerEntityPlayer;
 import com.fiskmods.lightsabers.asm.transformers.ClassTransformerModelBiped;
 import com.fiskmods.lightsabers.asm.transformers.ClassTransformerModelBipedMultiLayer;
 
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.MCVersion;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.asm.AbstractLoadingPlugin;
 
-@MCVersion("1.7.10")
+@MCVersion("1.12.2")
 @TransformerExclusions("com.fiskmods.lightsabers.asm")
 public class ALLoadingPlugin extends AbstractLoadingPlugin
 {

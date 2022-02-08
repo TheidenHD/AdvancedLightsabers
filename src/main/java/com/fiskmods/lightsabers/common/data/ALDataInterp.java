@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import com.fiskmods.lightsabers.Lightsabers;
 import com.google.common.base.Predicate;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.helper.FiskServerUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

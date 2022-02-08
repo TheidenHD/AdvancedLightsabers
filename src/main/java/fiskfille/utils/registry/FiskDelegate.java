@@ -2,12 +2,13 @@ package fiskfille.utils.registry;
 
 import com.google.common.base.Objects;
 
-import cpw.mods.fml.common.registry.RegistryDelegate;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IRegistryDelegate;
 
-public class FiskDelegate<T> implements RegistryDelegate<T>
+public class FiskDelegate<T> implements IRegistryDelegate<T>
 {
     private T referant;
-    private String name;
+    private ResourceLocation name;
     private final Class<T> type;
 
     public FiskDelegate(T referant, Class<T> type)
@@ -23,7 +24,7 @@ public class FiskDelegate<T> implements RegistryDelegate<T>
     }
 
     @Override
-    public String name()
+    public ResourceLocation name()
     {
         return name;
     }
@@ -39,7 +40,7 @@ public class FiskDelegate<T> implements RegistryDelegate<T>
         this.referant = newTarget;
     }
 
-    void setName(String name)
+    void setName(ResourceLocation name)
     {
         this.name = name;
     }
@@ -47,9 +48,9 @@ public class FiskDelegate<T> implements RegistryDelegate<T>
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof Delegate)
+        if (obj instanceof IRegistryDelegate)
         {
-            Delegate<?> other = (Delegate<?>) obj;
+        	IRegistryDelegate<?> other = (IRegistryDelegate<?>) obj;
 
             return Objects.equal(other.name(), name);
         }

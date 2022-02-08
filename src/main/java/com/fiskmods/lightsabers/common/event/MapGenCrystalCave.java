@@ -6,7 +6,7 @@
 //
 //import net.minecraft.block.Block;
 //import net.minecraft.init.Blocks;
-//import net.minecraft.util.MathHelper;
+//import net.minecraft.util.math.MathHelper;
 //import net.minecraft.world.World;
 //import net.minecraft.world.biome.BiomeGenBase;
 //import net.minecraft.world.chunk.Chunk;
@@ -115,12 +115,12 @@
 //
 //                if (randX >= centerX - 16 - width * 2 && randZ >= centerZ - 16 - width * 2 && randX <= centerX + 16 + width * 2 && randZ <= centerZ + 16 + width * 2)
 //                {
-//                    int minX = Math.max(MathHelper.floor_double(randX - width) - chunkX * 16 - 1, 0);
-//                    int maxX = Math.min(MathHelper.floor_double(randX + width) - chunkX * 16 + 1, 16);
-//                    int minY = Math.max(MathHelper.floor_double(randY - height) - 1, 1);
-//                    int maxY = Math.min(MathHelper.floor_double(randY + height) + 1, 248);
-//                    int minZ = Math.max(MathHelper.floor_double(randZ - width) - chunkZ * 16 - 1, 0);
-//                    int maxZ = Math.min(MathHelper.floor_double(randZ + width) - chunkZ * 16 + 1, 16);
+//                    int minX = Math.max(MathHelper.floor(randX - width) - chunkX * 16 - 1, 0);
+//                    int maxX = Math.min(MathHelper.floor(randX + width) - chunkX * 16 + 1, 16);
+//                    int minY = Math.max(MathHelper.floor(randY - height) - 1, 1);
+//                    int maxY = Math.min(MathHelper.floor(randY + height) + 1, 248);
+//                    int minZ = Math.max(MathHelper.floor(randZ - width) - chunkZ * 16 - 1, 0);
+//                    int maxZ = Math.min(MathHelper.floor(randZ + width) - chunkZ * 16 + 1, 16);
 //
 //                    boolean isOcean = false;
 //
@@ -209,7 +209,7 @@
 //        }
 //        
 //        int r = range;
-//        worldObj = world;
+//        world = world;
 //        rand.setSeed(world.getSeed());
 //        long l = rand.nextLong();
 //        long i1 = rand.nextLong();
@@ -292,7 +292,7 @@
 //    //Vanilla bugs to make sure that we generate the map the same way vanilla does.
 //    private boolean isTopBlock(Block[] data, int index, int x, int y, int z, int chunkX, int chunkZ)
 //    {
-//        BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
+//        BiomeGenBase biome = world.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
 //        return isExceptionBiome(biome) ? data[index] == Blocks.grass : data[index] == biome.topBlock;
 //    }
 //
@@ -314,7 +314,7 @@
 //     */
 //    protected void digBlock(Block[] data, int index, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, Random crystalCave)
 //    {
-//        BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
+//        BiomeGenBase biome = world.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
 //        Block filler = isExceptionBiome(biome) ? Blocks.dirt : biome.fillerBlock;
 //        Block top = isExceptionBiome(biome) ? Blocks.grass : biome.topBlock;
 //        Block block = data[index];

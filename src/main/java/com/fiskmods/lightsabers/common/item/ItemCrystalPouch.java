@@ -7,9 +7,8 @@ import com.fiskmods.lightsabers.ALConstants;
 import com.fiskmods.lightsabers.Lightsabers;
 import com.fiskmods.lightsabers.common.lightsaber.CrystalColor;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +16,10 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 
@@ -26,25 +28,31 @@ public class ItemCrystalPouch extends Item
     public static final UUID NULL_UUID = UUID.randomUUID();
     
     @SideOnly(Side.CLIENT)
-    private IIcon overlay;
+    //private IIcon overlay;
     
-    public ItemCrystalPouch()
+    public ItemCrystalPouch(String name)
     {
         super();
         setMaxStackSize(1);
         setHasSubtypes(true);
+        setTranslationKey(name);
+        setRegistryName(name);
+        setCreativeTab(Lightsabers.CREATIVE_TAB);
+
+        ModItems.ITEMS.add(this);
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
+    	ItemStack itemstack = player.getHeldItem(handIn); 
         if (!itemstack.hasTagCompound())
         {
             itemstack.setTagCompound(new NBTTagCompound());
         }
 
         player.openGui(Lightsabers.instance, 3, world, player.inventory.currentItem, 0, 0);
-        return itemstack;
+        return new ActionResult<ItemStack>(EnumActionResult.PASS,itemstack);
     }
     
     @Override
@@ -60,11 +68,11 @@ public class ItemCrystalPouch extends Item
     }
     
     @Override
-    public void getSubItems(Item item, CreativeTabs tab, List list)
+    public void getSubItems(CreativeTabs tab,  NonNullList<ItemStack> items)
     {
         for (CrystalColor color : CrystalColor.values())
         {
-            list.add(ItemCrystal.create(color, ModItems.crystalPouch));
+        	items.add(ItemCrystal.create(color, ModItems.crystalPouch));
         }
     }
     
@@ -74,41 +82,40 @@ public class ItemCrystalPouch extends Item
         return ItemCrystal.rarityMap.get(ItemCrystal.get(itemstack));
     }
     
-    @Override
+//    @Override //TODO
+//    @SideOnly(Side.CLIENT)
+//    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean advanced)
+//    {
+//        list.add(ItemCrystal.get(itemstack).getLocalizedName());
+//    }
+//
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean advanced)
+    public int getColor(ItemStack itemstack)
     {
-        list.add(ItemCrystal.get(itemstack).getLocalizedName());
+        return ItemCrystal.get(itemstack).color;
     }
-    
-    @Override
-    @SideOnly(Side.CLIENT)
-    public int getColorFromItemStack(ItemStack itemstack, int pass)
-    {
-        return pass == 1 ? ItemCrystal.get(itemstack).color : super.getColorFromItemStack(itemstack, pass);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean requiresMultipleRenderPasses()
-    {
-        return true;
-    }
-    
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIconFromDamageForRenderPass(int damage, int pass)
-    {
-        return pass == 1 ? overlay : itemIcon;
-    }
-    
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        super.registerIcons(iconRegister);
-        overlay = iconRegister.registerIcon(getIconString() + "_overlay");
-    }
+//
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public boolean requiresMultipleRenderPasses()
+//    {
+//        return true;
+//    }
+//    
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public IIcon getIconFromDamageForRenderPass(int damage, int pass)
+//    {
+//        return pass == 1 ? overlay : itemIcon;
+//    }
+//    
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public void registerIcons(IIconRegister iconRegister)
+//    {
+//        super.registerIcons(iconRegister);
+//        overlay = iconRegister.registerIcon(getIconString() + "_overlay");
+//    }
     
     public static boolean isPouch(ItemStack stack)
     {

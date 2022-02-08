@@ -8,10 +8,11 @@ import com.fiskmods.lightsabers.common.force.PowerDesc;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Target;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Unit;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 
 public class PowerEffectStealth extends PowerEffectStatus
@@ -39,7 +40,7 @@ public class PowerEffectStealth extends PowerEffectStatus
 
         if (Lightsabers.proxy.isClientPlayer(player))
         {
-            player.playSound(ALSounds.player_force_stealth_on, 1.0F, 1.0F);
+            player.playSound(ALSounds.PLAYER_FORCE_STEALTH_ON, 1.0F, 1.0F);
         }
     }
 
@@ -48,20 +49,20 @@ public class PowerEffectStealth extends PowerEffectStatus
     {
         super.stop(player, side);
         
-        if (!player.isPotionActive(Potion.invisibility))
+        if (!player.isPotionActive(MobEffects.INVISIBILITY))
         {
             player.setInvisible(false);
         }
 
         if (Lightsabers.proxy.isClientPlayer(player))
         {
-            player.playSound(ALSounds.player_force_stealth_off, 1.0F, 1.0F);
+            player.playSound(ALSounds.PLAYER_FORCE_STEALTH_OFF, 1.0F, 1.0F);
         }
     }
 
     @SideOnly(Side.CLIENT)
     public void playSound(EntityPlayer player)
     {
-        Minecraft.getMinecraft().getSoundHandler().playSound(new MovingSoundStatusEffect(player, Effect.STEALTH, ALSounds.ambient_stealth));
+        Minecraft.getMinecraft().getSoundHandler().playSound(new MovingSoundStatusEffect(player, Effect.STEALTH, ALSounds.AMBIENT_STEALTH));
     }
 }

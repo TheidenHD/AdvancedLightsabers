@@ -6,6 +6,7 @@ import com.fiskmods.lightsabers.common.item.ModItems;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class RecipesDoubleLightsaber implements IRecipe
@@ -61,15 +62,39 @@ public class RecipesDoubleLightsaber implements IRecipe
         return null;
     }
 
-    @Override
-    public int getRecipeSize()
-    {
-        return 10;
-    }
+//    @Override //TODO
+//    public int getRecipeSize()
+//    {
+//        return 10;
+//    }
 
     @Override
     public ItemStack getRecipeOutput()
     {
         return new ItemStack(ModItems.doubleLightsaber);
     }
+
+	@Override
+	public IRecipe setRegistryName(ResourceLocation name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResourceLocation getRegistryName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class<IRecipe> getRegistryType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canFit(int width, int height) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

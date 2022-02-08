@@ -1,7 +1,7 @@
 package fiskfille.utils.common.interaction.key;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import fiskfille.utils.common.interaction.InteractionBase;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import fiskfille.utils.common.keybinds.FiskKeyBinding;
@@ -34,7 +34,7 @@ public abstract class KeyPressBase extends InteractionBase
     @Override
     public boolean clientRequirements(EntityPlayer player, InteractionType type, int x, int y, int z)
     {
-        return getKey(player).getIsKeyPressed();
+        return getKey(player).isKeyDown();
     }
     
     @SideOnly(Side.CLIENT)

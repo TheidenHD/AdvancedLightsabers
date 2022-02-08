@@ -12,12 +12,12 @@ import net.minecraft.world.World;
 public class ContainerBasic<T extends TileEntity> extends Container
 {
     protected final T tileentity;
-    protected final World worldObj;
+    protected final World world;
 
     public ContainerBasic(T tile)
     {
         tileentity = tile;
-        worldObj = tile != null ? tile.getWorldObj() : null;
+        world = tile != null ? tile.getWorld() : null;
     }
 
     public void addPlayerInventory(InventoryPlayer inventoryPlayer, int yOffset)
@@ -51,10 +51,10 @@ public class ContainerBasic<T extends TileEntity> extends Container
         {
             if (tileentity instanceof IInventory)
             {
-                return ((IInventory) tileentity).isUseableByPlayer(player);
+                return ((IInventory) tileentity).isUsableByPlayer(player);
             }
 
-            return player.getDistanceSq(tileentity.xCoord + 0.5D, tileentity.yCoord + 0.5D, tileentity.zCoord + 0.5D) <= 64.0D;
+            return player.getDistanceSq(tileentity.getPos().getX() + 0.5D, tileentity.getPos().getY() + 0.5D, tileentity.getPos().getZ() + 0.5D) <= 64.0D;
         }
 
         return true;
@@ -81,7 +81,7 @@ public class ContainerBasic<T extends TileEntity> extends Container
 
         if (stackToMove.isStackable())
         {
-            while (stackToMove.stackSize > 0 && (!descending && id < toId || descending && id >= fromId))
+            while (stackToMove.getCount() > 0 && (!descending && id < toId || descending && id >= fromId))
             {
                 slot = (Slot) inventorySlots.get(id);
                 dstStack = slot.getStack();
@@ -89,19 +89,19 @@ public class ContainerBasic<T extends TileEntity> extends Container
                 if ((!check || slot.isItemValid(stackToMove)) && dstStack != null && dstStack.getItem() == stackToMove.getItem() && (!stackToMove.getHasSubtypes() || stackToMove.getItemDamage() == dstStack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackToMove, dstStack))
                 {
                     int maxStackSize = Math.min(slot.inventory.getInventoryStackLimit(), Math.min(dstStack.getMaxStackSize(), slot.getSlotStackLimit()));
-                    int combinedStackSize = dstStack.stackSize + stackToMove.stackSize;
+                    int combinedStackSize = dstStack.getCount() + stackToMove.getCount();
 
                     if (combinedStackSize <= maxStackSize)
                     {
-                        stackToMove.stackSize = 0;
-                        dstStack.stackSize = combinedStackSize;
+                        stackToMove.setCount(0);
+                        dstStack.setCount(combinedStackSize);
                         slot.onSlotChanged();
                         success = true;
                     }
-                    else if (dstStack.stackSize < maxStackSize)
+                    else if (dstStack.getCount() < maxStackSize)
                     {
-                        stackToMove.stackSize -= maxStackSize - dstStack.stackSize;
-                        dstStack.stackSize = maxStackSize;
+                        stackToMove.setCount(stackToMove.getCount()-(maxStackSize - dstStack.getCount()));
+                        dstStack.setCount(maxStackSize);
                         slot.onSlotChanged();
                         success = true;
                     }
@@ -118,7 +118,7 @@ public class ContainerBasic<T extends TileEntity> extends Container
             }
         }
 
-        if (stackToMove.stackSize > 0)
+        if (stackToMove.getCount() > 0)
         {
             if (descending)
             {
@@ -138,11 +138,11 @@ public class ContainerBasic<T extends TileEntity> extends Container
                 {
                     int maxStackSize = Math.min(slot.inventory.getInventoryStackLimit(), Math.min(stackToMove.getMaxStackSize(), slot.getSlotStackLimit()));
                     ItemStack itemstack1 = stackToMove.copy();
-                    itemstack1.stackSize = Math.min(maxStackSize, itemstack1.stackSize);
+                    itemstack1.setCount(Math.min(maxStackSize, itemstack1.getCount()));
                     slot.putStack(itemstack1);
 
                     maxStackSize = Math.min(slot.inventory.getInventoryStackLimit(), Math.min(slot.getStack().getMaxStackSize(), slot.getSlotStackLimit()));
-                    stackToMove.stackSize = Math.max(stackToMove.stackSize - itemstack1.stackSize, 0);
+                    stackToMove.setCount(Math.max(stackToMove.getCount() - itemstack1.getCount(), 0));
                     slot.onSlotChanged();
                     success = true;
                     break;

@@ -1,91 +1,69 @@
 buildscript {
     repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        jcenter()
+        maven { url = "https://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
 
-apply plugin: 'forge'
 
-version = "1.2.2"
-group = "com.fiskmods.lightsabers"
-archivesBaseName = "AdvancedLightsabers-1.7.10"
+group = 'com.fiskmods.lightsabers'
+version = '1.2.3'
+archivesBaseName = 'AdvancedLightsabers-1.12.2'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
 
 minecraft {
-    version = "1.7.10-10.13.4.1558-1.7.10"
-    runDir = "eclipse"
-    replace '${version}', '1.2.2'
+    version = "1.12.2-14.23.5.2847"
+    runDir = "run"
+    mappings = 'stable_39'
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDir 'resources'
-        }
+repositories {
+    maven {
+        name = "CB Repo."
+        url = "https://chickenbones.net/maven/"
     }
-}
-
-def coremodManifest = {
-    attributes 'FMLCorePlugin': 'com.fiskmods.lightsabers.asm.ALLoadingPlugin'
-    attributes 'FMLCorePluginContainsFMLMod': 'true'
-	attributes 'Main-Class': 'com.fiskmods.lightsabers.saberbuilder.SaberBuilder'
-	attributes 'Class-Path': '.'
-}
-
-jar {
-    destinationDir = file 'jars'
-    includeEmptyDirs = false
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	
-    manifest coremodManifest
+    maven {
+        name = "JEI Maven."
+        url = "https://dvs1.progwml6.com/files/maven"
+    }
 }
 
 dependencies {
+    // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft' it is assumed
+    // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
+    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
+
+
+    implementation "codechicken:CodeChickenLib:1.12.2-3.2.3.358:deobf"
+    compile "mezz.jei:jei_1.12.2:4.16.1.301"
+    implementation "codechicken:NotEnoughItems:1.12.2-2.4.3.245:deobf"
+
 }
 
 processResources {
+    // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
+    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
+
+        // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
+    // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
 }
 
-task deobfJar(type: Jar) {
-	destinationDir = file 'jars'
-    classifier = 'deobf'
-	
-	from sourceSets.main.output
-	manifest coremodManifest
-}
-
-task sourceJar(type: Jar, dependsOn:classes) {
-	destinationDir = file 'jars'
-    classifier = 'src'
-	
-    from sourceSets.main.allJava
-}
-
-artifacts {
-    archives deobfJar
-    archives sourceJar
-}

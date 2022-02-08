@@ -177,7 +177,7 @@ public abstract class AbstractLightsaberData
      * Sets the {@link Hilt} design of the lightsaber component in the given {@link PartType} slot.
      *
      * @param type - The component slot
-     * @param id - The hilt design
+     * //@param id - The hilt design
      * @return this
      */
     public AbstractLightsaberData set(PartType type, Hilt hilt)

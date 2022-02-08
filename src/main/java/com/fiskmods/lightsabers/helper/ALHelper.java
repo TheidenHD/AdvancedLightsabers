@@ -24,9 +24,8 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ALHelper
@@ -181,7 +180,7 @@ public class ALHelper
         {
             return true;
         }
-        else if (entity instanceof EntityMob || entity.getAITarget() == to)
+        else if (entity instanceof EntityMob || entity.getRevengeTarget() == to)
         {
             return false;
         }
@@ -189,12 +188,12 @@ public class ALHelper
         {
             return true;
         }
-        else if (to.getLastAttacker() == entity)
+        else if (to.getLastAttackedEntity() == entity)
         {
-            return to.getLastAttackerTime() > 1200;
+            return to.getLastAttackedEntityTime() > 1200;
         }
 
-        return to.ridingEntity == entity;
+        return to.getRidingEntity() == entity;
     }
 
     public static EntityLivingBase getForceLightningTarget(EntityLivingBase caster)
@@ -203,10 +202,10 @@ public class ALHelper
 
         if (effect != null)
         {
-            Vec3 src = VectorHelper.getOffsetCoords(caster, 0, 0, 0);
-            Vec3 dst = VectorHelper.getOffsetCoords(caster, 0, 0, 7);
-            Vec3 hitVec = null;
-            MovingObjectPosition rayTrace = caster.worldObj.rayTraceBlocks(VectorHelper.copy(src), VectorHelper.copy(dst));
+            Vec3d src = VectorHelper.getOffsetCoords(caster, 0, 0, 0);
+            Vec3d dst = VectorHelper.getOffsetCoords(caster, 0, 0, 7);
+            Vec3d hitVec = null;
+            RayTraceResult rayTrace = caster.getEntityWorld().rayTraceBlocks(VectorHelper.copy(src), VectorHelper.copy(dst));
 
             if (rayTrace == null)
             {
@@ -217,21 +216,19 @@ public class ALHelper
                 hitVec = rayTrace.hitVec;
             }
 
-            double distance = caster.getDistance(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord);
+            double distance = caster.getDistance(hitVec.x, hitVec.y, hitVec.z);
 
             for (double point = 0; point <= distance; point += 0.15D)
             {
-                Vec3 particleVec = VectorHelper.getOffsetCoords(caster, 0, 0, point);
+                Vec3d particleVec = VectorHelper.getOffsetCoords(caster, 0, 0, point);
 
-                for (EntityLivingBase entity : VectorHelper.getEntitiesNear(EntityLivingBase.class, caster.worldObj, particleVec, 1))
+                for (EntityLivingBase entity : VectorHelper.getEntitiesNear(EntityLivingBase.class, caster.getEntityWorld(), particleVec, 1))
                 {
-                    if (entity != null && entity != caster && caster.ridingEntity != entity)
+                    if (entity != null && entity != caster && caster.getRidingEntity() != entity)
                     {
-                        hitVec.xCoord = entity.posX;
-                        hitVec.yCoord = entity.posY;
-                        hitVec.zCoord = entity.posZ;
-                        rayTrace = new MovingObjectPosition(entity, hitVec);
-                        distance = caster.getDistance(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord);
+                    	hitVec = entity.getPositionVector();
+                        rayTrace = new RayTraceResult(entity, hitVec);
+                        distance = caster.getDistance(hitVec.x, hitVec.y, hitVec.z);
                         break;
                     }
                 }
@@ -239,7 +236,7 @@ public class ALHelper
 
             if (rayTrace != null)
             {
-                if (rayTrace.typeOfHit == MovingObjectType.ENTITY && rayTrace.entityHit instanceof EntityLivingBase)
+                if (rayTrace.typeOfHit == RayTraceResult.Type.ENTITY && rayTrace.entityHit instanceof EntityLivingBase)
                 {
                     EntityLivingBase entity = (EntityLivingBase) rayTrace.entityHit;
 
@@ -251,7 +248,7 @@ public class ALHelper
         return null;
     }
 
-    public static Lightning createLightning(Vec3 color, long seed, float length)
+    public static Lightning createLightning(Vec3d color, long seed, float length)
     {
         Random rand = new Random();
 
@@ -291,28 +288,28 @@ public class ALHelper
         float f1 = rand.nextFloat() * 0.8F + 0.1F;
         float f2 = rand.nextFloat() * 0.8F + 0.1F;
 
-        while (stack.stackSize > 0)
+        while (stack.getCount() > 0)
         {
             int i = rand.nextInt(21) + 10;
 
-            if (i > stack.stackSize)
+            if (i > stack.getCount())
             {
-                i = stack.stackSize;
+                i = stack.getCount();
             }
 
-            stack.stackSize -= i;
+            stack.setCount(stack.getCount()-i);
             EntityItem entity = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(stack.getItem(), i, stack.getItemDamage()));
 
             if (stack.hasTagCompound())
             {
-                entity.getEntityItem().setTagCompound((NBTTagCompound) stack.getTagCompound().copy());
+                entity.getItem().setTagCompound((NBTTagCompound) stack.getTagCompound().copy());
             }
 
             float f3 = 0.05F;
             entity.motionX = (float) rand.nextGaussian() * f3;
             entity.motionY = (float) rand.nextGaussian() * f3 + 0.2F;
             entity.motionZ = (float) rand.nextGaussian() * f3;
-            world.spawnEntityInWorld(entity);
+            world.spawnEntity(entity);
         }
     }
 }

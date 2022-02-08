@@ -4,7 +4,7 @@ import com.fiskmods.lightsabers.common.data.effect.Effect;
 import com.fiskmods.lightsabers.common.force.PowerDesc;
 import com.fiskmods.lightsabers.common.force.PowerDesc.Target;
 
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 public class PowerEffectGaze extends PowerEffectInstant
 {
@@ -18,6 +18,6 @@ public class PowerEffectGaze extends PowerEffectInstant
     {
         Object[][] args = {{Target.MOBS}, {Target.MOBS, Target.PLAYERS}, {Target.MOBS, Target.PLAYERS, Target.INVISIBLE}};
 
-        return new String[] {PowerDesc.create("highlight", PowerDesc.list(args[amplifier]), PowerDesc.format("%s%s", EnumChatFormatting.GRAY, duration))};
+        return new String[] {PowerDesc.create("highlight", PowerDesc.list(args[amplifier]), PowerDesc.format("%s%s", TextFormatting.GRAY, duration))};
     }
 }

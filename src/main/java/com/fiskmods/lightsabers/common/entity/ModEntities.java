@@ -2,7 +2,7 @@ package com.fiskmods.lightsabers.common.entity;
 
 import com.fiskmods.lightsabers.Lightsabers;
 
-import cpw.mods.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraft.entity.Entity;
 
 public class ModEntities
@@ -17,12 +17,12 @@ public class ModEntities
     
     private static void registerEntity(Class<? extends Entity> entityClass, String name, int trackingRange, int updateFrequency, boolean sendVelocityUpdates)
     {
-        EntityRegistry.registerModEntity(entityClass, name, ++nextID, Lightsabers.instance, trackingRange, updateFrequency, sendVelocityUpdates);
+        //EntityRegistry.registerModEntity(entityClass, name, ++nextID, Lightsabers.instance, trackingRange, updateFrequency, sendVelocityUpdates); //TODO
     }
 
     private static void registerEntityWithEgg(Class<? extends Entity> entityClass, String name, int trackingRange, int updateFrequency, boolean sendVelocityUpdates, int primary, int secondary)
     {
-        EntityRegistry.registerGlobalEntityID(entityClass, Lightsabers.MODID + "." + name, EntityRegistry.findGlobalUniqueEntityId(), primary, secondary);
+        //EntityRegistry.registerGlobalEntityID(entityClass, Lightsabers.MODID + "." + name, EntityRegistry.findGlobalUniqueEntityId(), primary, secondary); //TODO
         registerEntity(entityClass, name, trackingRange, updateFrequency, sendVelocityUpdates);
     }
 }

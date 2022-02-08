@@ -2,7 +2,7 @@ package com.fiskmods.lightsabers.common.keybinds;
 
 import org.lwjgl.input.Keyboard;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import fiskfille.utils.common.keybinds.FiskKeyBinding;
 
 public class ALKeyBinds

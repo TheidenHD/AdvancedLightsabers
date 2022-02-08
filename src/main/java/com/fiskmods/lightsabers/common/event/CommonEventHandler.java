@@ -14,8 +14,8 @@ import com.fiskmods.lightsabers.common.container.InventoryCrystalPouch;
 import com.fiskmods.lightsabers.common.damage.ALDamageSources;
 import com.fiskmods.lightsabers.common.damage.ALDamageTypes;
 import com.fiskmods.lightsabers.common.data.ALData;
-import com.fiskmods.lightsabers.common.data.ALEntityData;
-import com.fiskmods.lightsabers.common.data.ALPlayerData;
+//import com.fiskmods.lightsabers.common.data.ALEntityData; //TODO
+//import com.fiskmods.lightsabers.common.data.ALPlayerData;
 import com.fiskmods.lightsabers.common.data.effect.Effect;
 import com.fiskmods.lightsabers.common.data.effect.StatusEffect;
 import com.fiskmods.lightsabers.common.entity.EntityForceLightning;
@@ -35,10 +35,10 @@ import com.fiskmods.lightsabers.common.network.MessagePlayerJoin;
 import com.fiskmods.lightsabers.helper.ALHelper;
 import com.google.common.collect.Iterables;
 
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import fiskfille.utils.helper.FiskServerUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -49,7 +49,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.StringUtils;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
@@ -70,8 +70,8 @@ public class CommonEventHandler
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event)
     {
-        Entity entity = event.entity;
-        World world = entity.worldObj;
+        Entity entity = event.getEntity();
+        World world = entity.getEntityWorld();
 
         if (entity instanceof EntityPlayer)
         {
@@ -87,24 +87,24 @@ public class CommonEventHandler
     @SubscribeEvent
     public void onEntityConstruct(EntityConstructing event)
     {
-        event.entity.registerExtendedProperties(ALEntityData.IDENTIFIER, new ALEntityData());
-
-        if (event.entity instanceof EntityPlayer)
-        {
-            event.entity.registerExtendedProperties(ALPlayerData.IDENTIFIER, new ALPlayerData());
-        }
+//        event.getEntity().registerExtendedProperties(ALEntityData.IDENTIFIER, new ALEntityData()); //TODO
+//
+//        if (event.getEntity() instanceof EntityPlayer)
+//        {
+//            event.getEntity().registerExtendedProperties(ALPlayerData.IDENTIFIER, new ALPlayerData());
+//        }
     }
 
     @SubscribeEvent
     public void onStartTracking(StartTracking event)
     {
-        EntityPlayer player = event.entityPlayer;
+        EntityPlayer player = event.getEntityPlayer();
 
-        if (player != null && !player.worldObj.isRemote)
+        if (player != null && !player.getEntityWorld().isRemote)
         {
-            if (event.target instanceof EntityPlayer)
+            if (event.getTarget() instanceof EntityPlayer)
             {
-                EntityPlayerMP tracked = (EntityPlayerMP) event.target;
+                EntityPlayerMP tracked = (EntityPlayerMP) event.getTarget();
                 ALNetworkManager.wrapper.sendTo(new MessageBroadcastState(player), tracked);
                 ALNetworkManager.wrapper.sendTo(new MessageBroadcastState(tracked), (EntityPlayerMP) player);
             }
@@ -114,341 +114,341 @@ public class CommonEventHandler
     @SubscribeEvent
     public void onPlayerClone(PlayerEvent.Clone event)
     {
-        ALPlayerData.getData(event.entityPlayer).copy(ALPlayerData.getData(event.original));
+        //ALPlayerData.getData(event.getEntityPlayer()).copy(ALPlayerData.getData(event.getOriginal())); //TODO
     }
 
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent event)
     {
-        EntityPlayer player = event.player;
-        World world = player.worldObj;
-
-        if (event.phase == Phase.END)
-        {
-            List<Power> selectedPowers = ALData.SELECTED_POWERS.get(player);
-            
-            for (int i = 0; i < selectedPowers.size(); ++i)
-            {
-                Power power = selectedPowers.get(i);
-                
-                if (power != null)
-                {
-                    Set<Power> set;
-                    
-                    while (!(set = ALHelper.getUnlockedChildren(player, power)).isEmpty())
-                    {
-                        power = Iterables.get(set, 0);
-                    }
-
-                    while (power != null && !PowerManager.hasPowerUnlocked(player, power))
-                    {
-                        power = power.parent;
-                    }
-
-                    selectedPowers.set(i, power);
-                }
-            }
-
-            if (ALData.USING_POWER.get(player))
-            {
-                ALData.TICKS_USING_POWER.incrWithoutNotify(player, 1);
-            }
-            else
-            {
-                ALData.TICKS_USING_POWER.setWithoutNotify(player, 0);
-            }
-
-            Power power = PowerManager.getSelectedPower(player);
-
-            if (player.isEntityAlive())
-            {
-                int max = ALHelper.getForcePowerMax(player);
-                
-                if (max > 0)
-                {
-                    if (ALData.USE_POWER_COOLDOWN.get(player) > 0)
-                    {
-                        ALData.USE_POWER_COOLDOWN.incrWithoutNotify(player, -1);
-                    }
-
-                    if (power != null && ALData.USING_POWER.get(player))
-                    {
-                        if (power.powerStats.powerType == PowerType.PER_SECOND && ALData.FORCE_POWER.get(player) >= power.getUseCost(player) && power.powerEffect.execute(player, event.side))
-                        {
-                            ALData.FORCE_POWER.incrWithoutNotify(player, -power.getUseCost(player) / 20);
-                        }
-                    }
-                    else if (ALData.FORCE_POWER_DIFF.get(player) <= ALData.FORCE_POWER.get(player))
-                    {
-                        ALData.FORCE_POWER.incrWithoutNotify(player, ALHelper.getForcePowerRegen(player) / 20);
-                    }
-
-                    ALData.FORCE_POWER.clampWithoutNotify(player, 0.0F, (float) max);
-                }
-
-                String drainingTo = ALData.DRAINING_XP_TO.get(player);
-
-                if (!StringUtils.isNullOrEmpty(drainingTo))
-                {
-                    Power power1 = Power.getPowerFromName(drainingTo);
-
-                    if (power1 != null)
-                    {
-                        PowerData data = PowerManager.getPowerData(player, power1);
-
-                        if (data != null && !data.isUnlocked())
-                        {
-                            if (data.xpInvested >= power1.getActualXpCost(player))
-                            {
-                                data.setUnlocked(player, true);
-                                ALData.BASE_POWER.incrWithoutNotify(player, (byte) (power1.powerStats.baseBonus - power1.powerStats.baseRequirement));
-
-                                if (Lightsabers.proxy.isClientPlayer(player))
-                                {
-                                    player.playSound(ALSounds.block_holocron_unlock, 1.0F, 1.0F);
-                                }
-                            }
-                            else
-                            {
-                                int i = power1.getActualXpCost(player) / 40;
-
-                                if (i > MathHelper.floor_float(ALData.FORCE_XP.get(player)))
-                                {
-                                    i = MathHelper.floor_float(ALData.FORCE_XP.get(player));
-                                }
-
-                                if (i > power1.getActualXpCost(player) - data.xpInvested)
-                                {
-                                    i = power1.getActualXpCost(player) - data.xpInvested;
-                                }
-
-                                data.xpInvested += i;
-                                ALData.FORCE_XP.incrWithoutNotify(player, -(float) i);
-
-                                if (Lightsabers.proxy.isClientPlayer(player))
-                                {
-                                    Random rand = new Random();
-                                    player.playSound(ALSounds.block_holocron_invest, 1, 1.1F + (rand.nextFloat() - rand.nextFloat()) * 0.2F);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (ALData.FORCE_POWER_DIFF.get(player) > ALData.FORCE_POWER.get(player))
-            {
-                ALData.FORCE_POWER_DIFF.incrWithoutNotify(player, -7.5F);
-                ALData.FORCE_POWER_DIFF.clampWithoutNotify(player, 0.0F, ALData.FORCE_POWER_DIFF.get(player));
-            }
-            else
-            {
-                ALData.FORCE_POWER_DIFF.setWithoutNotify(player, ALData.FORCE_POWER.get(player));
-            }
-
-            if (ALData.FORCE_PUSHING_TIMER.get(player) > 0)
-            {
-                ALData.FORCE_PUSHING_TIMER.incrWithoutNotify(player, -0.075F);
-                ALData.FORCE_PUSHING_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
-            }
-            else
-            {
-                ALData.FORCE_PUSHING_TIMER.setWithoutNotify(player, 0.0F);
-            }
-
-            StatusEffect effectLightning = StatusEffect.get(player, Effect.LIGHTNING);
-
-            if (ALData.DRAIN_LIFE_TIMER.get(player) > 0 || effectLightning != null)
-            {
-                if (world.isRemote)
-                {
-                    world.spawnEntityInWorld(new EntityForceLightning(world, player));
-                }
-            }
-
-            if (ALData.DRAIN_LIFE_TIMER.get(player) > 0)
-            {
-                float decr = 1F / 30;
-                ALData.DRAIN_LIFE_TIMER.incrWithoutNotify(player, -decr);
-                ALData.DRAIN_LIFE_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
-
-                List list1 = world.loadedEntityList;
-
-                for (int i = 0; i < list1.size(); ++i)
-                {
-                    if (list1.get(i) instanceof EntityLivingBase)
-                    {
-                        EntityLivingBase entity = (EntityLivingBase) list1.get(i);
-                        StatusEffect effect = StatusEffect.get(entity, Effect.DRAIN);
-
-                        if (effect != null && effect.casterUUID != null && effect.casterUUID.equals(player.getUniqueID()))
-                        {
-                            float f = decr * (4 + effect.amplifier * 2) * 5;
-                            float prevHealth = entity.getHealth();
-
-                            if (effect.duration % 5 == 0)
-                            {
-                                entity.hurtResistantTime = 0;
-                                entity.attackEntityFrom(ALDamageSources.causeForceLightningDamage(player), f);
-                                player.heal(Math.max(prevHealth - entity.getHealth(), 0));
-                            }
-
-                            entity.motionX = 0;
-                            entity.motionY = 0.05F;
-                            entity.motionZ = 0;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                ALData.DRAIN_LIFE_TIMER.setWithoutNotify(player, 0.0F);
-            }
-
-            if (!StatusEffect.getTargets(player, Effect.CHOKE).isEmpty())
-            {
-                float decr = 1F / 60;
-                List list1 = world.loadedEntityList;
-
-                for (int i = 0; i < list1.size(); ++i)
-                {
-                    if (list1.get(i) instanceof EntityLivingBase)
-                    {
-                        EntityLivingBase entity = (EntityLivingBase) list1.get(i);
-                        StatusEffect effect = StatusEffect.get(entity, Effect.CHOKE);
-
-                        if (effect != null && effect.casterUUID != null && effect.casterUUID.equals(player.getUniqueID()))
-                        {
-                            float f = decr * (2 + effect.amplifier * 2) * 5;
-
-                            if (effect.duration % 5 == 0)
-                            {
-                                entity.hurtResistantTime = 0;
-                                entity.attackEntityFrom(ALDamageSources.causeForceDamage(player), f);
-                            }
-
-                            entity.motionX = 0;
-                            entity.motionY = 0.001F * effect.duration;
-                            entity.motionZ = 0;
-                        }
-                    }
-                }
-            }
-
-            boolean rightArm = effectLightning != null || !StatusEffect.getTargets(player, Effect.CHOKE).isEmpty();
-            boolean leftArm = effectLightning != null || !StatusEffect.getTargets(player, Effect.CHOKE, 2).isEmpty();
-
-            if (rightArm)
-            {
-                ALData.RIGHT_ARM_TIMER.incrWithoutNotify(player, 0.33F);
-            }
-            else
-            {
-                ALData.RIGHT_ARM_TIMER.incrWithoutNotify(player, -0.33F);
-            }
-
-            if (leftArm)
-            {
-                ALData.LEFT_ARM_TIMER.incrWithoutNotify(player, 0.33F);
-            }
-            else
-            {
-                ALData.LEFT_ARM_TIMER.incrWithoutNotify(player, -0.33F);
-            }
-
-            boolean flag = ALData.USING_POWER.get(player);
-            boolean flag1 = ALData.PREV_USING_POWER.get(player);
-
-            if (power != null)
-            {
-                if (power.powerEffect instanceof PowerEffectActive)
-                {
-                    PowerEffectActive effect = (PowerEffectActive) power.powerEffect;
-
-                    if (flag && !flag1)
-                    {
-                        effect.start(player, event.side);
-                    }
-
-                    if (!flag && flag1)
-                    {
-                        effect.stop(player, event.side);
-                    }
-                }
-            }
-
-            if (ALData.PREV_XP.get(player) < ALHelper.getTotalXp(player))
-            {
-                float f = ALHelper.getTotalXp(player) - ALData.PREV_XP.get(player);
-                ALData.FORCE_XP.incrWithoutNotify(player, f / 2);
-            }
-
-            if (ALData.BASE_POWER.get(player) < 0)
-            {
-                ALData.BASE_POWER.setWithoutNotify(player, (byte) Math.max(ALHelper.getBasePower(player), 0));
-            }
-
-            if (PowerManager.hasPowerUnlocked(player, Power.FORCE_SENSITIVITY))
-            {
-                PowerManager.getPowerData(player, Power.LIGHT_SIDE).setUnlocked(player, true);
-                PowerManager.getPowerData(player, Power.DARK_SIDE).setUnlocked(player, true);
-                PowerManager.getPowerData(player, Power.NEUTRAL).setUnlocked(player, true);
-            }
-
-            ALData.FORCE_POWER.clampWithoutNotify(player, 0.0F, (float) ALHelper.getForcePowerMax(player));
-            ALData.FORCE_POWER_DIFF.clampWithoutNotify(player, 0.0F, (float) ALHelper.getForcePowerMax(player));
-
-            ALData.PREV_XP.setWithoutNotify(player, ALHelper.getTotalXp(player));
-            ALData.PREV_USING_POWER.setWithoutNotify(player, ALData.USING_POWER.get(player));
-            ALData.RIGHT_ARM_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
-            ALData.LEFT_ARM_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
-        }
-        else
-        {
-            ALData.onUpdate(player);
-        }
+//        EntityPlayer player = event.player; //TODO ALData
+//        World world = player.getEntityWorld();
+//
+//        if (event.phase == Phase.END)
+//        {
+//            List<Power> selectedPowers = ALData.SELECTED_POWERS.get(player);
+//
+//            for (int i = 0; i < selectedPowers.size(); ++i)
+//            {
+//                Power power = selectedPowers.get(i);
+//
+//                if (power != null)
+//                {
+//                    Set<Power> set;
+//
+//                    while (!(set = ALHelper.getUnlockedChildren(player, power)).isEmpty())
+//                    {
+//                        power = Iterables.get(set, 0);
+//                    }
+//
+//                    while (power != null && !PowerManager.hasPowerUnlocked(player, power))
+//                    {
+//                        power = power.parent;
+//                    }
+//
+//                    selectedPowers.set(i, power);
+//                }
+//            }
+//
+//            if (ALData.USING_POWER.get(player))
+//            {
+//                ALData.TICKS_USING_POWER.incrWithoutNotify(player, 1);
+//            }
+//            else
+//            {
+//                ALData.TICKS_USING_POWER.setWithoutNotify(player, 0);
+//            }
+//
+//            Power power = PowerManager.getSelectedPower(player);
+//
+//            if (player.isEntityAlive())
+//            {
+//                int max = ALHelper.getForcePowerMax(player);
+//
+//                if (max > 0)
+//                {
+//                    if (ALData.USE_POWER_COOLDOWN.get(player) > 0)
+//                    {
+//                        ALData.USE_POWER_COOLDOWN.incrWithoutNotify(player, -1);
+//                    }
+//
+//                    if (power != null && ALData.USING_POWER.get(player))
+//                    {
+//                        if (power.powerStats.powerType == PowerType.PER_SECOND && ALData.FORCE_POWER.get(player) >= power.getUseCost(player) && power.powerEffect.execute(player, event.side))
+//                        {
+//                            ALData.FORCE_POWER.incrWithoutNotify(player, -power.getUseCost(player) / 20);
+//                        }
+//                    }
+//                    else if (ALData.FORCE_POWER_DIFF.get(player) <= ALData.FORCE_POWER.get(player))
+//                    {
+//                        ALData.FORCE_POWER.incrWithoutNotify(player, ALHelper.getForcePowerRegen(player) / 20);
+//                    }
+//
+//                    ALData.FORCE_POWER.clampWithoutNotify(player, 0.0F, (float) max);
+//                }
+//
+//                String drainingTo = ALData.DRAINING_XP_TO.get(player);
+//
+//                if (!StringUtils.isNullOrEmpty(drainingTo))
+//                {
+//                    Power power1 = Power.getPowerFromName(drainingTo);
+//
+//                    if (power1 != null)
+//                    {
+//                        PowerData data = PowerManager.getPowerData(player, power1);
+//
+//                        if (data != null && !data.isUnlocked())
+//                        {
+//                            if (data.xpInvested >= power1.getActualXpCost(player))
+//                            {
+//                                data.setUnlocked(player, true);
+//                                ALData.BASE_POWER.incrWithoutNotify(player, (byte) (power1.powerStats.baseBonus - power1.powerStats.baseRequirement));
+//
+//                                if (Lightsabers.proxy.isClientPlayer(player))
+//                                {
+//                                    player.playSound(ALSounds.BLOCK_HOLOCRON_UNLOCK, 1.0F, 1.0F);
+//                                }
+//                            }
+//                            else
+//                            {
+//                                int i = power1.getActualXpCost(player) / 40;
+//
+//                                if (i > MathHelper.floor(ALData.FORCE_XP.get(player)))
+//                                {
+//                                    i = MathHelper.floor(ALData.FORCE_XP.get(player));
+//                                }
+//
+//                                if (i > power1.getActualXpCost(player) - data.xpInvested)
+//                                {
+//                                    i = power1.getActualXpCost(player) - data.xpInvested;
+//                                }
+//
+//                                data.xpInvested += i;
+//                                ALData.FORCE_XP.incrWithoutNotify(player, -(float) i);
+//
+//                                if (Lightsabers.proxy.isClientPlayer(player))
+//                                {
+//                                    Random rand = new Random();
+//                                    player.playSound(ALSounds.BLOCK_HOLOCRON_INVEST, 1, 1.1F + (rand.nextFloat() - rand.nextFloat()) * 0.2F);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (ALData.FORCE_POWER_DIFF.get(player) > ALData.FORCE_POWER.get(player))
+//            {
+//                ALData.FORCE_POWER_DIFF.incrWithoutNotify(player, -7.5F);
+//                ALData.FORCE_POWER_DIFF.clampWithoutNotify(player, 0.0F, ALData.FORCE_POWER_DIFF.get(player));
+//            }
+//            else
+//            {
+//                ALData.FORCE_POWER_DIFF.setWithoutNotify(player, ALData.FORCE_POWER.get(player));
+//            }
+//
+//            if (ALData.FORCE_PUSHING_TIMER.get(player) > 0)
+//            {
+//                ALData.FORCE_PUSHING_TIMER.incrWithoutNotify(player, -0.075F);
+//                ALData.FORCE_PUSHING_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
+//            }
+//            else
+//            {
+//                ALData.FORCE_PUSHING_TIMER.setWithoutNotify(player, 0.0F);
+//            }
+//
+//            StatusEffect effectLightning = StatusEffect.get(player, Effect.LIGHTNING);
+//
+//            if (ALData.DRAIN_LIFE_TIMER.get(player) > 0 || effectLightning != null)
+//            {
+//                if (world.isRemote)
+//                {
+//                    world.spawnEntity(new EntityForceLightning(world, player));
+//                }
+//            }
+//
+//            if (ALData.DRAIN_LIFE_TIMER.get(player) > 0)
+//            {
+//                float decr = 1F / 30;
+//                ALData.DRAIN_LIFE_TIMER.incrWithoutNotify(player, -decr);
+//                ALData.DRAIN_LIFE_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
+//
+//                List list1 = world.loadedEntityList;
+//
+//                for (int i = 0; i < list1.size(); ++i)
+//                {
+//                    if (list1.get(i) instanceof EntityLivingBase)
+//                    {
+//                        EntityLivingBase entity = (EntityLivingBase) list1.get(i);
+//                        StatusEffect effect = StatusEffect.get(entity, Effect.DRAIN);
+//
+//                        if (effect != null && effect.casterUUID != null && effect.casterUUID.equals(player.getUniqueID()))
+//                        {
+//                            float f = decr * (4 + effect.amplifier * 2) * 5;
+//                            float prevHealth = entity.getHealth();
+//
+//                            if (effect.duration % 5 == 0)
+//                            {
+//                                entity.hurtResistantTime = 0;
+//                                entity.attackEntityFrom(ALDamageSources.causeForceLightningDamage(player), f);
+//                                player.heal(Math.max(prevHealth - entity.getHealth(), 0));
+//                            }
+//
+//                            entity.motionX = 0;
+//                            entity.motionY = 0.05F;
+//                            entity.motionZ = 0;
+//                        }
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                ALData.DRAIN_LIFE_TIMER.setWithoutNotify(player, 0.0F);
+//            }
+//
+//            if (!StatusEffect.getTargets(player, Effect.CHOKE).isEmpty())
+//            {
+//                float decr = 1F / 60;
+//                List list1 = world.loadedEntityList;
+//
+//                for (int i = 0; i < list1.size(); ++i)
+//                {
+//                    if (list1.get(i) instanceof EntityLivingBase)
+//                    {
+//                        EntityLivingBase entity = (EntityLivingBase) list1.get(i);
+//                        StatusEffect effect = StatusEffect.get(entity, Effect.CHOKE);
+//
+//                        if (effect != null && effect.casterUUID != null && effect.casterUUID.equals(player.getUniqueID()))
+//                        {
+//                            float f = decr * (2 + effect.amplifier * 2) * 5;
+//
+//                            if (effect.duration % 5 == 0)
+//                            {
+//                                entity.hurtResistantTime = 0;
+//                                entity.attackEntityFrom(ALDamageSources.causeForceDamage(player), f);
+//                            }
+//
+//                            entity.motionX = 0;
+//                            entity.motionY = 0.001F * effect.duration;
+//                            entity.motionZ = 0;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            boolean rightArm = effectLightning != null || !StatusEffect.getTargets(player, Effect.CHOKE).isEmpty();
+//            boolean leftArm = effectLightning != null || !StatusEffect.getTargets(player, Effect.CHOKE, 2).isEmpty();
+//
+//            if (rightArm)
+//            {
+//                ALData.RIGHT_ARM_TIMER.incrWithoutNotify(player, 0.33F);
+//            }
+//            else
+//            {
+//                ALData.RIGHT_ARM_TIMER.incrWithoutNotify(player, -0.33F);
+//            }
+//
+//            if (leftArm)
+//            {
+//                ALData.LEFT_ARM_TIMER.incrWithoutNotify(player, 0.33F);
+//            }
+//            else
+//            {
+//                ALData.LEFT_ARM_TIMER.incrWithoutNotify(player, -0.33F);
+//            }
+//
+//            boolean flag = ALData.USING_POWER.get(player);
+//            boolean flag1 = ALData.PREV_USING_POWER.get(player);
+//
+//            if (power != null)
+//            {
+//                if (power.powerEffect instanceof PowerEffectActive)
+//                {
+//                    PowerEffectActive effect = (PowerEffectActive) power.powerEffect;
+//
+//                    if (flag && !flag1)
+//                    {
+//                        effect.start(player, event.side);
+//                    }
+//
+//                    if (!flag && flag1)
+//                    {
+//                        effect.stop(player, event.side);
+//                    }
+//                }
+//            }
+//
+//            if (ALData.PREV_XP.get(player) < ALHelper.getTotalXp(player))
+//            {
+//                float f = ALHelper.getTotalXp(player) - ALData.PREV_XP.get(player);
+//                ALData.FORCE_XP.incrWithoutNotify(player, f / 2);
+//            }
+//
+//            if (ALData.BASE_POWER.get(player) < 0)
+//            {
+//                ALData.BASE_POWER.setWithoutNotify(player, (byte) Math.max(ALHelper.getBasePower(player), 0));
+//            }
+//
+//            if (PowerManager.hasPowerUnlocked(player, Power.FORCE_SENSITIVITY))
+//            {
+//                PowerManager.getPowerData(player, Power.LIGHT_SIDE).setUnlocked(player, true);
+//                PowerManager.getPowerData(player, Power.DARK_SIDE).setUnlocked(player, true);
+//                PowerManager.getPowerData(player, Power.NEUTRAL).setUnlocked(player, true);
+//            }
+//
+//            ALData.FORCE_POWER.clampWithoutNotify(player, 0.0F, (float) ALHelper.getForcePowerMax(player));
+//            ALData.FORCE_POWER_DIFF.clampWithoutNotify(player, 0.0F, (float) ALHelper.getForcePowerMax(player));
+//
+//            ALData.PREV_XP.setWithoutNotify(player, ALHelper.getTotalXp(player));
+//            ALData.PREV_USING_POWER.setWithoutNotify(player, ALData.USING_POWER.get(player));
+//            ALData.RIGHT_ARM_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
+//            ALData.LEFT_ARM_TIMER.clampWithoutNotify(player, 0.0F, 1.0F);
+//        }
+//        else
+//        {
+//            ALData.onUpdate(player);
+//        }
     }
 
     @SubscribeEvent
     public void onLivingUpdate(LivingUpdateEvent event)
     {
-        EntityLivingBase entity = event.entityLiving;
-        ALEntityData data = ALEntityData.getData(entity);
+        EntityLivingBase entity = event.getEntityLiving();
+        //ALEntityData data = ALEntityData.getData(entity); //TODO
         
-        if (data.forcePushed && entity.isCollided && !entity.onGround)
-        {
-            data.forcePushed = false;
-            entity.hurtResistantTime = 0;
-            
-            double motX = entity.prevPosX - entity.posX;
-            double motY = entity.prevPosY - entity.posY;
-            double motZ = entity.prevPosZ - entity.posZ;
-            double vel = MathHelper.sqrt_double(motX * motX + motY * motY + motZ * motZ);
-            
-            float damage = (float) Math.max(vel * 5 - 3, 0);
-            
-            if (damage > 0)
-            {
-                entity.attackEntityFrom(ALDamageSources.INTO_WALL, damage);
-            }
-        }
-        
-        for (int i = 0; i < data.activeEffects.size(); ++i)
-        {
-            StatusEffect status = data.activeEffects.get(i);
+//        if (data.forcePushed && entity.isCollided && !entity.onGround)
+//        {
+//            data.forcePushed = false;
+//            entity.hurtResistantTime = 0;
+//            
+//            double motX = entity.prevPosX - entity.posX;
+//            double motY = entity.prevPosY - entity.posY;
+//            double motZ = entity.prevPosZ - entity.posZ;
+//            double vel = MathHelper.sqrt(motX * motX + motY * motY + motZ * motZ);
+//            
+//            float damage = (float) Math.max(vel * 5 - 3, 0);
+//            
+//            if (damage > 0)
+//            {
+//                entity.attackEntityFrom(ALDamageSources.INTO_WALL, damage);
+//            }
+//        }
+//        
+//        for (int i = 0; i < data.activeEffects.size(); ++i)
+//        {
+//            StatusEffect status = data.activeEffects.get(i);
+//
+//            if (--status.duration <= 0)
+//            {
+//                data.activeEffects.remove(i);
+//
+//                if (status.effect == Effect.CHOKE)
+//                {
+//                    StatusEffect.add(entity, Effect.STUN, (int) (PowerEffectChoke.getStunDuration(status.amplifier) * 20), 0);
+//                }
+//            }
+//        }
 
-            if (--status.duration <= 0)
-            {
-                data.activeEffects.remove(i);
-
-                if (status.effect == Effect.CHOKE)
-                {
-                    StatusEffect.add(entity, Effect.STUN, (int) (PowerEffectChoke.getStunDuration(status.amplifier) * 20), 0);
-                }
-            }
-        }
-
-        IAttributeInstance speedAttribute = entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+        IAttributeInstance speedAttribute = entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
 
         if (speedAttribute != null)
         {
@@ -483,13 +483,13 @@ public class CommonEventHandler
 
         if (entity instanceof EntityPlayer)
         {
-            EntityPlayer player = (EntityPlayer) event.entity;
+            EntityPlayer player = (EntityPlayer) event.getEntity();
 
-            if (!player.worldObj.isRemote)
+            if (!player.getEntityWorld().isRemote)
             {
                 if (playersToSync.size() > 0 && playersToSync.contains(player))
-                {
-                    ALNetworkManager.wrapper.sendTo(new MessagePlayerJoin(player), (EntityPlayerMP) player);
+                {//TODO crash on load
+                    //ALNetworkManager.wrapper.sendTo(new MessagePlayerJoin(player), (EntityPlayerMP) player);
                     playersToSync.remove(player);
                 }
             }
@@ -499,38 +499,38 @@ public class CommonEventHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingFall(LivingFallEvent event)
     {
-        if (event.entity instanceof EntityPlayer && event.distance > 3)
-        {
-            EntityPlayer player = (EntityPlayer) event.entity;
-            float force = ALData.FORCE_POWER.get(player);
-            
-            if (force > 0 && PowerManager.hasPowerUnlocked(player, Power.REBOUND))
-            {
-                float cost = Power.REBOUND.getUseCost(player);
-                float amount = Math.min(Math.max(event.distance - 3, 0), MathHelper.floor_float(force / cost));
-                
-                if (amount > 0)
-                {
-                    event.distance -= amount;
-                    
-                    if (!event.entity.worldObj.isRemote)
-                    {
-                        ALData.FORCE_POWER.incr(player, -cost * amount);
-                    }
-                    
-                    amount -= 3;
-                    player.playSound(ALSounds.player_force_cast, Math.min(amount / 10 + 0.2F, 1), 1);
-                }
-            }
-        }
+//        if (event.getEntity() instanceof EntityPlayer && event.getDistance() > 3) //TODO ALData
+//        {
+//            EntityPlayer player = (EntityPlayer) event.getEntity();
+//            float force = ALData.FORCE_POWER.get(player);
+//
+//            if (force > 0 && PowerManager.hasPowerUnlocked(player, Power.REBOUND))
+//            {
+//                float cost = Power.REBOUND.getUseCost(player);
+//                float amount = Math.min(Math.max(event.getDistance() - 3, 0), MathHelper.floor(force / cost));
+//
+//                if (amount > 0)
+//                {
+//                    event.setDistance(event.getDistance() - amount);
+//
+//                    if (!event.getEntity().getEntityWorld().isRemote)
+//                    {
+//                        ALData.FORCE_POWER.incr(player, -cost * amount);
+//                    }
+//
+//                    amount -= 3;
+//                    player.playSound(ALSounds.PLAYER_FORCE_CAST, Math.min(amount / 10 + 0.2F, 1), 1);
+//                }
+//            }
+//        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLivingAttack(LivingAttackEvent event)
     {
-        if (event.source.getEntity() instanceof EntityLivingBase)
+        if (event.getSource().getTrueSource() instanceof EntityLivingBase)
         {
-            EntityLivingBase attacker = (EntityLivingBase) event.source.getEntity();
+            EntityLivingBase attacker = (EntityLivingBase) event.getSource().getTrueSource();
 
             if (StatusEffect.has(attacker, Effect.STUN))
             {
@@ -543,59 +543,59 @@ public class CommonEventHandler
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event)
     {
-        EntityLivingBase entity = event.entityLiving;
+        EntityLivingBase entity = event.getEntityLiving();
         StatusEffect effectFortify = StatusEffect.get(entity, Effect.FORTIFY);
         StatusEffect effectEnergyResist = StatusEffect.get(entity, Effect.RESIST);
 
-        if (event.source.getEntity() instanceof EntityLivingBase)
+        if (event.getSource().getTrueSource() instanceof EntityLivingBase)//TODO check
         {
-            EntityLivingBase attacker = (EntityLivingBase) event.source.getEntity();
+            EntityLivingBase attacker = (EntityLivingBase) event.getSource().getTrueSource();
             StatusEffect effectMeditation = StatusEffect.get(attacker, Effect.MEDITATION);
 
-            if (effectMeditation != null && FiskServerUtils.isMeleeDamage(event.source))
+            if (effectMeditation != null && FiskServerUtils.isMeleeDamage(event.getSource()))
             {
-                event.ammount *= PowerEffectMeditation.getModifierAmount(effectMeditation.amplifier);
+                event.setAmount(event.getAmount() * PowerEffectMeditation.getModifierAmount(effectMeditation.amplifier));
             }
         }
 
-        if (effectFortify != null && ALDamageTypes.FORCE.isPresent(event.source))
+        if (effectFortify != null && ALDamageTypes.FORCE.isPresent(event.getSource()))
         {
-            event.ammount /= PowerEffectFortify.getModifierAmount(effectFortify.amplifier);
+        	event.setAmount(event.getAmount() / PowerEffectFortify.getModifierAmount(effectFortify.amplifier));
         }
 
-        if (effectEnergyResist != null && ALDamageTypes.LIGHTSABER.isPresent(event.source))
+        if (effectEnergyResist != null && ALDamageTypes.LIGHTSABER.isPresent(event.getSource()))
         {
-            event.ammount /= PowerEffectResist.getModifierAmount(effectEnergyResist.amplifier);
+            event.setAmount(event.getAmount() / PowerEffectResist.getModifierAmount(effectEnergyResist.amplifier));
         }
     }
 
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event)
     {
-        ALEntityData.getData(event.entityLiving).activeEffects.clear();
-
-        if (event.entity instanceof EntityPlayer)
-        {
-            EntityPlayer player = (EntityPlayer) event.entity;
-
-            if (!player.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
-            {
-                ALData.FORCE_XP.set(player, (float) MathHelper.floor_float(ALData.FORCE_XP.get(player) * 0.7F));
-            }
-            else
-            {
-                ALData.FORCE_XP.set(player, 0.0F);
-            }
-
-            ALData.onDeath(player);
-        }
+        //ALEntityData.getData(event.getEntityLiving()).activeEffects.clear(); //TODO ALData
+//
+//        if (event.getEntity() instanceof EntityPlayer)
+//        {
+//            EntityPlayer player = (EntityPlayer) event.getEntity();
+//
+//            if (!player.getEntityWorld().getGameRules().getBoolean("keepInventory"))
+//            {
+//                ALData.FORCE_XP.set(player, (float) MathHelper.floor(ALData.FORCE_XP.get(player) * 0.7F));
+//            }
+//            else
+//            {
+//                ALData.FORCE_XP.set(player, 0.0F);
+//            }
+//
+//            ALData.onDeath(player);
+//        }
     }
     
     @SubscribeEvent
     public void onEntityItemPickup(EntityItemPickupEvent event)
     {
-        EntityPlayer player = event.entityPlayer;
-        ItemStack item = event.item.getEntityItem();
+        EntityPlayer player = event.getEntityPlayer();
+        ItemStack item = event.getItem().getItem();
         
         if (item != null && item.getItem() == Item.getItemFromBlock(ModBlocks.lightsaberCrystal))
         {
@@ -620,7 +620,7 @@ public class CommonEventHandler
                     pouch.addItemStackToInventory(item);
                     pouch.markDirty();
                     
-                    if (item.stackSize <= 0)
+                    if (item.getCount() <= 0)
                     {
                         break;
                     }
@@ -629,7 +629,7 @@ public class CommonEventHandler
         }
     }
     
-//    @SubscribeEvent
+//    @SubscribeEvent //TODO
 //    public void onInitMapGen(InitMapGenEvent event)
 //    {
 //        if (event.type == EventType.CAVE)

@@ -1,306 +1,194 @@
 package com.fiskmods.lightsabers.common.block;
 
-import static net.minecraftforge.common.util.ForgeDirection.*;
-
-import java.util.List;
 import java.util.Random;
 
+import com.fiskmods.lightsabers.Lightsabers;
 import com.fiskmods.lightsabers.common.item.ItemCrystal;
-import com.fiskmods.lightsabers.common.lightsaber.CrystalColor;
+import com.fiskmods.lightsabers.common.item.ModItems;
 import com.fiskmods.lightsabers.common.tileentity.TileEntityCrystal;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockCrystal extends BlockBasic implements ITileEntityProvider
+public class BlockCrystal extends BlockDirectional implements ITileEntityProvider
 {
+    protected static final AxisAlignedBB AABB_DOWN = new AxisAlignedBB(0.3125D, 0.875D, 0.375D, 0.6875D, 1.0D, 0.625D);
+    protected static final AxisAlignedBB AABB_UP = new AxisAlignedBB(0.3125D, 0.0D, 0.375D, 0.6875D, 0.125D, 0.625D);
+    protected static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.3125D, 0.375D, 0.875D, 0.6875D, 0.625D, 1.0D);
+    protected static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.3125D, 0.375D, 0.0D, 0.6875D, 0.625D, 0.125D);
+    protected static final AxisAlignedBB AABB_WEST = new AxisAlignedBB(0.875D, 0.375D, 0.3125D, 1.0D, 0.625D, 0.6875D);
+    protected static final AxisAlignedBB AABB_EAST = new AxisAlignedBB(0.0D, 0.375D, 0.3125D, 0.125D, 0.625D, 0.6875D);
+
     private Random rand = new Random();
 
-    public BlockCrystal()
+    public BlockCrystal(String name)
     {
-        super(Material.glass);
+        super(Material.GLASS);
         setLightLevel(0.25F);
         setHardness(2.0F);
         setResistance(10.0F);
-        setStepSound(Block.soundTypeGlass);
+        setSoundType(SoundType.GLASS);
+        setTranslationKey(name);
+        setRegistryName(Lightsabers.MODID,name);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+        ModBlocks.BLOCKS.add(this);
+        ModItems.crystal = new ItemCrystal(this);
+        hasTileEntity = true;
     }
 
     @Override
+    public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player)//TODO seting in reg?
+    {
+        return false;
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
+    {
+        return NULL_AABB;
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED; //-1
+    }
+
     @SideOnly(Side.CLIENT)
-    public void getSubBlocks(Item item, CreativeTabs tab, List subBlocks)
-    {
-        for (CrystalColor color : CrystalColor.values())
-        {
-            subBlocks.add(ItemCrystal.create(color));
-        }
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override
-    public boolean canHarvestBlock(EntityPlayer player, int meta)
+    public boolean isOpaqueCube(IBlockState state)
     {
         return false;
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z)
-    {
-        return null;
-    }
-
-    @Override
-    public boolean renderAsNormalBlock()
+    public boolean isFullCube(IBlockState state)
     {
         return false;
     }
 
-    @Override
-    public int getRenderType()
+    private boolean canPlaceAt(World world, BlockPos pos)
     {
-        return -1;
-    }
-
-    @Override
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
-
-    private boolean canPlaceAt(World world, int x, int y, int z)
-    {
-        if (World.doesBlockHaveSolidTopSurface(world, x, y, z))
+        if (world.isSideSolid(pos, EnumFacing.UP))
         {
             return true;
         }
         else
         {
-            Block block = world.getBlock(x, y, z);
-            return block.canPlaceTorchOnTop(world, x, y, z);
+            Block block = world.getBlockState(pos).getBlock();
+            return block.canPlaceTorchOnTop(world.getBlockState(pos), world, pos);
         }
     }
 
     @Override
-    public boolean canPlaceBlockAt(World world, int x, int y, int z)
+    public boolean canPlaceBlockAt(World world, BlockPos pos)
     {
-        return world.isSideSolid(x - 1, y, z, EAST, true) || world.isSideSolid(x + 1, y, z, WEST, true) || world.isSideSolid(x, y, z - 1, SOUTH, true) || world.isSideSolid(x, y, z + 1, NORTH, true) || canPlaceAt(world, x, y - 1, z) || canPlaceAt(world, x, y + 1, z);
+        return world.isSideSolid(pos.west(), EnumFacing.EAST, true) || world.isSideSolid(pos.east(), EnumFacing.WEST, true) || world.isSideSolid(pos.north(), EnumFacing.SOUTH, true) || world.isSideSolid(pos.south(), EnumFacing.NORTH, true) || canPlaceAt(world, pos.down()) || canPlaceAt(world, pos.up());
     }
 
     @Override
-    public int onBlockPlaced(World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata)
-    {
-        int j1 = metadata;
-
-        if (side == 0 && canPlaceAt(world, x, y + 1, z))
-        {
-            j1 = 6;
+    public void neighborChanged(IBlockState state, World world, BlockPos pos1, Block block, BlockPos pos2) {
+        if (this.checkForDrop(world, pos1, state) && !canPlaceBlock(world, pos1, (EnumFacing)state.getValue(FACING))) {
+            this.dropBlockAsItem(world, pos1, state, 0);
+            world.setBlockToAir(pos1);
         }
 
-        if (side == 1 && canPlaceAt(world, x, y - 1, z))
-        {
-            j1 = 5;
-        }
-
-        if (side == 2 && world.isSideSolid(x, y, z + 1, NORTH, true))
-        {
-            j1 = 4;
-        }
-
-        if (side == 3 && world.isSideSolid(x, y, z - 1, SOUTH, true))
-        {
-            j1 = 3;
-        }
-
-        if (side == 4 && world.isSideSolid(x + 1, y, z, WEST, true))
-        {
-            j1 = 2;
-        }
-
-        if (side == 5 && world.isSideSolid(x - 1, y, z, EAST, true))
-        {
-            j1 = 1;
-        }
-
-        return j1;
     }
 
-    @Override
-    public void updateTick(World world, int x, int y, int z, Random rand)
-    {
-        super.updateTick(world, x, y, z, rand);
-
-        if (world.getBlockMetadata(x, y, z) == 0)
-        {
-            onBlockAdded(world, x, y, z);
-        }
-    }
-
-    @Override
-    public void onBlockAdded(World world, int x, int y, int z)
-    {
-        if (world.getBlockMetadata(x, y, z) == 0)
-        {
-            if (world.isSideSolid(x - 1, y, z, EAST, true))
-            {
-                world.setBlockMetadataWithNotify(x, y, z, 1, 2);
-            }
-            else if (world.isSideSolid(x + 1, y, z, WEST, true))
-            {
-                world.setBlockMetadataWithNotify(x, y, z, 2, 2);
-            }
-            else if (world.isSideSolid(x, y, z - 1, SOUTH, true))
-            {
-                world.setBlockMetadataWithNotify(x, y, z, 3, 2);
-            }
-            else if (world.isSideSolid(x, y, z + 1, NORTH, true))
-            {
-                world.setBlockMetadataWithNotify(x, y, z, 4, 2);
-            }
-            else if (canPlaceAt(world, x, y - 1, z))
-            {
-                world.setBlockMetadataWithNotify(x, y, z, 5, 2);
-            }
-            else if (canPlaceAt(world, x, y + 1, z))
-            {
-                world.setBlockMetadataWithNotify(x, y, z, 6, 2);
-            }
-        }
-
-        func_150109_e(world, x, y, z);
-    }
-
-    @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block block)
-    {
-        func_150108_b(world, x, y, z, block);
-    }
-
-    protected boolean func_150108_b(World world, int x, int y, int z, Block block)
-    {
-        if (func_150109_e(world, x, y, z))
-        {
-            int l = world.getBlockMetadata(x, y, z);
-            boolean flag = false;
-
-            if (!world.isSideSolid(x - 1, y, z, EAST, true) && l == 1)
-            {
-                flag = true;
-            }
-
-            if (!world.isSideSolid(x + 1, y, z, WEST, true) && l == 2)
-            {
-                flag = true;
-            }
-
-            if (!world.isSideSolid(x, y, z - 1, SOUTH, true) && l == 3)
-            {
-                flag = true;
-            }
-
-            if (!world.isSideSolid(x, y, z + 1, NORTH, true) && l == 4)
-            {
-                flag = true;
-            }
-
-            if (!canPlaceAt(world, x, y - 1, z) && l == 5)
-            {
-                flag = true;
-            }
-
-            if (!canPlaceAt(world, x, y + 1, z) && l == 6)
-            {
-                flag = true;
-            }
-
-            if (flag)
-            {
-                dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
-                world.setBlockToAir(x, y, z);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
+    private boolean checkForDrop(World world, BlockPos pos, IBlockState state) {
+        if (this.canPlaceBlockAt(world, pos)) {
             return true;
-        }
-    }
-
-    protected boolean func_150109_e(World world, int x, int y, int z)
-    {
-        if (!canPlaceBlockAt(world, x, y, z))
-        {
-            if (world.getBlock(x, y, z) == this)
-            {
-                dropBlockAsItem(world, x, y, z, 1, 0);
-                world.setBlockToAir(x, y, z);
-            }
-
+        } else {
+            this.dropBlockAsItem(world, pos, state, 0);
+            world.setBlockToAir(pos);
             return false;
         }
-        else
-        {
-            return true;
-        }
     }
 
+
     @Override
-    public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 vec3, Vec3 vec31)
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos)
     {
-        int l = world.getBlockMetadata(x, y, z);
+    	//TODO l== state
         float f = 0.0625F;
         float width = f * 6;
         float height = f * 6;
 
-        if (l == 1)
-        {
-            setBlockBounds(0, 0.5F - width / 2, 0.5F - width / 2, height, 0.5F + width / 2, 0.5F + width / 2);
-        }
-        else if (l == 2)
-        {
-            setBlockBounds(1 - height, 0.5F - width / 2, 0.5F - width / 2, 1, 0.5F + width / 2, 0.5F + width / 2);
-        }
-        else if (l == 3)
-        {
-            setBlockBounds(0.5F - width / 2, 0.5F - width / 2, 0, 0.5F + width / 2, 0.5F + width / 2, height);
-        }
-        else if (l == 4)
-        {
-            setBlockBounds(0.5F - width / 2, 0.5F - width / 2, 1 - height, 0.5F + width / 2, 0.5F + width / 2, 1);
-        }
-        else if (l == 5)
-        {
-            setBlockBounds(0.5F - width / 2, 0, 0.5F - width / 2, 0.5F + width / 2, height, 0.5F + width / 2);
-        }
-        else
-        {
-            setBlockBounds(0.5F - width / 2, 1 - height, 0.5F - width / 2, 0.5F + width / 2, 1, 0.5F + width / 2);
-        }
+//        if (l == 1) //TODO
+//        {
+//            setBlockBounds(0, 0.5F - width / 2, 0.5F - width / 2, height, 0.5F + width / 2, 0.5F + width / 2);
+//        }
+//        else if (l == 2)
+//        {
+//            setBlockBounds(1 - height, 0.5F - width / 2, 0.5F - width / 2, 1, 0.5F + width / 2, 0.5F + width / 2);
+//        }
+//        else if (l == 3)
+//        {
+//            setBlockBounds(0.5F - width / 2, 0.5F - width / 2, 0, 0.5F + width / 2, 0.5F + width / 2, height);
+//        }
+//        else if (l == 4)
+//        {
+//            setBlockBounds(0.5F - width / 2, 0.5F - width / 2, 1 - height, 0.5F + width / 2, 0.5F + width / 2, 1);
+//        }
+//        else if (l == 5)
+//        {
+//            setBlockBounds(0.5F - width / 2, 0, 0.5F - width / 2, 0.5F + width / 2, height, 0.5F + width / 2);
+//        }
+//        else
+//        {
+//            setBlockBounds(0.5F - width / 2, 1 - height, 0.5F - width / 2, 0.5F + width / 2, 1, 0.5F + width / 2);
+//        }
 
-        return super.collisionRayTrace(world, x, y, z, vec3, vec31);
+        EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+        switch(enumfacing) {
+            case EAST:
+                return AABB_EAST;
+            case WEST:
+                return AABB_WEST;
+            case SOUTH:
+                return AABB_SOUTH;
+            case NORTH:
+            default:
+                return AABB_NORTH;
+            case UP:
+                return AABB_UP;
+            case DOWN:
+                return AABB_DOWN;
+        }
     }
 
     @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack)
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack itemstack)
     {
-        super.onBlockPlacedBy(world, x, y, z, entity, itemstack);
-        TileEntity tile = world.getTileEntity(x, y, z);
+        super.onBlockPlacedBy(world, pos, state, entity, itemstack);
+        TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileEntityCrystal)
         {
@@ -309,27 +197,27 @@ public class BlockCrystal extends BlockBasic implements ITileEntityProvider
     }
 
     @Override
-    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
     {
-        TileEntity tile = world.getTileEntity(x, y, z);
+        TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileEntityCrystal)
         {
             return ItemCrystal.create(((TileEntityCrystal) tile).getColor());
         }
 
-        return super.getPickBlock(target, world, x, y, z);
+        return super.getPickBlock(state, target, world, pos, player);
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int metadata, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        TileEntity tile = world.getTileEntity(x, y, z);
+        TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileEntityCrystal)
         {
-            dropBlockAsItem(world, x, y, z, ItemCrystal.create(((TileEntityCrystal) tile).getColor()));
-            world.setBlock(x, y, z, Blocks.air);
+            dropBlockAsItem(world, pos, state, 0);
+            world.setBlockToAir(pos);
 
             return true;
         }
@@ -338,23 +226,17 @@ public class BlockCrystal extends BlockBasic implements ITileEntityProvider
     }
 
     @Override
-    public int quantityDropped(int meta, int fortune, Random random)
+    public int quantityDropped(IBlockState state, int fortune, Random random)
     {
         return 0;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public int colorMultiplier(IBlockAccess world, int x, int y, int z)
+    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
-        TileEntity tile = world.getTileEntity(x, y, z);
-
-        if (tile instanceof TileEntityCrystal)
-        {
-            return ((TileEntityCrystal) tile).getColor().color;
-        }
-        
-        return -1;
+        super.getDrops(drops, world, pos, state, fortune);
+        TileEntity tile = world.getTileEntity(pos);
+        drops.add(ItemCrystal.create(((TileEntityCrystal) tile).getColor()));
     }
 
     @Override
@@ -362,4 +244,91 @@ public class BlockCrystal extends BlockBasic implements ITileEntityProvider
     {
         return new TileEntityCrystal();
     }
+
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{FACING});
+    }
+
+    public int getMetaFromState(IBlockState p_getMetaFromState_1_) {
+        int i;
+        switch((EnumFacing)p_getMetaFromState_1_.getValue(FACING)) {
+            case EAST:
+                i = 1;
+                break;
+            case WEST:
+                i = 2;
+                break;
+            case SOUTH:
+                i = 3;
+                break;
+            case NORTH:
+                i = 4;
+                break;
+            case UP:
+            default:
+                i = 5;
+                break;
+            case DOWN:
+                i = 0;
+        }
+
+        return i;
+    }
+
+    public IBlockState getStateFromMeta(int p_getStateFromMeta_1_) {
+        IBlockState iblockstate = this.getDefaultState();
+        switch(p_getStateFromMeta_1_) {
+            case 0:
+                iblockstate = iblockstate.withProperty(FACING, EnumFacing.DOWN);
+                break;
+            case 1:
+                iblockstate = iblockstate.withProperty(FACING, EnumFacing.EAST);
+                break;
+            case 2:
+                iblockstate = iblockstate.withProperty(FACING, EnumFacing.WEST);
+                break;
+            case 3:
+                iblockstate = iblockstate.withProperty(FACING, EnumFacing.SOUTH);
+                break;
+            case 4:
+                iblockstate = iblockstate.withProperty(FACING, EnumFacing.NORTH);
+                break;
+            case 5:
+            default:
+                iblockstate = iblockstate.withProperty(FACING, EnumFacing.UP);
+        }
+
+        return iblockstate;
+    }
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float p_getStateForPlacement_4_, float p_getStateForPlacement_5_, float p_getStateForPlacement_6_, int p_getStateForPlacement_7_, EntityLivingBase entity) {
+        return canPlaceBlock(world, pos, facing) ? this.getDefaultState().withProperty(FACING, facing) : this.getDefaultState().withProperty(FACING, EnumFacing.DOWN);
+    }
+
+    protected static boolean canPlaceBlock(World p_canPlaceBlock_0_, BlockPos p_canPlaceBlock_1_, EnumFacing p_canPlaceBlock_2_) {
+        BlockPos blockpos = p_canPlaceBlock_1_.offset(p_canPlaceBlock_2_.getOpposite());
+        IBlockState iblockstate = p_canPlaceBlock_0_.getBlockState(blockpos);
+        boolean flag = iblockstate.getBlockFaceShape(p_canPlaceBlock_0_, blockpos, p_canPlaceBlock_2_) == BlockFaceShape.SOLID;
+        Block block = iblockstate.getBlock();
+        if (p_canPlaceBlock_2_ == EnumFacing.UP) {
+            return iblockstate.isTopSolid() || !isExceptionBlockForAttaching(block) && flag;
+        } else {
+            return !isExceptBlockForAttachWithPiston(block) && flag;
+        }
+    }
+
+//    @Override
+//    public int getRenderColor(IBlockState state) {
+//        return new Color(0, 0, 255).getRGB();
+//    }
+//
+//    @Override
+//    public int getBlockColor() {
+//        return new Color(0, 0, 255).getRGB();
+//    }
+//
+//    @Override
+//    public int colorMultiplier(IBlockAccess worldIn, BlockPos pos, int renderPass) {
+//        return new Color(0, 0, 255).getRGB();
+//    }
+
 }

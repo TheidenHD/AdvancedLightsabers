@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import net.minecraft.entity.player.EntityPlayer;
 

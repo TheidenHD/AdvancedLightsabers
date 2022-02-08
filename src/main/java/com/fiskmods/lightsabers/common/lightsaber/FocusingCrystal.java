@@ -1,9 +1,6 @@
 package com.fiskmods.lightsabers.common.lightsaber;
 
 import java.util.Locale;
-
-import net.minecraft.util.StatCollector;
-
 public enum FocusingCrystal
 {
     COMPRESSED,
@@ -25,6 +22,6 @@ public enum FocusingCrystal
 
     public String getLocalizedName()
     {
-        return StatCollector.translateToLocal(getUnlocalizedName()).trim();
+        return "";//StatCollector.translateToLocal(getUnlocalizedName()).trim();//TODO
     }
 }

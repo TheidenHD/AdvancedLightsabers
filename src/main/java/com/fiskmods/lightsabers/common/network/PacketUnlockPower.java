@@ -4,10 +4,10 @@ import com.fiskmods.lightsabers.Lightsabers;
 import com.fiskmods.lightsabers.common.force.Power;
 import com.fiskmods.lightsabers.common.force.PowerManager;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,7 +52,7 @@ public class PacketUnlockPower implements IMessage
             if (ctx.side.isClient())
             {
                 EntityPlayer player = Lightsabers.proxy.getPlayer();
-                Entity entity = player.worldObj.getEntityByID(message.id);
+                Entity entity = player.getEntityWorld().getEntityByID(message.id);
 
                 if (entity instanceof EntityPlayer)
                 {
@@ -62,17 +62,17 @@ public class PacketUnlockPower implements IMessage
             }
             else
             {
-                EntityPlayer player = ctx.getServerHandler().playerEntity;
+                EntityPlayer player = ctx.getServerHandler().player;
 
                 if (player != null)
                 {
-                    Entity entity = player.worldObj.getEntityByID(message.id);
+                    Entity entity = player.getEntityWorld().getEntityByID(message.id);
 
                     if (entity instanceof EntityPlayer)
                     {
                         EntityPlayer player1 = (EntityPlayer) entity;
 
-                        if (player.worldObj.isRemote)
+                        if (player.getEntityWorld().isRemote)
                         {
                             ALNetworkManager.wrapper.sendToServer(new PacketUnlockPower(player1, power));
                         }

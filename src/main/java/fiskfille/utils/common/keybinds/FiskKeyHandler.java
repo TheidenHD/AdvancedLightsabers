@@ -3,16 +3,16 @@ package fiskfille.utils.common.keybinds;
 import java.util.ArrayList;
 import java.util.List;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import fiskfille.utils.common.interaction.InteractionHandler;
 import fiskfille.utils.common.interaction.InteractionHandler.InteractionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 public enum FiskKeyHandler
 {
@@ -27,7 +27,7 @@ public enum FiskKeyHandler
     @SubscribeEvent
     public void onKeyInput(KeyInputEvent event)
     {
-        EntityPlayer player = mc.thePlayer;
+        EntityPlayer player = mc.player;
 
         if (mc.currentScreen == null)
         {
@@ -36,7 +36,7 @@ public enum FiskKeyHandler
             
             for (int i = 0; i < KEYS.size(); ++i)
             {
-                if (KEYS.get(i).getIsKeyPressed())
+                if (KEYS.get(i).isKeyDown())
                 {
                     pressed |= 1 << i;
                 }
@@ -44,7 +44,7 @@ public enum FiskKeyHandler
             
             if (pressed != prevPressed)
             {
-                InteractionHandler.interact(mc.thePlayer, InteractionType.KEY_PRESS, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.boundingBox.minY), MathHelper.floor_double(player.posZ));
+                InteractionHandler.interact(mc.player, InteractionType.KEY_PRESS, MathHelper.floor(player.posX), MathHelper.floor(player.getEntityBoundingBox().minY), MathHelper.floor(player.posZ));
             }
         }
     }
@@ -52,7 +52,7 @@ public enum FiskKeyHandler
     @SubscribeEvent
     public void onClientTick(ClientTickEvent event)
     {
-        EntityPlayer player = mc.thePlayer;
+        EntityPlayer player = mc.player;
 
         if (mc.currentScreen == null && event.phase == Phase.END)
         {
@@ -63,11 +63,11 @@ public enum FiskKeyHandler
             
             for (int i = 0; i < KEYS.size(); ++i)
             {
-                if (KEYS.get(i).getIsKeyPressed())
+                if (KEYS.get(i).isKeyDown())
                 {
                     if (++timePressed[i] == 5)
                     {
-                        InteractionHandler.interact(mc.thePlayer, InteractionType.KEY_HOLD, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.boundingBox.minY), MathHelper.floor_double(player.posZ));
+                        InteractionHandler.interact(mc.player, InteractionType.KEY_HOLD, MathHelper.floor(player.posX), MathHelper.floor(player.getCollisionBoundingBox().minY), MathHelper.floor(player.posZ));
                     }
                 }
                 else

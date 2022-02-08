@@ -60,7 +60,7 @@ public class ModelLightsaberBlade extends ModelBase
         if (data.hasFocusingCrystal(FocusingCrystal.CRACKED))
         {
             float divider = 60;
-            int ticks = Minecraft.getMinecraft().thePlayer.ticksExisted;
+            int ticks = Minecraft.getMinecraft().player.ticksExisted;
             Random rand = new Random(ticks % 100 * 1000);
             Random prev = new Random((ticks - 1) % 100 * 1000);
 
@@ -98,7 +98,7 @@ public class ModelLightsaberBlade extends ModelBase
 
         if (fineCut)
         {
-            Tessellator tessellator = Tessellator.instance;
+            Tessellator tessellator = Tessellator.getInstance();
             float f = 0.0625F;
             float length = f * bladeLength * 0.7F;
             float edge = f * 1.5F;
@@ -107,43 +107,43 @@ public class ModelLightsaberBlade extends ModelBase
             float edge1 = f / 2;
             float tip = f * 1.5F;
 
-            tessellator.startDrawingQuads();
-            tessellator.addVertex(-f / 2, -length, f / 2);
-            tessellator.addVertex(0, -length, edge);
-            tessellator.addVertex(0, edgeAngle, edge);
-            tessellator.addVertex(-f / 2, -f, f / 2);
-            tessellator.addVertex(f / 2, -length, f / 2);
-            tessellator.addVertex(0, -length, edge);
-            tessellator.addVertex(0, edgeAngle, edge);
-            tessellator.addVertex(f / 2, -f, f / 2);
-            tessellator.addVertex(f / 2, -f, f / 2);
-            tessellator.addVertex(0, edgeAngle, edge);
-            tessellator.addVertex(0, edgeAngle, edge);
-            tessellator.addVertex(-f / 2, -f, f / 2);
-            tessellator.addVertex(-f / 2, 0 - length, f / 2);
-            tessellator.addVertex(-f / 2, -length1 - length, edge1);
-            tessellator.addVertex(0, -length1 - length, edge1);
-            tessellator.addVertex(0, 0 - length, edge);
-            tessellator.addVertex(f / 2, 0 - length, f / 2);
-            tessellator.addVertex(f / 2, -length1 - length, edge1);
-            tessellator.addVertex(0, -length1 - length, edge1);
-            tessellator.addVertex(0, 0 - length, edge);
-            tessellator.addVertex(-f / 2, 0 - f * bladeLength, f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(-f / 2, 0 - f * bladeLength, -f / 2);
-            tessellator.addVertex(f / 2, 0 - f * bladeLength, f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(f / 2, 0 - f * bladeLength, -f / 2);
-            tessellator.addVertex(-f / 2, 0 - f * bladeLength, -f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(f / 2, 0 - f * bladeLength, -f / 2);
-            tessellator.addVertex(-f / 2, 0 - f * bladeLength, f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
-            tessellator.addVertex(f / 2, 0 - f * bladeLength, f / 2);
+//            tessellator.startDrawingQuads(); TODO
+//            tessellator.addVertex(-f / 2, -length, f / 2);
+//            tessellator.addVertex(0, -length, edge);
+//            tessellator.addVertex(0, edgeAngle, edge);
+//            tessellator.addVertex(-f / 2, -f, f / 2);
+//            tessellator.addVertex(f / 2, -length, f / 2);
+//            tessellator.addVertex(0, -length, edge);
+//            tessellator.addVertex(0, edgeAngle, edge);
+//            tessellator.addVertex(f / 2, -f, f / 2);
+//            tessellator.addVertex(f / 2, -f, f / 2);
+//            tessellator.addVertex(0, edgeAngle, edge);
+//            tessellator.addVertex(0, edgeAngle, edge);
+//            tessellator.addVertex(-f / 2, -f, f / 2);
+//            tessellator.addVertex(-f / 2, 0 - length, f / 2);
+//            tessellator.addVertex(-f / 2, -length1 - length, edge1);
+//            tessellator.addVertex(0, -length1 - length, edge1);
+//            tessellator.addVertex(0, 0 - length, edge);
+//            tessellator.addVertex(f / 2, 0 - length, f / 2);
+//            tessellator.addVertex(f / 2, -length1 - length, edge1);
+//            tessellator.addVertex(0, -length1 - length, edge1);
+//            tessellator.addVertex(0, 0 - length, edge);
+//            tessellator.addVertex(-f / 2, 0 - f * bladeLength, f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(-f / 2, 0 - f * bladeLength, -f / 2);
+//            tessellator.addVertex(f / 2, 0 - f * bladeLength, f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(f / 2, 0 - f * bladeLength, -f / 2);
+//            tessellator.addVertex(-f / 2, 0 - f * bladeLength, -f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(f / 2, 0 - f * bladeLength, -f / 2);
+//            tessellator.addVertex(-f / 2, 0 - f * bladeLength, f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(0, -tip - f * bladeLength, -f / 2);
+//            tessellator.addVertex(f / 2, 0 - f * bladeLength, f / 2);
             tessellator.draw();
 
             blade.render(0.0625F);

@@ -68,7 +68,7 @@ public abstract class Hilt extends FiskRegistryEntry<Hilt>
 
     public String getUnlocalizedName()
     {
-        return "hilt." + delegate.name().replace(':', '.') + ".name";
+        return "hilt." + delegate.name().toString().replace(':', '.') + ".name";
     }
 
     public String getLocalizedName()

@@ -4,10 +4,10 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class WorldGenCrystalCaveEntrance extends WorldGenerator
 {
@@ -19,15 +19,15 @@ public class WorldGenCrystalCaveEntrance extends WorldGenerator
     }
 
     @Override
-    public boolean generate(World world, Random random, int x, int y, int z)
+    public boolean generate(World world, Random random, BlockPos pos)
     {
         float f = random.nextFloat() * (float) Math.PI;
-        double d0 = x + random.nextInt(3) - 2;
-        double d1 = x + random.nextInt(3) - 2;
-        double d2 = z + random.nextInt(3) - 2;
-        double d3 = z + random.nextInt(3) - 2;
-        double d4 = y + random.nextInt(3) - 2;
-        double d5 = y + random.nextInt(3) - 2;
+        double d0 = pos.getX() + random.nextInt(3) - 2;
+        double d1 = pos.getX() + random.nextInt(3) - 2;
+        double d2 = pos.getZ() + random.nextInt(3) - 2;
+        double d3 = pos.getZ() + random.nextInt(3) - 2;
+        double d4 = pos.getY() + random.nextInt(3) - 2;
+        double d5 = pos.getY() + random.nextInt(3) - 2;
 
         for (int l = 0; l <= numberOfBlocks; ++l)
         {
@@ -37,12 +37,12 @@ public class WorldGenCrystalCaveEntrance extends WorldGenerator
             double d9 = random.nextDouble() * numberOfBlocks / 16.0D;
             double d10 = (MathHelper.sin(l * (float) Math.PI / numberOfBlocks) + 1.0F) * d9 + 1.0D;
             double d11 = (MathHelper.sin(l * (float) Math.PI / numberOfBlocks) + 1.0F) * d9 + 1.0D;
-            int i1 = MathHelper.floor_double(d6 - d10 / 2.0D);
-            int j1 = MathHelper.floor_double(d7 - d11 / 2.0D);
-            int k1 = MathHelper.floor_double(d8 - d10 / 2.0D);
-            int l1 = MathHelper.floor_double(d6 + d10 / 2.0D);
-            int i2 = MathHelper.floor_double(d7 + d11 / 2.0D);
-            int j2 = MathHelper.floor_double(d8 + d10 / 2.0D);
+            int i1 = MathHelper.floor(d6 - d10 / 2.0D);
+            int j1 = MathHelper.floor(d7 - d11 / 2.0D);
+            int k1 = MathHelper.floor(d8 - d10 / 2.0D);
+            int l1 = MathHelper.floor(d6 + d10 / 2.0D);
+            int i2 = MathHelper.floor(d7 + d11 / 2.0D);
+            int j2 = MathHelper.floor(d8 + d10 / 2.0D);
 
             for (int k2 = i1; k2 <= l1; ++k2)
             {
@@ -59,16 +59,16 @@ public class WorldGenCrystalCaveEntrance extends WorldGenerator
                             for (int i3 = k1; i3 <= j2; ++i3)
                             {
                                 double d14 = (i3 + 0.5D - d8) / (d10 / 2.0D);
-                                Block block1 = world.getBlock(k2, l2 + 1, i3);
+                                Block block1 = world.getBlockState(new BlockPos(k2, l2 + 1, i3)).getBlock();
 
-                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && world.getBlock(k2, l2, i3) != Blocks.chest)
+                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && world.getBlockState(new BlockPos(k2, l2, i3)).getBlock() != Blocks.CHEST)
                                 {
-                                    if (world.getBlock(k2 + 1, l2, i3) != Blocks.air || world.getBlock(k2 - 1, l2, i3) != Blocks.air || world.getBlock(k2, l2 + 1, i3) != Blocks.air || world.getBlock(k2, l2 - 1, i3) != Blocks.air || world.getBlock(k2, l2, i3 + 1) != Blocks.air || world.getBlock(k2, l2, i3 - 1) != Blocks.air)
+                                    if (world.getBlockState(new BlockPos(k2 + 1, l2, i3)).getBlock() != Blocks.AIR || world.getBlockState(new BlockPos(k2 - 1, l2, i3)).getBlock() != Blocks.AIR || world.getBlockState(new BlockPos(k2, l2 + 1, i3)).getBlock() != Blocks.AIR || world.getBlockState(new BlockPos(k2, l2 - 1, i3)).getBlock() != Blocks.AIR || world.getBlockState(new BlockPos(k2, l2, i3 + 1)).getBlock() != Blocks.AIR || world.getBlockState(new BlockPos(k2, l2, i3 - 1)).getBlock() != Blocks.AIR)
                                     {
-                                        world.setBlock(k2, l2, i3, Blocks.air);
+                                        world.setBlockState(new BlockPos(k2, l2, i3), Blocks.AIR.getDefaultState());
                                     }
 
-                                    Block block = Blocks.stone;
+                                    Block block = Blocks.STONE;
                                     createWalls(world, k2 + 1, l2, i3, block);
                                     createWalls(world, k2 - 1, l2, i3, block);
                                     createWalls(world, k2, l2 + 1, i3, block);
@@ -88,9 +88,9 @@ public class WorldGenCrystalCaveEntrance extends WorldGenerator
 
     public void createWalls(World world, int x, int y, int z, Block block)
     {
-        if (world.getBlock(x, y, z).isSideSolid(world, x, y, z, ForgeDirection.UP))
-        {
-            world.setBlock(x, y, z, block, 0, 2);
-        }
+//        if (world.getBlock(x, y, z).isSideSolid(world, x, y, z, ForgeDirection.UP))//TODO
+//        {
+//            world.setBlock(x, y, z, block, 0, 2);
+//        }
     }
 }

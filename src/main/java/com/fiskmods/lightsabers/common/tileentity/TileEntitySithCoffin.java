@@ -12,11 +12,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 
-public class TileEntitySithCoffin extends TileEntity implements IInventory
+public class TileEntitySithCoffin extends TileEntity implements IInventory, ITickable
 {
     public static final int LID_OPEN_MAX = 60;
     
@@ -28,7 +30,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
     public int prevLidOpenTimer = 0;
 
     @Override
-    public void updateEntity()
+    public void update()
     {
         prevLidOpenTimer = lidOpenTimer;
 
@@ -45,9 +47,9 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
         }
 
         int metadata = getBlockMetadata();
-        int dir = BlockDirectional.getDirection(metadata);
+        int dir = BlockDirectional.FACING.hashCode();//TODO
 
-        if (!BlockSithCoffin.isBlockFrontOfCoffin(metadata))
+        if (true)//!BlockSithCoffin.isBlockFrontOfCoffin(metadata))//TODO
         {
             if (!hasBeenOpened)
             {
@@ -64,7 +66,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
                         double motionX = (rand.nextFloat() - 0.5F) * 0.5F * d;
                         double motionY = (rand.nextFloat() - 0.5F) * 0.1F;
                         double motionZ = (rand.nextFloat() - 0.5F) * 0.5F * d;
-                        worldObj.spawnParticle("smoke", xCoord + 0.5F + x + BlockSithCoffin.DIRECTIONS[dir][0] * 0.5F, yCoord + 0.8F + y, zCoord + 0.5F + z + BlockSithCoffin.DIRECTIONS[dir][1] * 0.5F, motionX, motionY, motionZ);
+                        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, pos.getX() + 0.5F + x + BlockSithCoffin.DIRECTIONS[dir][0] * 0.5F, pos.getY() + 0.8F + y, pos.getZ() + 0.5F + z + BlockSithCoffin.DIRECTIONS[dir][1] * 0.5F, motionX, motionY, motionZ);
                     }
                 }
                 else
@@ -84,7 +86,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1).expand(1, 0, 1);
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).expand(1, 0, 1);
     }
 
     @Override
@@ -106,7 +108,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
         {
             ItemStack itemstack;
 
-            if (itemstacks[slot].stackSize <= amount)
+            if (itemstacks[slot].getCount() <= amount)
             {
                 itemstack = itemstacks[slot];
                 itemstacks[slot] = null;
@@ -116,7 +118,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
             {
                 itemstack = itemstacks[slot].splitStack(amount);
 
-                if (itemstacks[slot].stackSize == 0)
+                if (itemstacks[slot].getCount() == 0)
                 {
                     itemstacks[slot] = null;
                 }
@@ -131,7 +133,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int slot)
+    public ItemStack removeStackFromSlot(int slot)
     {
         if (itemstacks[slot] != null)
         {
@@ -150,20 +152,20 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
     {
         itemstacks[slot] = itemstack;
 
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit())
+        if (itemstack != null && itemstack.getCount() > getInventoryStackLimit())
         {
-            itemstack.stackSize = getInventoryStackLimit();
+            itemstack.setCount(getInventoryStackLimit());
         }
     }
 
     @Override
-    public String getInventoryName()
+    public String getName()
     {
         return "gui.sith_coffin";
     }
 
     @Override
-    public boolean hasCustomInventoryName()
+    public boolean hasCustomName()
     {
         return false;
     }
@@ -182,7 +184,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
 
             if (slot >= 0 && slot < itemstacks.length)
             {
-                itemstacks[slot] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+                itemstacks[slot] = new ItemStack(nbttagcompound1);
             }
         }
 
@@ -192,9 +194,9 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+    	NBTTagCompound ret = super.writeToNBT(nbt);//TODO nbt=super.?
         NBTTagList nbttaglist = new NBTTagList();
 
         for (int i = 0; i < itemstacks.length; ++i)
@@ -212,6 +214,7 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
         nbt.setBoolean("HasBeenOpened", hasBeenOpened);
         nbt.setBoolean("IsLidOpen", isLidOpen);
         nbt.setInteger("LidOpenTimer", lidOpenTimer);
+        return ret;
     }
 
     @Override
@@ -221,19 +224,9 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player)
+    public boolean isUsableByPlayer(EntityPlayer player)
     {
-        return worldObj.getTileEntity(xCoord, yCoord, zCoord) != this ? false : player.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) <= 64.0D;
-    }
-
-    @Override
-    public void openInventory()
-    {
-    }
-
-    @Override
-    public void closeInventory()
-    {
+        return world.getTileEntity(pos) != this ? false : player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
@@ -242,18 +235,58 @@ public class TileEntitySithCoffin extends TileEntity implements IInventory
         return true;
     }
 
-    @Override
-    public Packet getDescriptionPacket()
-    {
-        NBTTagCompound syncData = new NBTTagCompound();
-        writeToNBT(syncData);
+//    @Override
+//    public Packet getDescriptionPacket()
+//    {
+//        NBTTagCompound syncData = new NBTTagCompound();
+//        writeToNBT(syncData);
+//
+//        return new SPacketUpdateTileEntity(pos, 1, syncData);
+//    }
 
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, syncData);
+    @Override
+    public void onDataPacket(NetworkManager netManager, SPacketUpdateTileEntity packet)
+    {
+        readFromNBT(packet.getNbtCompound());
     }
 
-    @Override
-    public void onDataPacket(NetworkManager netManager, S35PacketUpdateTileEntity packet)
-    {
-        readFromNBT(packet.func_148857_g());
-    }
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+	
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
 }
